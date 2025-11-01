@@ -3,79 +3,105 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>3 - Guns.lol Style</title>
+<title>333 - Lost in the Neon</title>
 
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+  /* Reset */
+  * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
   body, html { width: 100%; height: 100%; overflow: hidden; }
 
-  /* Background GIF */
+  /* Background */
   body {
     background: url('https://media.tenor.com/fDpLh_dGvB8AAAAC/black-and-white-night-city.gif') no-repeat center center fixed;
     background-size: cover;
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #00dfff;
-    text-shadow: 0 0 10px #00dfff, 0 0 20px #00dfff;
+    color: #00faff;
+    text-shadow: 0 0 15px #00eaff, 0 0 30px #00eaff;
     flex-direction: column;
   }
 
+  /* Neon Card */
   .card {
-    backdrop-filter: blur(15px);
-    background-color: rgba(0,0,0,0.4);
-    border-radius: 20px;
-    padding: 40px 60px;
+    backdrop-filter: blur(18px);
+    background-color: rgba(0, 0, 0, 0.45);
+    border-radius: 22px;
+    padding: 50px 70px;
     text-align: center;
-    box-shadow: 0 0 30px #00dfff;
-    animation: glowPulse 2s infinite alternate;
+    box-shadow: 0 0 30px #00eaff;
+    animation: glowPulse 2.5s infinite alternate;
   }
 
   @keyframes glowPulse {
-    0% { box-shadow: 0 0 20px #00dfff; }
-    100% { box-shadow: 0 0 40px #00ffff; }
+    0% { box-shadow: 0 0 25px #00eaff; }
+    100% { box-shadow: 0 0 45px #00ffff; }
   }
 
+  /* Avatar */
   .avatar {
-    width: 120px;
-    height: 120px;
+    width: 130px;
+    height: 130px;
     border-radius: 50%;
-    border: 3px solid #00dfff;
-    margin-bottom: 20px;
-  }
-
-  h1 { font-size: 2.5rem; margin-bottom: 10px; }
-  p { font-size: 1.2rem; color: #00f5ff; margin-bottom: 30px; }
-
-  .links {
-    display: flex;
-    gap: 30px;
-    justify-content: center;
+    border: 3px solid #00eaff;
     margin-bottom: 25px;
-  }
-
-  .links a {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 60px; height: 60px;
-    border-radius: 50%;
-    background: rgba(0,255,255,0.15);
-    color: #00f5ff;
-    font-size: 2rem;
-    transition: 0.3s;
-    box-shadow: 0 0 10px #00dfff;
-  }
-
-  .links a:hover {
-    transform: scale(1.15);
     box-shadow: 0 0 20px #00ffff;
   }
 
+  /* Glitchy Name */
+  .glitch {
+    font-size: 3rem;
+    font-weight: 800;
+    position: relative;
+    color: #00faff;
+    animation: glitch 1.5s infinite;
+  }
+
+  @keyframes glitch {
+    0% { text-shadow: 2px 2px #ff00c8, -2px -2px #00ffff; }
+    25% { text-shadow: -2px 2px #ff00c8, 2px -2px #00ffff; }
+    50% { text-shadow: 2px -2px #ff00c8, -2px 2px #00ffff; }
+    75% { text-shadow: -1px -1px #ff00c8, 1px 1px #00ffff; }
+    100% { text-shadow: 2px 2px #ff00c8, -2px -2px #00ffff; }
+  }
+
+  p { 
+    font-size: 1.1rem; 
+    color: #aafaff; 
+    margin-bottom: 30px;
+    opacity: 0.9;
+  }
+
+  /* Links */
+  .links {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 35px;
+  }
+
+  .links a {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(0,255,255,0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.4s;
+    box-shadow: 0 0 15px #00eaff;
+  }
+
+  .links a:hover {
+    transform: scale(1.2) rotate(4deg);
+    background: rgba(0,255,255,0.3);
+    box-shadow: 0 0 25px #00ffff;
+  }
+
   .links svg {
-    width: 30px;
-    height: 30px;
-    fill: #00f5ff;
+    width: 32px;
+    height: 32px;
+    fill: #00faff;
   }
 
   /* Music Player */
@@ -83,8 +109,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
-    color: #00f5ff;
+    gap: 12px;
+    color: #00faff;
   }
 
   .controls {
@@ -94,9 +120,9 @@
   }
 
   .controls button {
-    background: rgba(0,255,255,0.1);
+    background: rgba(0,255,255,0.15);
     border: none;
-    color: #00f5ff;
+    color: #00faff;
     padding: 10px;
     border-radius: 50%;
     font-size: 1.2rem;
@@ -105,31 +131,63 @@
   }
 
   .controls button:hover {
-    background: rgba(0,255,255,0.3);
+    background: rgba(0,255,255,0.4);
   }
 
   input[type="range"] {
-    width: 200px;
-    accent-color: #00dfff;
+    width: 220px;
+    accent-color: #00eaff;
+    cursor: pointer;
   }
 
   /* Viewer Counter */
   .view-count {
-    margin-top: 15px;
+    margin-top: 20px;
     font-size: 0.9rem;
     color: #00ffff;
     opacity: 0.8;
+  }
+
+  /* Floating Glow Particles */
+  .particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: -1;
+  }
+
+  .particle {
+    position: absolute;
+    background: rgba(0,255,255,0.6);
+    border-radius: 50%;
+    animation: float 10s infinite ease-in-out;
+  }
+
+  @keyframes float {
+    0% { transform: translateY(0) scale(1); opacity: 0.9; }
+    50% { transform: translateY(-50px) scale(1.2); opacity: 0.4; }
+    100% { transform: translateY(0) scale(1); opacity: 0.9; }
   }
 </style>
 </head>
 <body>
 
+<!-- Floating neon particles -->
+<div class="particles">
+  <div class="particle" style="top:10%; left:20%; width:8px; height:8px; animation-delay:0s;"></div>
+  <div class="particle" style="top:40%; left:80%; width:6px; height:6px; animation-delay:2s;"></div>
+  <div class="particle" style="top:70%; left:50%; width:10px; height:10px; animation-delay:4s;"></div>
+  <div class="particle" style="top:30%; left:10%; width:7px; height:7px; animation-delay:6s;"></div>
+  <div class="particle" style="top:85%; left:60%; width:9px; height:9px; animation-delay:8s;"></div>
+</div>
+
 <div class="card">
   <!-- Avatar -->
   <img src="https://media.discordapp.net/attachments/1433931945766551604/1434019169845776424/Screenshot_2025-10-30_002542.png?ex=6906cdec&is=69057c6c&hm=4b9ce6985c1e0172cc49fffa31d442ca72ec7b9a433a26a6fd4af04867b1ead4&=&format=webp&quality=lossless" alt="Avatar" class="avatar">
   
-  <!-- Name & Bio -->
-  <h1>3</h1>
+  <!-- Glitch Name -->
+  <h1 class="glitch">333</h1>
   <p>lost in the neon night 🌌⚡</p>
 
   <!-- Links -->
@@ -143,7 +201,7 @@
     </a>
   </div>
 
-  <!-- Custom Music Player -->
+  <!-- Music Player -->
   <div class="music-container">
     <audio id="audio" src="https://www.dropbox.com/scl/fi/your-song.mp3?raw=1"></audio>
 
@@ -190,15 +248,12 @@
     audio.volume = volume.value / 100;
   });
 
-  // Auto play music
   window.addEventListener('load', () => {
     audio.volume = 0.5;
-    audio.play().catch(() => {
-      console.log("Autoplay blocked by browser.");
-    });
+    audio.play().catch(() => {});
   });
 
-  // === Viewer Counter (local simulation) ===
+  // === Viewer Counter (local) ===
   let views = localStorage.getItem('viewCount');
   if (!views) views = 0;
   views++;
