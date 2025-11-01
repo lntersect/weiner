@@ -1,421 +1,217 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>333 — Night Void (Ultra Aura — 3D)</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --white:#ffffff;
-    --muted:rgba(255,255,255,0.08);
-    --control-bg: rgba(255,255,255,0.03);
-  }
-  *{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif}
-  html,body{height:100%;background:#000;color:var(--white);overflow:hidden}
-  body{display:flex;align-items:center;justify-content:center;cursor:none}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>333</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&display=swap');
 
-  /* BACKGROUND GIF */
-  .bg{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;filter:brightness(0.28) contrast(1.2);transition:transform .25s ease-out}
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-  /* canvas layers */
-  canvas#motes, canvas#fog, canvas#grain {position:fixed;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
-  .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);backdrop-filter:blur(2px);z-index:2;pointer-events:none}
+    body {
+      font-family: 'UnifrakturCook', cursive;
+      background: url('https://i.imgur.com/LUwBkw2.gif') center/cover no-repeat fixed;
+      color: white;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
 
-  /* subtle scanlines */
-  .scanlines{position:fixed;inset:0;z-index:4;pointer-events:none;background:repeating-linear-gradient(to bottom, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 2px, transparent 3px);mix-blend-mode:overlay;opacity:.22}
+    /* Fade in overlay */
+    #overlay {
+      position: fixed;
+      inset: 0;
+      background: black;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 10;
+      transition: opacity 1s ease;
+    }
+    #overlay h1 {
+      font-size: 2em;
+      letter-spacing: 3px;
+      animation: blink 1s infinite;
+      cursor: pointer;
+    }
+    @keyframes blink {
+      50% { opacity: 0.4; }
+    }
 
-  /* ENTER screen */
-  #enterScreen{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;flex-direction:column;background:#000}
-  #enterText{font-size:1.6rem;letter-spacing:6px;text-transform:uppercase;color:transparent;-webkit-text-stroke:0.9px rgba(255,255,255,0.95);cursor:pointer;padding:14px 30px;border-radius:999px;user-select:none}
-  #enterText:hover{transform:scale(1.03)}
-  #enterScreen.fade{opacity:0;pointer-events:none;transition:opacity .9s ease}
+    .container {
+      position: relative;
+      text-align: center;
+      z-index: 2;
+      opacity: 0;
+      transition: opacity 2s ease;
+    }
 
-  /* center holder */
-  #centerWrap{position:relative;z-index:10;perspective:1000px;pointer-events:none}
-  #center{position:relative;display:flex;flex-direction:column;align-items:center;gap:12px;pointer-events:auto;transform-style:preserve-3d;transition:transform .12s ease-out;will-change: transform}
-  .centerShadow{position:absolute;left:50%;transform:translateX(-50%);bottom:-36px;width:420px;height:120px;border-radius:50%;background:radial-gradient(closest-side, rgba(0,0,0,0.45), rgba(0,0,0,0.0));filter:blur(26px);z-index:5;opacity:0.6;pointer-events:none;}
+    .pfp-box {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 50%;
+      padding: 15px;
+      display: inline-block;
+      box-shadow: 0 0 30px rgba(255,255,255,0.2);
+      transition: 0.3s ease;
+    }
 
-  /* PFP + aura */
-  .pfp{width:140px;height:140px;border-radius:999px;overflow:visible;position:relative;z-index:11;transform-origin:center center;transition:transform .12s}
-  .pfp img{width:140px;height:140px;border-radius:999px;object-fit:cover;display:block;filter:grayscale(1) contrast(1.02)}
-  .aura{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;width:420px;height:420px;border-radius:50%;z-index:9;mix-blend-mode:screen;filter:blur(36px);opacity:0.92;background:radial-gradient(circle at 40% 30%, rgba(255,255,255,0.16), rgba(255,255,255,0.06) 18%, rgba(255,255,255,0.00) 50%);transition:transform .12s}
+    .pfp-box:hover {
+      box-shadow: 0 0 50px rgba(255,255,255,0.4);
+    }
 
-  /* title with breathing glow */
-  h1{font-size:2.6rem;letter-spacing:8px;margin-top:6px;background:linear-gradient(90deg,#fff,#d0d0d0,#fff);background-size:220% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 3.5s linear infinite;text-shadow:0 0 18px rgba(255,255,255,0.05);z-index:11;transform-origin:center}
-  @keyframes shimmer{0%{background-position:0% 50%}100%{background-position:200% 50%}}
-  @keyframes titleBreath {0%{filter:drop-shadow(0 0 6px rgba(255,255,255,0.04))}50%{filter:drop-shadow(0 0 26px rgba(255,255,255,0.18))}100%{filter:drop-shadow(0 0 6px rgba(255,255,255,0.04))}}
-  #title{animation: titleBreath 6s ease-in-out infinite;}
+    .pfp-box img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+    }
 
-  /* icon row */
-  .icon-row{display:flex;gap:18px;margin-top:14px;z-index:11}
-  .icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);transition:transform .18s,box-shadow .18s;cursor:pointer}
-  .icon img{width:24px;height:24px;filter:grayscale(1);opacity:0.98}
-  .icon:hover{transform:translateY(-6px) scale(1.08);box-shadow:0 18px 60px rgba(255,255,255,0.04)}
+    h1 {
+      font-size: 3em;
+      margin-top: 10px;
+      letter-spacing: 4px;
+      text-shadow: 0 0 20px rgba(255,255,255,0.5);
+    }
 
-  /* visualizer strip */
-  #visualizer{display:flex;gap:5px;margin-top:18px;align-items:flex-end;height:56px;z-index:11}
-  .vbar{width:6px;background:linear-gradient(to top,#fff,#cfcfcf);border-radius:3px;opacity:0.85;transform-origin:bottom center;transition:height .05s linear}
+    .icons {
+      margin-top: 20px;
+    }
 
-  /* controls (ICON-ONLY) — VISIBLE WHITE/GLOW */
-  #controls{
-    position:fixed;
-    left:50%;
-    transform:translateX(-50%);
-    bottom:26px;
-    z-index:40;
-    display:flex;
-    align-items:center;
-    gap:12px;
-    padding:8px 12px;
-    border-radius:999px;
-    background: rgba(255,255,255,0.05);
-    backdrop-filter: blur(8px);
-    border:1px solid rgba(255,255,255,0.15);
-    box-shadow: 0 8px 30px rgba(0,0,0,0.5);
-    pointer-events:auto;
-  }
-  .btn{
-    width:40px;height:40px;display:grid;place-items:center;border-radius:8px;
-    background:rgba(255,255,255,0.22);cursor:pointer;transition:transform .12s,background .12s,box-shadow .12s;
-    box-shadow: 0 6px 18px rgba(255,255,255,0.04), inset 0 -2px 6px rgba(255,255,255,0.02);
-  }
-  .btn:hover{transform:scale(1.06);background:rgba(255,255,255,0.34);box-shadow:0 14px 40px rgba(255,255,255,0.06)}
-  .icon-white{width:18px;height:18px;filter:invert(1) brightness(1.2) grayscale(1)}
+    .icons a {
+      color: white;
+      margin: 0 10px;
+      font-size: 1.8em;
+      text-decoration: none;
+      transition: 0.3s ease;
+      opacity: 0.8;
+    }
 
-  input[type="range"]{width:140px;-webkit-appearance:none;background:transparent;margin-left:6px}
-  input[type=range]::-webkit-slider-runnable-track{height:4px;background:rgba(255,255,255,0.35);border-radius:999px}
-  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:#fff;margin-top:-5px;box-shadow:0 0 12px rgba(255,255,255,0.9)}
+    .icons a:hover {
+      opacity: 1;
+      text-shadow: 0 0 20px white;
+    }
 
-  /* cursor aura */
-  .cursor{position:fixed;width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,0.95);box-shadow:0 0 18px rgba(255,255,255,0.75),0 0 40px rgba(255,255,255,0.06);pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform .08s linear}
+    .video-container {
+      margin-top: 20px;
+      border-radius: 20px;
+      overflow: hidden;
+      width: 360px;
+      height: 200px;
+      margin-inline: auto;
+      box-shadow: 0 0 20px rgba(255,255,255,0.2);
+    }
 
-  /* small center ripple */
-  .ripple{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.08);mix-blend-mode:screen;pointer-events:none;opacity:0;z-index:8}
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
 
-  /* responsive */
-  @media(max-width:520px){
-    .pfp{width:110px;height:110px}.pfp img{width:110px;height:110px}
-    h1{font-size:1.8rem}
-    #visualizer{height:40px}
-    #controls{bottom:14px}
-  }
-</style>
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+  </style>
 </head>
 <body>
-  <!-- ENTER -->
-  <div id="enterScreen"><div id="enterText">Enter the Void</div></div>
 
-  <!-- BACKGROUND + LAYERS -->
-  <img class="bg" src="https://media.tenor.com/Ua5qB1eng_oAAAAC/black-and-white-night-city.gif" alt="night city">
-  <canvas id="motes"></canvas>
-  <canvas id="fog"></canvas>
-  <canvas id="grain"></canvas>
-  <div class="overlay"></div>
-  <div class="scanlines"></div>
+  <div id="overlay">
+    <h1>Click to Enter</h1>
+  </div>
 
-  <!-- flicker overlay -->
-  <div class="flicker" id="flick" style="position:fixed;left:-15%;top:0;width:35%;height:100%;transform:skewX(-12deg);background:linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.04), rgba(255,255,255,0));mix-blend-mode:screen;z-index:8;pointer-events:none;opacity:0"></div>
+  <canvas id="particles"></canvas>
 
-  <!-- center container -->
-  <div id="centerWrap">
-    <div class="centerShadow" id="centerShadow"></div>
-    <div id="center" aria-hidden="true">
-      <div class="aura" id="aura"></div>
-      <div class="pfp" id="pfp"><img src="https://i.imgur.com/OJeD12w.jpeg" alt="pfp"></div>
-      <h1 id="title">333</h1>
-      <!-- subtitle removed as requested -->
-      <div class="icon-row" id="icons">
-        <a class="icon" href="https://discord.com" target="_blank" rel="noreferrer"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111370.png" alt="discord"></a>
-        <a class="icon" href="https://t.me" target="_blank" rel="noreferrer"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="telegram"></a>
-      </div>
-      <div id="visualizer" aria-hidden="true">
-        <!-- bars -->
-        <div class="vbar" style="height:10px"></div><div class="vbar" style="height:12px"></div><div class="vbar" style="height:8px"></div><div class="vbar" style="height:9px"></div>
-        <div class="vbar" style="height:14px"></div><div class="vbar" style="height:11px"></div><div class="vbar" style="height:9px"></div><div class="vbar" style="height:10px"></div>
-        <div class="vbar" style="height:8px"></div><div class="vbar" style="height:12px"></div><div class="vbar" style="height:11px"></div><div class="vbar" style="height:9px"></div>
-        <div class="vbar" style="height:8px"></div><div class="vbar" style="height:10px"></div><div class="vbar" style="height:8px"></div><div class="vbar" style="height:9px"></div>
-        <div class="vbar" style="height:12px"></div><div class="vbar" style="height:8px"></div><div class="vbar" style="height:10px"></div><div class="vbar" style="height:11px"></div>
-        <div class="vbar" style="height:8px"></div><div class="vbar" style="height:9px"></div><div class="vbar" style="height:10px"></div><div class="vbar" style="height:8px"></div>
-      </div>
-      <div class="ripple" id="ripple"></div>
+  <div class="container" id="main">
+    <div class="pfp-box">
+      <img src="https://i.imgur.com/OJeD12w.jpeg" alt="pfp">
+    </div>
+    <h1 id="typing"></h1>
+    <div class="icons">
+      <a href="https://discord.com" target="_blank">💬</a>
+      <a href="https://t.me" target="_blank">✈️</a>
+    </div>
+    <div class="video-container">
+      <iframe id="ytplayer" src="https://www.youtube.com/embed/OAyixxm4yXw?autoplay=1&mute=0&loop=1&playlist=OAyixxm4yXw&controls=0&modestbranding=1"></iframe>
     </div>
   </div>
 
-  <!-- controls -->
-  <div id="controls" aria-hidden="true" style="display:none">
-    <div class="btn" id="playBtn" title="Play / Pause" role="button" aria-pressed="false">
-      <!-- initial: play icon -->
-      <svg class="icon-white" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.4" xmlns="http://www.w3.org/2000/svg"><path d="M5 3v18l15-9L5 3z" stroke="#fff" stroke-linejoin="round" stroke-linecap="round"/></svg>
-    </div>
-    <div class="btn" id="muteBtn" title="Mute / Unmute" role="button" aria-pressed="false">
-      <svg class="icon-white" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" stroke-width="1.4" xmlns="http://www.w3.org/2000/svg"><path d="M11 5L6 9H3v6h3l5 4V5z" stroke="#fff" stroke-linecap="round" stroke-linejoin="round"/><path d="M19 9a4 4 0 010 6" stroke="#fff" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </div>
-    <input id="vol" type="range" min="0" max="100" value="70" aria-label="Volume">
-  </div>
+  <script>
+    // Overlay fade
+    const overlay = document.getElementById('overlay');
+    const main = document.getElementById('main');
+    overlay.addEventListener('click', () => {
+      overlay.style.opacity = '0';
+      setTimeout(() => overlay.style.display = 'none', 1000);
+      main.style.opacity = '1';
+    });
 
-  <!-- custom cursor -->
-  <div class="cursor" id="cursorEl" aria-hidden="true"></div>
-
-  <!-- YT host -->
-  <div id="ytHost" style="width:1px;height:1px;overflow:hidden;position:fixed;left:-9999px;top:-9999px;"></div>
-
-<script>
-/* ---------------------------
-  Setup & DOM references
-----------------------------*/
-const enterScreen = document.getElementById('enterScreen');
-const enterText = document.getElementById('enterText');
-const center = document.getElementById('center');
-const centerWrap = document.getElementById('centerWrap');
-const centerShadow = document.getElementById('centerShadow');
-const bg = document.querySelector('.bg');
-const cursorEl = document.getElementById('cursorEl');
-const controls = document.getElementById('controls');
-const playBtn = document.getElementById('playBtn');
-const muteBtn = document.getElementById('muteBtn');
-const volRange = document.getElementById('vol');
-const vbars = Array.from(document.querySelectorAll('.vbar'));
-const flick = document.getElementById('flick');
-const aura = document.getElementById('aura');
-const ripple = document.getElementById('ripple');
-
-let ytPlayer = null;
-let isPlaying = false;
-let isMuted = false;
-
-/* ---------------------------
-  YouTube API loader & player creation
-----------------------------*/
-function loadYouTubeAPI(cb){
-  if(window.YT && window.YT.Player){ cb(); return; }
-  const tag = document.createElement('script');
-  tag.src = "https://www.youtube.com/iframe_api";
-  document.head.appendChild(tag);
-  window.onYouTubeIframeAPIReady = cb;
-}
-
-function createYTPlayer(){
-  const host = document.getElementById('ytHost');
-  const div = document.createElement('div'); div.id = 'ytPlayerEl'; host.appendChild(div);
-
-  ytPlayer = new YT.Player('ytPlayerEl',{
-    height: '1', width: '1',
-    videoId: 'OAyixxm4yXw',
-    playerVars: { autoplay: 1, controls: 0, loop: 1, playlist: 'OAyixxm4yXw', rel:0, modestbranding:1 },
-    events: {
-      onReady: (e)=>{
-        ytPlayer.setVolume(parseInt(volRange.value));
-        ytPlayer.playVideo();
-        isPlaying = true; updatePlayBtn(); onPlayerCreated();
-      },
-      onStateChange: (ev)=>{
-        if(ev.data === YT.PlayerState.ENDED) ytPlayer.playVideo();
+    // Typewriter loop for 333
+    const text = "333";
+    const typingEl = document.getElementById("typing");
+    let index = 0;
+    function typeLoop() {
+      typingEl.textContent = text.slice(0, index);
+      index++;
+      if (index > text.length) {
+        setTimeout(() => {
+          index = 0;
+          typeLoop();
+        }, 1000);
+      } else {
+        setTimeout(typeLoop, 400);
       }
     }
-  });
-}
+    typeLoop();
 
-/* ---------------------------
-  ENTER: reveal & start everything
-----------------------------*/
-enterText.addEventListener('click', ()=>{
-  enterScreen.classList.add('fade');
-  setTimeout(()=> enterScreen.style.display='none',900);
+    // Particles background
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
 
-  // reveal center + controls
-  center.classList.add('show');
-  centerWrap.style.pointerEvents = 'auto';
-  controls.style.display='flex';
-  controls.setAttribute('aria-hidden','false');
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
 
-  // minor flicker
-  flick.style.opacity = 0.28;
-  setTimeout(()=> flick.style.opacity = 0, 180);
+    for (let i = 0; i < 60; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 2,
+        dx: (Math.random() - 0.5) * 0.5,
+        dy: (Math.random() - 0.5) * 0.5
+      });
+    }
 
-  // spawn animation loops
-  startAnimationLoops();
-
-  // create yt player (user gesture allows audible)
-  loadYouTubeAPI(()=> createYTPlayer() );
-});
-
-/* ---------------------------
-  PLAY / MUTE / VOLUME controls
-----------------------------*/
-function updatePlayBtn(){
-  playBtn.innerHTML = isPlaying
-    ? `<svg class="icon-white" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>`
-    : `<svg class="icon-white" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.4" xmlns="http://www.w3.org/2000/svg"><path d="M5 3v18l15-9L5 3z" stroke="#fff" stroke-linejoin="round" stroke-linecap="round"/></svg>`;
-  playBtn.setAttribute('aria-pressed', String(isPlaying));
-}
-playBtn.addEventListener('click', ()=>{
-  if(!ytPlayer) return;
-  if(isPlaying){ ytPlayer.pauseVideo(); isPlaying=false; } else { ytPlayer.playVideo(); isPlaying=true; }
-  updatePlayBtn();
-});
-
-muteBtn.addEventListener('click', ()=>{
-  if(!ytPlayer) return;
-  if(isMuted){ ytPlayer.unMute(); isMuted=false; muteBtn.setAttribute('aria-pressed','false'); }
-  else { ytPlayer.mute(); isMuted=true; muteBtn.setAttribute('aria-pressed','true'); }
-});
-
-volRange.addEventListener('input', ()=>{ if(ytPlayer) ytPlayer.setVolume(parseInt(volRange.value)); });
-
-/* ---------------------------
-  Visualizer (fake-but-convincing energy)
-----------------------------*/
-let vizStart = 0;
-function fakeEnergy(t){
-  const beat = 0.9 + 0.5 * Math.abs(Math.sin(t*0.004 + 0.02));
-  const rhythm = 0.6 + 0.45 * Math.abs(Math.sin(t*0.011 + 0.7));
-  const bursts = (Math.sin(t*0.02) > 0.82) ? (0.4 + Math.random()*0.9) : (0.02*Math.random());
-  return Math.min(1, (0.5*beat + 0.35*rhythm + 0.9*bursts) * (0.95 + 0.2*Math.random()));
-}
-function stepViz(t){
-  if(!vizStart) vizStart = t;
-  const elapsed = t - vizStart;
-  const E = fakeEnergy(elapsed);
-  vbars.forEach((bar,i)=>{
-    const idx = i / vbars.length;
-    const local = E * (0.6 + 0.6*(1-idx)) + 0.12*Math.sin(elapsed*0.007*(1+idx*2)+i);
-    const transient = (Math.random() < 0.02) ? (0.2 + Math.random()*0.9) : 0;
-    const val = Math.min(1, Math.max(0, local + transient));
-    const h = Math.max(6, Math.round(val * (56 - idx*18)));
-    bar.style.height = h + 'px';
-    bar.style.opacity = 0.45 + (val*0.55);
-    if(val > 0.9 && Math.random() < 0.08) { cameraShake(6 + Math.random()*6); }
-  });
-}
-
-/* ---------------------------
-  Camera shake
-----------------------------*/
-let shakeTimer = 0;
-function cameraShake(power=6){
-  shakeTimer = 16;
-  centerWrap.style.transition = 'transform 0.05s linear';
-  let px = (Math.random()-0.5)*power;
-  let py = (Math.random()-0.5)*power;
-  centerWrap.style.transform = `translate(${px}px, ${py}px)`;
-  setTimeout(()=> { centerWrap.style.transform = ''; centerWrap.style.transition = ''; }, 70);
-}
-
-/* ---------------------------
-  Cursor & trail
-----------------------------*/
-function spawnTrail(x,y){
-  const el = document.createElement('div');
-  el.className = 'trail';
-  el.style.left = x + 'px'; el.style.top = y + 'px';
-  el.style.position='fixed'; el.style.width='10px'; el.style.height='10px'; el.style.borderRadius='50%';
-  el.style.background='rgba(255,255,255,0.9)'; el.style.pointerEvents='none'; el.style.zIndex=9998; el.style.transform='translate(-50%,-50%)';
-  el.style.filter='blur(1px)'; document.body.appendChild(el);
-  el.animate([{opacity:1, transform:'translate(-50%,-50%) scale(1)'},{opacity:0, transform:'translate(-50%,-50%) scale(3)'}], {duration:650, easing:'cubic-bezier(.2,.9,.2,1)'});
-  setTimeout(()=> el.remove(),700);
-}
-window.addEventListener('pointermove', (e)=>{
-  cursorEl.style.left = e.clientX + 'px'; cursorEl.style.top = e.clientY + 'px';
-  if(Math.random() < 0.45) spawnTrail(e.clientX, e.clientY);
-  // parallax rotation (real 3d)
-  const rect = center.getBoundingClientRect();
-  const cx = rect.left + rect.width/2;
-  const cy = rect.top + rect.height/2;
-  const dx = (e.clientX - cx);
-  const dy = (e.clientY - cy);
-  const rx = (dy / rect.height) * -6;
-  const ry = (dx / rect.width) * 8;
-  center.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg) translateZ(6px)`;
-  aura.style.transform = `translate(-50%,-50%) translateZ(-40px) rotate(${ry*0.6}deg)`;
-  document.querySelector('.pfp').style.transform = `translateZ(12px) rotateY(${ry*0.4}deg) rotateX(${rx*0.2}deg)`;
-  const dist = Math.hypot(dx,dy);
-  const s = Math.max(0.45, Math.min(1.2, 1 - dist/(rect.width*1.2) + 0.6));
-  centerShadow.style.width = Math.max(220, rect.width * s) + 'px';
-  centerShadow.style.opacity = (0.45 * s).toString();
-});
-window.addEventListener('pointerleave', ()=>{ center.style.transform = ''; document.querySelector('.pfp').style.transform=''; aura.style.transform='translate(-50%,-50%)'; centerShadow.style.width = '420px'; centerShadow.style.opacity = '0.6'; });
-
-/* ---------------------------
-  Motions: motes (floating particles), fog, grain
-----------------------------*/
-const motes = document.getElementById('motes');
-const fog = document.getElementById('fog');
-const grain = document.getElementById('grain');
-const mctx = motes.getContext('2d');
-const fctx = fog.getContext('2d');
-const gctx = grain.getContext('2d');
-let W = innerWidth, H = innerHeight;
-function resizeAll(){ W = innerWidth; H = innerHeight; [motes,fog,grain].forEach(c=>{ c.width = W; c.height = H; }); }
-window.addEventListener('resize', resizeAll); resizeAll();
-/* motes */
-const motelist = [];
-for(let i=0;i<90;i++){ motelist.push({x:Math.random()*W, y:Math.random()*H, r: Math.random()*1.6+0.4, vx:(Math.random()-0.5)*0.2, vy:-0.15 - Math.random()*0.35, a:Math.random()*Math.PI*2}); }
-function drawMotes(){
-  mctx.clearRect(0,0,W,H);
-  for(let m of motelist){
-    m.x += m.vx; m.y += m.vy; m.a += 0.005;
-    const alpha = 0.06 + 0.25 * Math.abs(Math.sin(m.a));
-    mctx.beginPath();
-    mctx.fillStyle = `rgba(255,255,255,${alpha})`;
-    mctx.arc(m.x, m.y, m.r, 0, Math.PI*2);
-    mctx.fill();
-    if(m.y < -10){ m.y = H + 10; m.x = Math.random()*W; }
-    if(m.x < -10) m.x = W+10; if(m.x > W+10) m.x = -10;
-  }
-}
-/* fog blobs */
-const fogBlobs = [];
-for(let i=0;i<5;i++){ fogBlobs.push({x:Math.random()*W, y:Math.random()*H, s: (W/2)*(0.18+Math.random()*0.5), vx:(Math.random()-0.5)*0.04, vy:(Math.random()-0.5)*0.02, alpha:0.02+Math.random()*0.06, phase:Math.random()*Math.PI*2}); }
-function drawFog(t){
-  fctx.clearRect(0,0,W,H);
-  for(let b of fogBlobs){
-    b.x += b.vx*Math.cos(t*0.0006 + b.phase);
-    b.y += b.vy*Math.sin(t*0.0005 + b.phase);
-    const g = fctx.createRadialGradient(b.x,b.y,0,b.x,b.y,b.s);
-    g.addColorStop(0, `rgba(255,255,255,${b.alpha})`);
-    g.addColorStop(0.4, `rgba(255,255,255,${b.alpha*0.45})`);
-    g.addColorStop(1, 'rgba(255,255,255,0)');
-    fctx.fillStyle = g; fctx.beginPath(); fctx.arc(b.x,b.y,b.s,0,Math.PI*2); fctx.fill();
-  }
-}
-/* grain */
-function drawGrain(){ gctx.clearRect(0,0,W,H); gctx.fillStyle = 'rgba(255,255,255,0.02)'; const count = Math.round(W*H/7000); for(let i=0;i<count;i++){ gctx.fillRect(Math.random()*W, Math.random()*H, 1, 1); } }
-drawGrain();
-
-/* ripple pulse */
-function pulseRipple(){ ripple.style.opacity = 1; ripple.style.transform = 'translate(-50%,-50%) scale(1)'; ripple.style.transition = 'transform 1.2s ease-out, opacity 1.25s ease-out'; setTimeout(()=>{ ripple.style.transform = 'translate(-50%,-50%) scale(6)'; ripple.style.opacity = 0; }, 10); }
-setInterval(pulseRipple, 12000);
-
-/* main animation loop */
-function frame(t){
-  drawMotes(); drawFog(t); stepViz(t);
-  if(Math.random() < 0.0018){ flick.style.opacity = 0.28; setTimeout(()=> flick.style.opacity = 0, 140); }
-  requestAnimationFrame(frame);
-}
-requestAnimationFrame(frame);
-
-/* start animation helpers */
-function startAnimationLoops(){
-  document.getElementById('title').style.transition = 'transform .6s ease';
-  document.getElementById('title').style.transform = 'scale(1.04)';
-  setTimeout(()=> document.getElementById('title').style.transform = '', 700);
-}
-
-/* on player created */
-function onPlayerCreated(){ controls.style.display='flex'; isPlaying = true; updatePlayBtn(); }
-
-/* keyboard: space toggle */
-document.addEventListener('keydown', (e)=>{ if(e.code === 'Space'){ e.preventDefault(); if(ytPlayer){ if(isPlaying){ ytPlayer.pauseVideo(); isPlaying=false; } else { ytPlayer.playVideo(); isPlaying=true; } updatePlayBtn(); } } });
-
-/* accessibility: enter key start */
-enterText.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' ') enterText.click(); });
-
-/* resize on load */
-window.addEventListener('resize', ()=>{ resizeAll(); drawGrain(); });
-
-/* expose debug */
-window.__VOID = { pulseRipple, motelist, fogBlobs };
-</script>
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "rgba(255,255,255,0.7)";
+      for (let p of particles) {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+        p.x += p.dx;
+        p.y += p.dy;
+        if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+      }
+      requestAnimationFrame(animate);
+    }
+    animate();
+  </script>
 </body>
 </html>
