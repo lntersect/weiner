@@ -6,20 +6,23 @@
 <title>333 — Night Void (Final Cut)</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <style>
-:root{ --white:#ffffff; --muted: rgba(255,255,255,0.08); }
-*{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif;cursor:none !important;}
+:root{
+  --white:#ffffff;
+  --muted: rgba(255,255,255,0.08);
+}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif}
 html,body{height:100%;background:#000;color:var(--white);overflow:hidden}
-body{display:flex;align-items:center;justify-content:center}
+body{display:flex;align-items:center;justify-content:center;cursor:none}
 
 /* BACKGROUND + LAYERS */
-.bg{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;filter:brightness(0.28) contrast(1.2);}
+.bg{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;filter:brightness(0.28) contrast(1.2);transition:transform .25s ease-out;}
 canvas#snow,canvas#fog,canvas#grain,canvas#particles{position:fixed;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;}
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);backdrop-filter:blur(2px);z-index:2;pointer-events:none}
 .scanlines{position:fixed;inset:0;z-index:4;pointer-events:none;background:repeating-linear-gradient(to bottom,rgba(255,255,255,0.02)0px,rgba(255,255,255,0.02)1px,transparent 2px,transparent 3px);mix-blend-mode:overlay;opacity:0.25}
 
 /* ENTER SCREEN */
 #enterScreen{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;flex-direction:column;background:#000}
-#enterText{font-size:1.6rem;letter-spacing:6px;text-transform:uppercase;color:transparent;-webkit-text-stroke:0.9px rgba(255,255,255,0.95);cursor:pointer;padding:14px 30px;border-radius:999px;transition:transform .18s ease,opacity .5s ease;user-select:none}
+#enterText{font-size:1.6rem;letter-spacing:6px;text-transform:uppercase;color:transparent;-webkit-text-stroke:0.9px rgba(255,255,255,0.95);cursor:none;padding:14px 30px;border-radius:999px;transition:transform .18s ease,opacity .5s ease;user-select:none}
 #enterText:hover{transform:scale(1.03)}
 #enterScreen.fade{opacity:0;pointer-events:none;transition:opacity .9s ease}
 
@@ -38,15 +41,9 @@ h1{font-size:2.2rem;letter-spacing:6px;margin-top:6px;background:linear-gradient
 
 /* ICONS */
 .icon-row{display:flex;gap:18px;margin-top:14px;z-index:11}
-.icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.04);transition:transform .25s,box-shadow .25s;cursor:none !important;position:relative;}
-.icon img{width:22px;height:22px;filter:grayscale(1);opacity:0.95;pointer-events:none;}
-.icon::after{
-  content:"";position:absolute;inset:0;border-radius:10px;
-  background:radial-gradient(circle,rgba(255,255,255,0.25) 0%,rgba(255,255,255,0) 70%);
-  opacity:0;transition:opacity .25s;
-}
-.icon:hover::after{opacity:0.5;}
-.icon:hover{transform:translateY(-6px) scale(1.08);}
+.icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.04);transition:transform .25s,box-shadow .25s;cursor:none}
+.icon img{width:22px;height:22px;filter:grayscale(1);opacity:0.95}
+.icon:hover{transform:translateY(-6px) scale(1.08);box-shadow:0 12px 40px rgba(255,255,255,0.04)}
 
 /* VISUALIZER */
 #visualizer{display:flex;gap:4px;margin-top:20px;align-items:flex-end;height:44px;z-index:11}
@@ -54,37 +51,39 @@ h1{font-size:2.2rem;letter-spacing:6px;margin-top:6px;background:linear-gradient
 
 /* CONTROLS */
 #controls{position:fixed;left:50%;transform:translateX(-50%);bottom:22px;z-index:40;display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:999px;background:rgba(0,0,0,0.25);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.04)}
-.btn{width:36px;height:36px;display:grid;place-items:center;border-radius:8px;background:rgba(255,255,255,0.03);cursor:none !important;transition:transform .12s,background .12s}
+.btn{width:36px;height:36px;display:grid;place-items:center;border-radius:8px;background:rgba(255,255,255,0.03);cursor:none;transition:transform .12s,background .12s}
 .btn:hover{transform:scale(1.06);background:rgba(255,255,255,0.08)}
 .icon-white{width:18px;height:18px;filter:invert(1) grayscale(1) brightness(1.2)}
 
-/* Volume slider */
-input[type="range"]{width:140px;-webkit-appearance:none;background:transparent;margin-left:8px;cursor:none !important;}
+/* VOLUME SLIDER */
+input[type="range"]{width:140px;-webkit-appearance:none;background:transparent;margin-left:8px;cursor:none}
 input[type=range]::-webkit-slider-runnable-track{height:5px;background:rgba(255,255,255,0.45);border-radius:999px}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:#fff;margin-top:-4px;box-shadow:0 0 12px rgba(255,255,255,0.7);cursor:none !important;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:#fff;margin-top:-4px;box-shadow:0 0 12px rgba(255,255,255,0.7);cursor:none}
 
-/* CURSOR (fixed and glowing) */
-.cursor{position:fixed;width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,0.95);box-shadow:0 0 12px rgba(255,255,255,0.8),0 0 35px rgba(255,255,255,0.15);pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform .1s ease-out, width .2s, height .2s;}
-.cursor.hover{width:22px;height:22px;box-shadow:0 0 25px rgba(255,255,255,0.9),0 0 60px rgba(255,255,255,0.25);}
+/* CURSOR & TRAIL */
+.cursor{position:fixed;width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,0.95);box-shadow:0 0 18px rgba(255,255,255,0.75),0 0 40px rgba(255,255,255,0.06);pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform .15s ease, width .15s ease, height .15s ease, opacity .15s ease}
+.cursor.hover{width:22px;height:22px;opacity:0.8}
+.trail{position:fixed;width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.7);pointer-events:none;z-index:9998;transform:translate(-50%,-50%);filter:blur(1.4px);opacity:0.8;animation:trailFade 500ms linear forwards}
+@keyframes trailFade{0%{opacity:0.9;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.8)}}
 
 /* FLICKER SWEEP */
 .flicker{position:fixed;left:-10%;top:0;width:30%;height:100%;transform:skewX(-12deg);background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,0.04),rgba(255,255,255,0));mix-blend-mode:screen;z-index:8;pointer-events:none;opacity:0;transition:opacity .12s ease}
 
 /* responsive */
 @media(max-width:520px){
- .pfp{width:96px;height:96px}.pfp img{width:96px;height:96px}
- h1{font-size:1.6rem}
- #visualizer{height:34px}
- #controls{bottom:14px}
+  .pfp{width:96px;height:96px}
+  .pfp img{width:96px;height:96px}
+  h1{font-size:1.6rem}
+  #visualizer{height:34px}
+  #controls{bottom:14px}
 }
 </style>
 </head>
 <body>
-
 <!-- ENTER -->
 <div id="enterScreen"><div id="enterText" tabindex="0">Enter the Void</div></div>
 
-<!-- BACKGROUND -->
+<!-- BACKGROUND + CANVASES -->
 <img class="bg" src="https://media.tenor.com/Ua5qB1eng_oAAAAC/black-and-white-night-city.gif" alt="night city">
 <canvas id="particles"></canvas>
 <canvas id="snow"></canvas>
@@ -105,25 +104,124 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
     <a class="icon" href="https://discord.com" target="_blank" rel="noreferrer"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111370.png" alt="discord"></a>
     <a class="icon" href="https://t.me" target="_blank" rel="noreferrer"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="telegram"></a>
   </div>
-  <div id="visualizer" aria-hidden="true"></div>
+  <div id="visualizer" aria-hidden="true">
+    <!-- 20 bars -->
+    ${"<div class='vbar'></div>".repeat(20)}
+  </div>
 </div>
 
 <!-- CONTROLS -->
-<div id="controls" style="display:none" aria-hidden="true"></div>
+<div id="controls" style="display:none" aria-hidden="true">
+  <button class="btn" id="playBtn" title="Play/Pause" aria-pressed="false" aria-label="Play/Pause">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v18l15-9L5 3z"/></svg>
+  </button>
+  <button class="btn" id="muteBtn" title="Mute/Unmute" aria-pressed="false" aria-label="Mute/Unmute">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M19 9a4 4 0 010 6"/></svg>
+  </button>
+  <input id="vol" type="range" min="0" max="100" value="70" aria-label="Volume">
+</div>
 
 <div class="cursor" id="cursorEl"></div>
+<div id="ytHost" style="width:1px;height:1px;overflow:hidden;position:fixed;left:-9999px;top:-9999px;"></div>
 
 <script>
-/* Cursor tracking and hover animation */
-const cursor = document.getElementById('cursorEl');
-window.addEventListener('mousemove', (e) => {
-  cursor.style.left = e.clientX + 'px';
-  cursor.style.top = e.clientY + 'px';
+/* DOM */
+const enterScreen=document.getElementById('enterScreen');
+const enterText=document.getElementById('enterText');
+const center=document.getElementById('center');
+const cursorEl=document.getElementById('cursorEl');
+const controls=document.getElementById('controls');
+const playBtn=document.getElementById('playBtn');
+const muteBtn=document.getElementById('muteBtn');
+const volRange=document.getElementById('vol');
+const flick=document.getElementById('flick');
+let ytPlayer=null,isPlaying=false,isMuted=false;
+
+/* YouTube */
+function loadYouTubeAPI(cb){
+ if(window.YT&&window.YT.Player){cb();return;}
+ const s=document.createElement('script');
+ s.src="https://www.youtube.com/iframe_api";
+ document.head.appendChild(s);
+ window.onYouTubeIframeAPIReady=cb;
+}
+function createYTPlayer(){
+ const host=document.getElementById('ytHost');
+ const div=document.createElement('div');
+ div.id='ytPlayerEl';host.appendChild(div);
+ ytPlayer=new YT.Player('ytPlayerEl',{height:'1',width:'1',videoId:'OAyixxm4yXw',
+  playerVars:{autoplay:1,controls:0,loop:1,playlist:'OAyixxm4yXw',rel:0,modestbranding:1},
+  events:{onReady:(e)=>{
+    const v=parseInt(volRange.value,10);
+    ytPlayer.setVolume(v);ytPlayer.playVideo();
+    isPlaying=true;updatePlayIcon();showControls();
+  },onStateChange:(ev)=>{if(ev.data===YT.PlayerState.ENDED)ytPlayer.playVideo();}
+ }});
+}
+
+/* ENTER */
+enterText.addEventListener('click',()=>startExperience());
+enterText.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')startExperience();});
+function startExperience(){
+ enterScreen.classList.add('fade');
+ setTimeout(()=>enterScreen.style.display='none',900);
+ center.classList.add('show');
+ flick.style.opacity=0.22;setTimeout(()=>flick.style.opacity=0,240);
+ loadYouTubeAPI(()=>createYTPlayer());
+}
+
+/* CONTROLS */
+function showControls(){controls.style.display='flex';controls.setAttribute('aria-hidden','false');}
+function updatePlayIcon(){
+ playBtn.innerHTML=isPlaying?
+ `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>`:
+ `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v18l15-9L5 3z"/></svg>`;
+ playBtn.setAttribute('aria-pressed',String(isPlaying));
+}
+playBtn.addEventListener('click',()=>{
+ if(!ytPlayer)return;
+ if(isPlaying){ytPlayer.pauseVideo();isPlaying=false;}
+ else{ytPlayer.playVideo();isPlaying=true;}
+ updatePlayIcon();
 });
-document.querySelectorAll('.icon, .btn, #enterText').forEach(el => {
-  el.addEventListener('mouseenter', ()=>cursor.classList.add('hover'));
-  el.addEventListener('mouseleave', ()=>cursor.classList.remove('hover'));
+muteBtn.addEventListener('click',()=>{
+ if(!ytPlayer)return;
+ if(isMuted){ytPlayer.unMute();isMuted=false;}
+ else{ytPlayer.mute();isMuted=true;}
 });
+volRange.addEventListener('input',()=>{
+ const v=parseInt(volRange.value,10)||0;
+ if(ytPlayer)ytPlayer.setVolume(v);
+});
+
+/* Cursor */
+window.addEventListener('pointermove',e=>{
+ cursorEl.style.left=e.clientX+'px';
+ cursorEl.style.top=e.clientY+'px';
+ if(Math.random()<0.25)spawnTrail(e.clientX,e.clientY);
+});
+function spawnTrail(x,y){
+ const el=document.createElement('div');
+ el.className='trail';
+ el.style.left=x+'px';el.style.top=y+'px';
+ document.body.appendChild(el);
+ setTimeout(()=>el.remove(),500);
+}
+document.querySelectorAll('a,button,input,#enterText').forEach(el=>{
+ el.addEventListener('mouseenter',()=>cursorEl.classList.add('hover'));
+ el.addEventListener('mouseleave',()=>cursorEl.classList.remove('hover'));
+});
+
+/* Fake visualizer just animates bars */
+const vbars=document.querySelectorAll('.vbar');
+function stepViz(t){
+ vbars.forEach((bar,i)=>{
+   const h=8+Math.sin((t/100)+(i*0.6))*6+Math.random()*2;
+   bar.style.height=Math.max(6,h)+'px';
+ });
+ requestAnimationFrame(stepViz);
+}
+requestAnimationFrame(stepViz);
 </script>
 </body>
 </html>
