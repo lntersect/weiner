@@ -45,7 +45,7 @@
     .card {
       position: relative;
       z-index: 2;
-      width: 380px;
+      width: 500px;
       background: rgba(18,18,18,0.85);
       border: 1px solid rgba(255,255,255,0.06);
       border-radius: 18px;
@@ -78,35 +78,13 @@
     }
 
     h1 {
-      font-size: 1.6rem;
+      font-size: 2rem;
       font-weight: 600;
       letter-spacing: 1px;
       color: #fff;
       position: relative;
       display: inline-block;
     }
-
-    /* Floating sparkle particles around 333 */
-    .sparkle {
-      position: absolute;
-      width: 3px;
-      height: 3px;
-      background: white;
-      border-radius: 50%;
-      opacity: 0.8;
-      animation: sparkleMove 4s infinite ease-in-out;
-    }
-
-    @keyframes sparkleMove {
-      0% { transform: translateY(0) scale(0.8); opacity: 0.9; }
-      50% { transform: translateY(-10px) scale(1.2); opacity: 0.6; }
-      100% { transform: translateY(0) scale(0.8); opacity: 0.9; }
-    }
-
-    .sparkle:nth-child(1) { top: -8px; left: -25px; animation-delay: 0s; }
-    .sparkle:nth-child(2) { top: -10px; right: -20px; animation-delay: 1s; }
-    .sparkle:nth-child(3) { bottom: -8px; left: -15px; animation-delay: 2s; }
-    .sparkle:nth-child(4) { bottom: -10px; right: -15px; animation-delay: 3s; }
 
     .divider {
       height: 1px;
@@ -118,13 +96,13 @@
     .icon-row {
       display: flex;
       justify-content: center;
-      gap: 16px;
+      gap: 20px;
       margin-top: 18px;
     }
 
     .icon {
-      width: 42px;
-      height: 42px;
+      width: 45px;
+      height: 45px;
       border-radius: 10px;
       background: rgba(255,255,255,0.03);
       display: flex;
@@ -141,9 +119,10 @@
     }
 
     .icon img {
-      width: 20px;
-      height: 20px;
+      width: 24px;
+      height: 24px;
       opacity: 0.9;
+      object-fit: contain;
     }
 
     @media (max-width: 480px) {
@@ -168,13 +147,7 @@
       <img src="https://cdn.discordapp.com/attachments/1431809720431280282/1434030714940166205/fde005003e6ecd6ca3e7b8886da6e6d7.jpg?ex=6906d8ad&is=6905872d&hm=752d975d24c39751445ef2cbca1b4271dda7ae6cd72438f43751ce203fea7321&" alt="pfp">
     </div>
 
-    <div style="position: relative; display: inline-block;">
-      <h1>333</h1>
-      <span class="sparkle"></span>
-      <span class="sparkle"></span>
-      <span class="sparkle"></span>
-      <span class="sparkle"></span>
-    </div>
+    <h1>333</h1>
 
     <div class="divider"></div>
 
@@ -186,7 +159,6 @@
         <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="telegram">
       </a>
     </div>
-
   </div>
 
 </body>
