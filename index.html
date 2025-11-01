@@ -31,15 +31,14 @@
       height: 100%;
       object-fit: cover;
       z-index: 0;
-      /* made video clearer */
-      filter: brightness(0.55) contrast(1.2);
+      filter: brightness(0.35) contrast(1.1); /* darker background */
     }
 
     .overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.35);
-      backdrop-filter: blur(2px);
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(3px);
       z-index: 1;
     }
 
@@ -79,11 +78,29 @@
     }
 
     h1 {
-      font-size: 1.5rem;
+      font-size: 1.6rem;
       font-weight: 600;
       margin-bottom: 10px;
       letter-spacing: 1px;
       color: #fff;
+      position: relative;
+      display: inline-block;
+    }
+
+    /* Sparkle effect */
+    h1::after {
+      content: '✨';
+      position: absolute;
+      right: -20px;
+      top: -10px;
+      font-size: 0.9rem;
+      opacity: 0.8;
+      animation: sparkle 2s infinite ease-in-out;
+    }
+
+    @keyframes sparkle {
+      0%, 100% { opacity: 0; transform: scale(0.6) rotate(0deg); }
+      50% { opacity: 1; transform: scale(1.2) rotate(20deg); }
     }
 
     .divider {
@@ -149,7 +166,7 @@
 
   <div class="card">
     <div class="pfp">
-      <img src="https://via.placeholder.com/100x100" alt="pfp">
+      <img src="https://cdn.discordapp.com/attachments/1431809720431280282/1434030714940166205/fde005003e6ecd6ca3e7b8886da6e6d7.jpg?ex=6906d8ad&is=6905872d&hm=752d975d24c39751445ef2cbca1b4271dda7ae6cd72438f43751ce203fea7321&" alt="pfp">
     </div>
 
     <h1>333</h1>
