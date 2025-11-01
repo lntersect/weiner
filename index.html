@@ -31,45 +31,20 @@
   #enterText:hover{transform:scale(1.03)}
   #enterScreen.fade{opacity:0;pointer-events:none;transition:opacity .9s ease}
 
-  /* center holder for 3d parallax */
+  /* center holder */
   #centerWrap{position:relative;z-index:10;perspective:1000px;pointer-events:none}
-  #center{
-    position:relative;display:flex;flex-direction:column;align-items:center;gap:12px;pointer-events:auto;
-    transform-style:preserve-3d;
-    transition:transform 0.12s ease-out;
-    will-change: transform;
-  }
-
-  /* shadow under center (dynamic) */
-  .centerShadow{
-    position:absolute;left:50%;transform:translateX(-50%);bottom:-36px;width:420px;height:120px;border-radius:50%;background:radial-gradient(closest-side, rgba(0,0,0,0.45), rgba(0,0,0,0.0));filter:blur(26px);z-index:5;opacity:0.6;pointer-events:none;
-  }
+  #center{position:relative;display:flex;flex-direction:column;align-items:center;gap:12px;pointer-events:auto;transform-style:preserve-3d;transition:transform .12s ease-out;will-change: transform}
+  .centerShadow{position:absolute;left:50%;transform:translateX(-50%);bottom:-36px;width:420px;height:120px;border-radius:50%;background:radial-gradient(closest-side, rgba(0,0,0,0.45), rgba(0,0,0,0.0));filter:blur(26px);z-index:5;opacity:0.6;pointer-events:none;}
 
   /* PFP + aura */
   .pfp{width:140px;height:140px;border-radius:999px;overflow:visible;position:relative;z-index:11;transform-origin:center center;transition:transform .12s}
   .pfp img{width:140px;height:140px;border-radius:999px;object-fit:cover;display:block;filter:grayscale(1) contrast(1.02)}
-  .aura{
-    position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;
-    width:420px;height:420px;border-radius:50%;z-index:9;mix-blend-mode:screen;filter:blur(36px);opacity:0.92;
-    background:radial-gradient(circle at 40% 30%, rgba(255,255,255,0.16), rgba(255,255,255,0.06) 18%, rgba(255,255,255,0.00) 50%);
-    transition:transform .12s;
-  }
+  .aura{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;width:420px;height:420px;border-radius:50%;z-index:9;mix-blend-mode:screen;filter:blur(36px);opacity:0.92;background:radial-gradient(circle at 40% 30%, rgba(255,255,255,0.16), rgba(255,255,255,0.06) 18%, rgba(255,255,255,0.00) 50%);transition:transform .12s}
 
   /* title with breathing glow */
-  h1{
-    font-size:2.6rem;letter-spacing:8px;margin-top:6px;
-    background:linear-gradient(90deg,#fff,#d0d0d0,#fff);background-size:220% auto;
-    -webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 3.5s linear infinite;
-    text-shadow: 0 0 18px rgba(255,255,255,0.05);
-    z-index:11;transform-origin:center;
-  }
+  h1{font-size:2.6rem;letter-spacing:8px;margin-top:6px;background:linear-gradient(90deg,#fff,#d0d0d0,#fff);background-size:220% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 3.5s linear infinite;text-shadow:0 0 18px rgba(255,255,255,0.05);z-index:11;transform-origin:center}
   @keyframes shimmer{0%{background-position:0% 50%}100%{background-position:200% 50%}}
-  @keyframes titleBreath {
-    0%{filter:drop-shadow(0 0 6px rgba(255,255,255,0.04))}
-    50%{filter:drop-shadow(0 0 26px rgba(255,255,255,0.18))}
-    100%{filter:drop-shadow(0 0 6px rgba(255,255,255,0.04))}
-  }
-  /* subtle breathing */
+  @keyframes titleBreath {0%{filter:drop-shadow(0 0 6px rgba(255,255,255,0.04))}50%{filter:drop-shadow(0 0 26px rgba(255,255,255,0.18))}100%{filter:drop-shadow(0 0 6px rgba(255,255,255,0.04))}}
   #title{animation: titleBreath 6s ease-in-out infinite;}
 
   /* icon row */
@@ -82,15 +57,35 @@
   #visualizer{display:flex;gap:5px;margin-top:18px;align-items:flex-end;height:56px;z-index:11}
   .vbar{width:6px;background:linear-gradient(to top,#fff,#cfcfcf);border-radius:3px;opacity:0.85;transform-origin:bottom center;transition:height .05s linear}
 
-  /* controls (icon-only) */
-  #controls{position:fixed;left:50%;transform:translateX(-50%);bottom:26px;z-index:40;display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:999px;background:rgba(0,0,0,0.28);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.04);pointer-events:auto}
-  .btn{width:40px;height:40px;display:grid;place-items:center;border-radius:8px;background:var(--control-bg);cursor:pointer;transition:transform .12s,background .12s}
-  .btn:hover{transform:scale(1.06);background:rgba(255,255,255,0.06)}
-  .icon-white{width:18px;height:18px;filter:invert(1) grayscale(1) brightness(1.2)}
+  /* controls (ICON-ONLY) — VISIBLE WHITE/GLOW */
+  #controls{
+    position:fixed;
+    left:50%;
+    transform:translateX(-50%);
+    bottom:26px;
+    z-index:40;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:8px 12px;
+    border-radius:999px;
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(8px);
+    border:1px solid rgba(255,255,255,0.15);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+    pointer-events:auto;
+  }
+  .btn{
+    width:40px;height:40px;display:grid;place-items:center;border-radius:8px;
+    background:rgba(255,255,255,0.22);cursor:pointer;transition:transform .12s,background .12s,box-shadow .12s;
+    box-shadow: 0 6px 18px rgba(255,255,255,0.04), inset 0 -2px 6px rgba(255,255,255,0.02);
+  }
+  .btn:hover{transform:scale(1.06);background:rgba(255,255,255,0.34);box-shadow:0 14px 40px rgba(255,255,255,0.06)}
+  .icon-white{width:18px;height:18px;filter:invert(1) brightness(1.2) grayscale(1)}
 
-  input[type="range"]{width:140px;-webkit-appearance:none;background:transparent; margin-left:6px}
-  input[type=range]::-webkit-slider-runnable-track{height:4px;background:rgba(255,255,255,0.12);border-radius:999px}
-  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:#fff;margin-top:-4px;box-shadow:0 0 10px rgba(255,255,255,0.08)}
+  input[type="range"]{width:140px;-webkit-appearance:none;background:transparent;margin-left:6px}
+  input[type=range]::-webkit-slider-runnable-track{height:4px;background:rgba(255,255,255,0.35);border-radius:999px}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:#fff;margin-top:-5px;box-shadow:0 0 12px rgba(255,255,255,0.9)}
 
   /* cursor aura */
   .cursor{position:fixed;width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,0.95);box-shadow:0 0 18px rgba(255,255,255,0.75),0 0 40px rgba(255,255,255,0.06);pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform .08s linear}
@@ -119,17 +114,17 @@
   <div class="overlay"></div>
   <div class="scanlines"></div>
 
-  <!-- flicker overlay used occasionally -->
+  <!-- flicker overlay -->
   <div class="flicker" id="flick" style="position:fixed;left:-15%;top:0;width:35%;height:100%;transform:skewX(-12deg);background:linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.04), rgba(255,255,255,0));mix-blend-mode:screen;z-index:8;pointer-events:none;opacity:0"></div>
 
-  <!-- center container with perspective for 3d parallax -->
+  <!-- center container -->
   <div id="centerWrap">
     <div class="centerShadow" id="centerShadow"></div>
     <div id="center" aria-hidden="true">
       <div class="aura" id="aura"></div>
       <div class="pfp" id="pfp"><img src="https://i.imgur.com/OJeD12w.jpeg" alt="pfp"></div>
       <h1 id="title">333</h1>
-      <!-- removed subtitle as requested -->
+      <!-- subtitle removed as requested -->
       <div class="icon-row" id="icons">
         <a class="icon" href="https://discord.com" target="_blank" rel="noreferrer"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111370.png" alt="discord"></a>
         <a class="icon" href="https://t.me" target="_blank" rel="noreferrer"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="telegram"></a>
@@ -150,6 +145,7 @@
   <!-- controls -->
   <div id="controls" aria-hidden="true" style="display:none">
     <div class="btn" id="playBtn" title="Play / Pause" role="button" aria-pressed="false">
+      <!-- initial: play icon -->
       <svg class="icon-white" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.4" xmlns="http://www.w3.org/2000/svg"><path d="M5 3v18l15-9L5 3z" stroke="#fff" stroke-linejoin="round" stroke-linecap="round"/></svg>
     </div>
     <div class="btn" id="muteBtn" title="Mute / Unmute" role="button" aria-pressed="false">
@@ -289,10 +285,7 @@ function stepViz(t){
     const h = Math.max(6, Math.round(val * (56 - idx*18)));
     bar.style.height = h + 'px';
     bar.style.opacity = 0.45 + (val*0.55);
-    // camera shake on strong peaks
-    if(val > 0.9 && Math.random() < 0.08) {
-      cameraShake(6 + Math.random()*6);
-    }
+    if(val > 0.9 && Math.random() < 0.08) { cameraShake(6 + Math.random()*6); }
   });
 }
 
@@ -301,7 +294,7 @@ function stepViz(t){
 ----------------------------*/
 let shakeTimer = 0;
 function cameraShake(power=6){
-  shakeTimer = 16; // frames
+  shakeTimer = 16;
   centerWrap.style.transition = 'transform 0.05s linear';
   let px = (Math.random()-0.5)*power;
   let py = (Math.random()-0.5)*power;
@@ -331,20 +324,16 @@ window.addEventListener('pointermove', (e)=>{
   const cy = rect.top + rect.height/2;
   const dx = (e.clientX - cx);
   const dy = (e.clientY - cy);
-  const rx = (dy / rect.height) * -6; // tilt X
-  const ry = (dx / rect.width) * 8;   // tilt Y
+  const rx = (dy / rect.height) * -6;
+  const ry = (dx / rect.width) * 8;
   center.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg) translateZ(6px)`;
-  // subtle aura / pfp parallax
   aura.style.transform = `translate(-50%,-50%) translateZ(-40px) rotate(${ry*0.6}deg)`;
   document.querySelector('.pfp').style.transform = `translateZ(12px) rotateY(${ry*0.4}deg) rotateX(${rx*0.2}deg)`;
-  // shadow scaling based on distance
   const dist = Math.hypot(dx,dy);
   const s = Math.max(0.45, Math.min(1.2, 1 - dist/(rect.width*1.2) + 0.6));
   centerShadow.style.width = Math.max(220, rect.width * s) + 'px';
   centerShadow.style.opacity = (0.45 * s).toString();
 });
-
-/* reset rotation when pointer leaves */
 window.addEventListener('pointerleave', ()=>{ center.style.transform = ''; document.querySelector('.pfp').style.transform=''; aura.style.transform='translate(-50%,-50%)'; centerShadow.style.width = '420px'; centerShadow.style.opacity = '0.6'; });
 
 /* ---------------------------
@@ -359,17 +348,13 @@ const gctx = grain.getContext('2d');
 let W = innerWidth, H = innerHeight;
 function resizeAll(){ W = innerWidth; H = innerHeight; [motes,fog,grain].forEach(c=>{ c.width = W; c.height = H; }); }
 window.addEventListener('resize', resizeAll); resizeAll();
-
 /* motes */
 const motelist = [];
-for(let i=0;i<90;i++){
-  motelist.push({x:Math.random()*W, y:Math.random()*H, r: Math.random()*1.6+0.4, vx:(Math.random()-0.5)*0.2, vy:-0.15 - Math.random()*0.35, a:Math.random()*Math.PI*2});
-}
+for(let i=0;i<90;i++){ motelist.push({x:Math.random()*W, y:Math.random()*H, r: Math.random()*1.6+0.4, vx:(Math.random()-0.5)*0.2, vy:-0.15 - Math.random()*0.35, a:Math.random()*Math.PI*2}); }
 function drawMotes(){
   mctx.clearRect(0,0,W,H);
   for(let m of motelist){
-    m.x += m.vx; m.y += m.vy;
-    m.a += 0.005;
+    m.x += m.vx; m.y += m.vy; m.a += 0.005;
     const alpha = 0.06 + 0.25 * Math.abs(Math.sin(m.a));
     mctx.beginPath();
     mctx.fillStyle = `rgba(255,255,255,${alpha})`;
@@ -379,12 +364,9 @@ function drawMotes(){
     if(m.x < -10) m.x = W+10; if(m.x > W+10) m.x = -10;
   }
 }
-
 /* fog blobs */
 const fogBlobs = [];
-for(let i=0;i<5;i++){
-  fogBlobs.push({x:Math.random()*W, y:Math.random()*H, s: (W/2)*(0.18+Math.random()*0.5), vx:(Math.random()-0.5)*0.04, vy:(Math.random()-0.5)*0.02, alpha:0.02+Math.random()*0.06, phase:Math.random()*Math.PI*2});
-}
+for(let i=0;i<5;i++){ fogBlobs.push({x:Math.random()*W, y:Math.random()*H, s: (W/2)*(0.18+Math.random()*0.5), vx:(Math.random()-0.5)*0.04, vy:(Math.random()-0.5)*0.02, alpha:0.02+Math.random()*0.06, phase:Math.random()*Math.PI*2}); }
 function drawFog(t){
   fctx.clearRect(0,0,W,H);
   for(let b of fogBlobs){
@@ -397,85 +379,43 @@ function drawFog(t){
     fctx.fillStyle = g; fctx.beginPath(); fctx.arc(b.x,b.y,b.s,0,Math.PI*2); fctx.fill();
   }
 }
-
 /* grain */
-function drawGrain(){
-  gctx.clearRect(0,0,W,H);
-  gctx.fillStyle = 'rgba(255,255,255,0.02)';
-  const count = Math.round(W*H/7000);
-  for(let i=0;i<count;i++){
-    gctx.fillRect(Math.random()*W, Math.random()*H, 1, 1);
-  }
-}
+function drawGrain(){ gctx.clearRect(0,0,W,H); gctx.fillStyle = 'rgba(255,255,255,0.02)'; const count = Math.round(W*H/7000); for(let i=0;i<count;i++){ gctx.fillRect(Math.random()*W, Math.random()*H, 1, 1); } }
 drawGrain();
 
-/* ---------------------------
-  ripple pulse (center) every ~12s
-----------------------------*/
-function pulseRipple(){
-  ripple.style.opacity = 1;
-  ripple.style.transform = 'translate(-50%,-50%) scale(1)';
-  ripple.style.transition = 'transform 1.2s ease-out, opacity 1.25s ease-out';
-  setTimeout(()=>{ ripple.style.transform = 'translate(-50%,-50%) scale(6)'; ripple.style.opacity = 0; }, 10);
-}
+/* ripple pulse */
+function pulseRipple(){ ripple.style.opacity = 1; ripple.style.transform = 'translate(-50%,-50%) scale(1)'; ripple.style.transition = 'transform 1.2s ease-out, opacity 1.25s ease-out'; setTimeout(()=>{ ripple.style.transform = 'translate(-50%,-50%) scale(6)'; ripple.style.opacity = 0; }, 10); }
 setInterval(pulseRipple, 12000);
 
-/* ---------------------------
-  main animation loop
-----------------------------*/
-let last = performance.now();
+/* main animation loop */
 function frame(t){
-  drawMotes();
-  drawFog(t);
-  // visualizer
-  stepViz(t);
-  // occasional lens flicker
+  drawMotes(); drawFog(t); stepViz(t);
   if(Math.random() < 0.0018){ flick.style.opacity = 0.28; setTimeout(()=> flick.style.opacity = 0, 140); }
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
 
-/* ---------------------------
-  start animation helpers (trigger on enter)
-----------------------------*/
+/* start animation helpers */
 function startAnimationLoops(){
-  // already running frame loop; motes/fog/visualizer active
-  // small pulse of title when starting
   document.getElementById('title').style.transition = 'transform .6s ease';
   document.getElementById('title').style.transform = 'scale(1.04)';
   setTimeout(()=> document.getElementById('title').style.transform = '', 700);
 }
 
-/* ---------------------------
-  on player created callback
-----------------------------*/
-function onPlayerCreated(){
-  controls.style.display='flex';
-  isPlaying = true; updatePlayBtn();
-}
+/* on player created */
+function onPlayerCreated(){ controls.style.display='flex'; isPlaying = true; updatePlayBtn(); }
 
-/* ---------------------------
-  keyboard shortcut: space toggle
-----------------------------*/
-document.addEventListener('keydown', (e)=>{
-  if(e.code === 'Space'){ e.preventDefault(); if(ytPlayer){ if(isPlaying){ ytPlayer.pauseVideo(); isPlaying=false; } else { ytPlayer.playVideo(); isPlaying=true; } updatePlayBtn(); } }
-});
+/* keyboard: space toggle */
+document.addEventListener('keydown', (e)=>{ if(e.code === 'Space'){ e.preventDefault(); if(ytPlayer){ if(isPlaying){ ytPlayer.pauseVideo(); isPlaying=false; } else { ytPlayer.playVideo(); isPlaying=true; } updatePlayBtn(); } } });
 
-/* ---------------------------
-  expose debug
-----------------------------*/
-window.__VOID = { pulseRipple, motelist, fogBlobs };
-
-/* ---------------------------
-  make sure canvases resize on load
-----------------------------*/
-window.addEventListener('resize', ()=>{
-  resizeAll(); drawGrain();
-});
-
-/* accessibility: enter to click */
+/* accessibility: enter key start */
 enterText.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' ') enterText.click(); });
 
+/* resize on load */
+window.addEventListener('resize', ()=>{ resizeAll(); drawGrain(); });
+
+/* expose debug */
+window.__VOID = { pulseRipple, motelist, fogBlobs };
 </script>
 </body>
 </html>
