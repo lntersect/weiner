@@ -1,245 +1,246 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>333</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>333 — profile</title>
 
-    body {
-      height: 100vh;
-      overflow: hidden;
-      color: #fff;
-      background: #000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Cinzel+Decorative:wght@700&display=swap" rel="stylesheet">
 
-    .bg {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      object-fit: cover;
-      z-index: 0;
-      filter: brightness(0.3) contrast(1.2);
-      background: #000;
-    }
+<style>
+  :root{
+    --card-w: 760px;
+    --bg-dark: rgba(0,0,0,0.45);
+  }
 
-    .overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.45);
-      backdrop-filter: blur(3px);
-      z-index: 1;
-    }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:#000;color:#fff}
+  body{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:28px;padding:56px 20px 80px;}
 
-    .card {
-      position: relative;
-      z-index: 2;
-      width: 500px;
-      background: rgba(18,18,18,0.85);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 18px;
-      padding: 40px 30px;
-      text-align: center;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.7);
-      backdrop-filter: blur(10px);
-      opacity: 0;
-      transform: translateY(30px);
-      transition: opacity 1s ease, transform 1s ease;
-    }
+/* background GIF (full-bleed) */
+.bg {
+  position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;
+  filter:brightness(0.30) contrast(1.15);
+  background:#000;
+}
 
-    .card.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
+/* overlay to dim GIF */
+.overlay{position:fixed;inset:0;background:var(--bg-dark);backdrop-filter:blur(3px);z-index:1}
 
-    .pfp {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      overflow: hidden;
-      margin: 0 auto 18px;
-      border: 1px solid rgba(255,255,255,0.08);
-    }
+/* enter screen */
+.enter-screen{position:fixed;inset:0;z-index:60;background:#000;display:flex;align-items:center;justify-content:center;flex-direction:column;cursor:pointer}
+.enter-btn{
+  font-family:'Cinzel Decorative', serif;
+  font-size:1.15rem;padding:14px 28px;border-radius:12px;border:1px solid rgba(255,255,255,0.18);
+  background:transparent;color:#fff;letter-spacing:2px;transition:all .28s ease;box-shadow:0 6px 28px rgba(0,0,0,0.6);
+}
+.enter-btn:hover{transform:scale(1.04);background:rgba(255,255,255,0.04)}
+.enter-screen.fade{opacity:0;pointer-events:none;transition:opacity .9s ease}
 
-    .pfp img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+/* main card (centered, horizontal feel but stacked items) */
+.container{position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;gap:18px;width:100%;max-width:var(--card-w);margin:0 auto}
 
-    h1 {
-      font-size: 2rem;
-      font-weight: 600;
-      letter-spacing: 1px;
-      color: #fff;
-    }
+/* card */
+.card{
+  width:100%;
+  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border-radius:18px;padding:34px 38px;border:1px solid rgba(255,255,255,0.03);
+  box-shadow:0 18px 40px rgba(0,0,0,0.6);
+  backdrop-filter:blur(10px);text-align:center;opacity:0;transform:translateY(18px);
+  transition:opacity .9s ease, transform .9s ease;
+}
+.card.show{opacity:1;transform:none}
 
-    .divider {
-      height: 1px;
-      width: 80%;
-      margin: 18px auto;
-      background: rgba(255,255,255,0.06);
-    }
+/* avatar */
+.pfp{width:120px;height:120px;border-radius:50%;overflow:hidden;margin:0 auto 10px;border:2px solid rgba(255,255,255,0.06);background:#111}
+.pfp img{width:100%;height:100%;object-fit:cover;display:block}
 
-    .icon-row {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      margin-top: 18px;
-    }
+/* name/typewriter area */
+.name-wrap{display:flex;flex-direction:column;align-items:center;gap:6px}
+#typing{
+  font-family:'Cinzel Decorative', serif;
+  font-size:40px;line-height:1;color:#fff;letter-spacing:2px;
+  overflow:hidden;white-space:nowrap;border-right:.08em solid rgba(255,255,255,0.8);
+  padding-right:6px;
+}
+/* small blinking caret handled by border-right animation */
+@keyframes caret {50% {border-color:transparent}}
+#typing{animation:caret .9s step-end infinite}
 
-    .icon {
-      width: 45px;
-      height: 45px;
-      border-radius: 10px;
-      background: rgba(255,255,255,0.03);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all .2s ease;
-      border: 1px solid rgba(255,255,255,0.04);
-      cursor: pointer;
-    }
+/* divider */
+.divider{height:1px;width:86%;margin:16px auto;background:rgba(255,255,255,0.04)}
 
-    .icon:hover {
-      background: rgba(255,255,255,0.08);
-      transform: scale(1.08);
-    }
+/* icons */
+.icon-row{display:flex;gap:14px;align-items:center;justify-content:center;margin-top:6px}
+.icon{width:46px;height:46px;border-radius:10px;background:rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.04);transition:all .18s;cursor:pointer}
+.icon img{width:22px;height:22px;object-fit:contain;filter:invert(1)}
 
-    .icon img {
-      width: 24px;
-      height: 24px;
-      opacity: 0.9;
-      object-fit: contain;
-    }
+/* cinematic full-width video below card */
+.cinematic-video{
+  width:100%;max-width:1100px;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.04);
+  box-shadow:0 25px 60px rgba(0,0,0,0.6);opacity:0;transform:translateY(12px);
+  transition:opacity .9s ease, transform .9s ease;
+}
+.cinematic-video.show{opacity:1;transform:none}
+.cinematic-video iframe{width:100%;height:520px;border:none}
 
-    /* YouTube video embed */
-    .video-container {
-      margin-top: 25px;
-      border-radius: 12px;
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.06);
-      box-shadow: 0 5px 20px rgba(0,0,0,0.5);
-      opacity: 0;
-      transform: translateY(15px);
-      transition: all 1s ease;
-    }
-
-    .card.show .video-container {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    iframe {
-      width: 100%;
-      height: 280px;
-      border: none;
-    }
-
-    /* Click to Enter */
-    #enterScreen {
-      position: fixed;
-      inset: 0;
-      background: #000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      z-index: 999;
-      transition: opacity 1s ease;
-      cursor: pointer;
-    }
-
-    #enterScreen.fade {
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    #enterScreen h2 {
-      font-size: 1.6rem;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      border: 1px solid rgba(255,255,255,0.2);
-      padding: 14px 30px;
-      border-radius: 14px;
-      transition: all 0.3s ease;
-      animation: pulse 2s infinite;
-    }
-
-    #enterScreen h2:hover {
-      background: rgba(255,255,255,0.1);
-      transform: scale(1.05);
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 0.6; }
-      50% { opacity: 1; }
-    }
-
-    @media (max-width: 480px) {
-      .card {
-        width: 90%;
-        padding: 30px 20px;
-      }
-      iframe {
-        height: 200px;
-      }
-    }
-  </style>
+/* responsive */
+@media (max-width:900px){ .cinematic-video iframe{height:360px} .pfp{width:92px;height:92px} #typing{font-size:34px} }
+@media (max-width:620px){ body{padding:28px 14px 48px} .card{padding:24px} .cinematic-video iframe{height:220px} }
+</style>
 </head>
 <body>
-  <!-- Click to Enter -->
-  <div id="enterScreen">
-    <h2>Click to Enter</h2>
+
+  <!-- ENTER SCREEN -->
+  <div class="enter-screen" id="enterScreen" role="button" aria-label="Click to enter">
+    <button class="enter-btn" id="enterBtn">click to enter</button>
   </div>
 
-  <!-- Background GIF -->
-  <img src="https://media.tenor.com/Ua5qB1eng_oAAAAC/black-and-white-night-city.gif" alt="Night City" class="bg" />
+  <!-- Background GIF (direct CDN GIF) -->
+  <img class="bg" src="https://media.tenor.com/Ua5qB1eng_oAAAAC/black-and-white-night-city.gif" alt="night city">
 
-  <div class="overlay"></div>
+  <div class="overlay" aria-hidden="true"></div>
 
-  <div class="card" id="mainCard">
-    <div class="pfp">
-      <img src="https://cdn.discordapp.com/attachments/1431809720431280282/1434030714940166205/fde005003e6ecd6ca3e7b8886da6e6d7.jpg" alt="pfp">
+  <!-- Main container -->
+  <div class="container" aria-hidden="true">
+
+    <!-- Profile card -->
+    <div class="card" id="card">
+      <div class="pfp" role="img" aria-label="profile picture">
+        <!-- IMPORTANT: put the uploaded image file next to this HTML with this exact name,
+             or change the src to your hosted PFP URL -->
+        <img id="pfpImg" src="fde005003e6ecd6ca3e7b8886da6e6d7.jpg" alt="pfp">
+      </div>
+
+      <div class="name-wrap">
+        <div id="typing" aria-live="polite"></div>
+      </div>
+
+      <div class="divider" aria-hidden="true"></div>
+
+      <div class="icon-row" role="group" aria-label="links">
+        <a class="icon" href="https://discord.com" target="_blank" rel="noopener">
+          <img src="https://cdn-icons-png.flaticon.com/512/2111/2111370.png" alt="discord">
+        </a>
+
+        <a class="icon" href="https://t.me" target="_blank" rel="noopener">
+          <!-- Telegram plane icon (not circular) -->
+          <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="telegram">
+        </a>
+      </div>
     </div>
 
-    <h1>333</h1>
-    <div class="divider"></div>
-
-    <div class="icon-row">
-      <a href="https://discord.com" target="_blank" class="icon">
-        <img src="https://cdn-icons-png.flaticon.com/512/2111/2111370.png" alt="Discord">
-      </a>
-      <a href="https://t.me" target="_blank" class="icon">
-        <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="Telegram">
-      </a>
-    </div>
-
-    <div class="video-container">
-      <iframe 
-        src="https://www.youtube.com/embed/OAyixxm4yXw?autoplay=1&mute=1&controls=0&loop=1&playlist=OAyixxm4yXw"
-        allow="autoplay; encrypted-media"
-        allowfullscreen>
-      </iframe>
+    <!-- Full-width cinematic YouTube embed (separate box) -->
+    <div class="cinematic-video" id="cinematicVideo" aria-hidden="true">
+      <!-- player will be created by YouTube iFrame API -->
+      <div id="yt-player"></div>
     </div>
   </div>
 
-  <script>
-    const enterScreen = document.getElementById('enterScreen');
-    const mainCard = document.getElementById('mainCard');
+<script>
+/* ---------------------------
+  TYPEWRITER (forward-only loop)
+   shows: "3" -> "33" -> "333" -> pause -> repeat
+----------------------------*/
+(function(){
+  const el = document.getElementById('typing');
+  const seq = ["3","33","333"];
+  let i = 0;
+  function loop(){
+    el.textContent = "";
+    const cur = seq[i];
+    let j=0;
+    function type(){
+      if(j < cur.length){
+        el.textContent += cur[j++];
+        setTimeout(type, 160);
+      } else {
+        setTimeout(()=>{ i = (i+1)%seq.length; loop(); }, 1100);
+      }
+    }
+    type();
+  }
+  loop();
+})();
 
-    enterScreen.addEventListener('click', () => {
-      enterScreen.classList.add('fade');
-      setTimeout(() => {
-        enterScreen.style.display = 'none';
-        mainCard.classList.add('show');
-      }, 1000);
-    });
-  </script>
+/* ---------------------------
+  ENTER button handling:
+  - hide enter screen
+  - reveal card & cinematic video
+  - initialize YouTube player (muted autoplay initially for reliability)
+  - then unmute & play (user clicked so browsers allow sound)
+----------------------------*/
+let player;
+const YT_VIDEO_ID = "OAyixxm4yXw"; // your video id
+const enterBtn = document.getElementById('enterBtn');
+const enterScreen = document.getElementById('enterScreen');
+const card = document.getElementById('card');
+const cinematicVideo = document.getElementById('cinematicVideo');
+
+enterBtn.addEventListener('click', () => {
+  // fade out enter screen
+  enterScreen.classList.add('fade');
+  setTimeout(()=> enterScreen.style.display = 'none', 800);
+
+  // reveal card
+  card.classList.add('show');
+
+  // reveal cinematic container (animates in)
+  setTimeout(()=> {
+    cinematicVideo.classList.add('show');
+    // init youtube player if not ready
+    if(!player){
+      loadYouTubeAPI();
+    } else {
+      // if already created (unlikely), ensure plays & unmute
+      player.unMute();
+      player.playVideo();
+    }
+  }, 450);
+});
+
+/* Load YouTube IFrame API & create player */
+function loadYouTubeAPI(){
+  if(window.YT && window.YT.Player){ createPlayer(); return; }
+  const tag = document.createElement('script');
+  tag.src = "https://www.youtube.com/iframe_api";
+  document.head.appendChild(tag);
+  window.onYouTubeIframeAPIReady = createPlayer;
+}
+
+function createPlayer(){
+  player = new YT.Player('yt-player', {
+    height: '520',
+    width: '100%',
+    videoId: YT_VIDEO_ID,
+    playerVars: {
+      autoplay: 1,
+      controls: 1,
+      mute: 1,        // start muted for autoplay reliability, we'll unmute after user click
+      loop: 1,
+      playlist: YT_VIDEO_ID,
+      modestbranding: 1,
+      rel: 0
+    },
+    events: {
+      onReady: function(e){
+        e.target.playVideo();
+        // Because user clicked "enter", it's allowed to unmute now:
+        try { e.target.unMute(); } catch(e){}
+      },
+      onStateChange: function(ev){
+        // if ended, loop (YT loop param handles but keep fallback)
+        if(ev.data === YT.PlayerState.ENDED) {
+          player.playVideo();
+        }
+      }
+    }
+  });
+}
+
+/* Note about PFP: if you host this on GitHub Pages, upload the image file
+   named "fde005003e6ecd6ca3e7b8886da6e6d7.jpg" to the same repo/folder as this index.html
+   or replace the <img id="pfpImg" src="..."> with a permanent image URL. */
+</script>
 </body>
 </html>
