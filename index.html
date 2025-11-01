@@ -1,358 +1,552 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>333</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Inter', sans-serif;
-    }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>333 — cinematic</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  /* --- Base / layout --- */
+  * { box-sizing: border-box; margin:0; padding:0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color:transparent; }
+  html,body { height:100%; background:#000; color:#fff; overflow:hidden; }
+  body { display:flex; align-items:center; justify-content:center; }
 
-    body {
-      height: 100vh;
-      overflow: hidden;
-      color: #fff;
-      background: #000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+  /* background gif */
+  .bg { position:fixed; inset:0; width:100%; height:100%; object-fit:cover; z-index:0; filter:brightness(0.28) contrast(1.2); transition:transform .18s ease-out; }
 
-    .bg {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      object-fit: cover;
-      z-index: 0;
-      filter: brightness(0.3) contrast(1.2);
-      transition: transform 0.2s ease-out;
-    }
+  /* overlay layers order:
+     bg (z0) -> fog canvas (z1) -> particles/trail/sparks canvas (z1.5) -> overlay dim (z2) -> card & cube (z3) -> UI (z4)
+   */
+  canvas, .bg { -webkit-user-select:none; user-select:none; pointer-events:none; }
 
-    .overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.45);
-      backdrop-filter: blur(3px);
-      z-index: 1;
-    }
+  #fogCanvas { position:fixed; inset:0; z-index:1; }
+  #effectCanvas { position:fixed; inset:0; z-index:1.5; }
+  .overlay { position:fixed; inset:0; background:rgba(0,0,0,0.45); backdrop-filter:blur(2px); z-index:2; pointer-events:none; }
 
-    /* Particle effect */
-    #particles {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      z-index: 1;
-      pointer-events: none;
-    }
+  /* small radial spotlight that follows cursor */
+  .spotlight { position:fixed; inset:0; z-index:2.1; pointer-events:none; background:radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(255,255,255,0.06), transparent 10%, transparent 30%); mix-blend-mode:screen; transition:background .06s linear; }
 
-    .card {
-      position: relative;
-      z-index: 2;
-      width: 500px;
-      background: rgba(18,18,18,0.85);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 18px;
-      padding: 40px 30px;
-      text-align: center;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.7);
-      backdrop-filter: blur(10px);
-      opacity: 0;
-      transform: translateY(30px);
-      transition: opacity 1s ease, transform 1s ease;
-    }
+  /* custom cursor */
+  .cursor {
+    position:fixed; width:18px; height:18px; border-radius:50%;
+    transform:translate(-50%,-50%) scale(1);
+    pointer-events:none; z-index:9999;
+    box-shadow:0 0 18px rgba(255,255,255,0.65), inset 0 0 6px rgba(255,255,255,0.2);
+    transition:transform .12s ease-out, width .12s ease, height .12s ease;
+    mix-blend-mode:screen;
+    background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.15) 40%, transparent 60%);
+  }
 
-    .card.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  /* hide default cursor */
+  html,body { cursor:none; }
 
-    .pfp {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      overflow: hidden;
-      margin: 0 auto 18px;
-      position: relative;
-    }
+  /* main card */
+  .card {
+    position:relative; z-index:3; width:520px; max-width:92vw;
+    background:linear-gradient(180deg, rgba(18,18,18,0.92), rgba(12,12,12,0.85));
+    border-radius:20px; padding:40px 34px; text-align:center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+    border:1px solid rgba(255,255,255,0.04);
+    backdrop-filter:blur(8px);
+    transform:translateY(20px); opacity:0; transition:opacity .9s ease, transform .9s cubic-bezier(.2,.9,.2,1);
+    overflow:visible;
+  }
+  .card.show { transform:none; opacity:1; }
 
-    /* Glow ring */
-    .pfp::before {
-      content: "";
-      position: absolute;
-      inset: -4px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(255,255,255,0.5) 0%, transparent 70%);
-      animation: pulseGlow 2.5s infinite;
-      z-index: 0;
-    }
+  /* profile */
+  .pfp { width:108px; height:108px; border-radius:50%; margin:0 auto 18px; overflow:hidden; position:relative; }
+  .pfp img { width:100%; height:100%; object-fit:cover; display:block; }
 
-    @keyframes pulseGlow {
-      0%, 100% { opacity: 0.4; transform: scale(1); }
-      50% { opacity: 1; transform: scale(1.1); }
-    }
+  /* glowing ring (larger and sharper) */
+  .pfp::before {
+    content:""; position:absolute; inset:-6px; border-radius:50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.12) 30%, transparent 55%);
+    filter:blur(6px); opacity:.9; animation:pulseGlow 2.8s infinite;
+    z-index:0;
+  }
+  @keyframes pulseGlow { 0%{ transform:scale(1); opacity:0.45 } 50%{ transform:scale(1.08); opacity:1 } 100%{ transform:scale(1); opacity:0.45 } }
 
-    .pfp img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 50%;
-      position: relative;
-      z-index: 1;
-    }
+  h1.title {
+    font-size:2rem; font-weight:600; letter-spacing:1px; text-transform:none;
+    /* shimmer text */
+    background:linear-gradient(90deg,#fff 0%, #cfcfcf 40%, #fff 100%);
+    background-size:200% auto; -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    animation:shimmer 3s linear infinite;
+    position:relative; z-index:2;
+  }
+  @keyframes shimmer { from{background-position:0% 50%} to{background-position:200% 50%} }
 
-    h1 {
-      font-size: 2rem;
-      font-weight: 600;
-      letter-spacing: 1px;
-      color: #fff;
-      background: linear-gradient(90deg, #ffffff 0%, #b1b1b1 50%, #ffffff 100%);
-      background-size: 200% auto;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: shimmer 3s linear infinite;
-    }
+  .divider { height:1px; width:80%; margin:14px auto; background:rgba(255,255,255,0.05); }
 
-    @keyframes shimmer {
-      0% { background-position: 0% 50%; }
-      100% { background-position: 200% 50%; }
-    }
+  .icon-row { display:flex; gap:18px; justify-content:center; margin-top:16px; align-items:center; z-index:5; }
+  .icon {
+    width:48px; height:48px; border-radius:12px; display:inline-flex; align-items:center; justify-content:center;
+    background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04); cursor:pointer; position:relative; overflow:visible;
+    transition:transform .22s cubic-bezier(.2,.9,.2,1), box-shadow .22s ease;
+  }
+  .icon img { width:26px; height:26px; display:block; filter:grayscale(0) brightness(1.1); pointer-events:none; }
 
-    .divider {
-      height: 1px;
-      width: 80%;
-      margin: 18px auto;
-      background: rgba(255,255,255,0.06);
-    }
+  .icon:hover { transform:translateY(-6px) scale(1.06); box-shadow:0 8px 30px rgba(255,255,255,0.06); }
+  /* small spark emitter anchor */
+  .icon .spark-anchor { position:absolute; inset:0; z-index:1; pointer-events:none; }
 
-    .icon-row {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      margin-top: 18px;
-      opacity: 0;
-      transform: translateY(15px);
-      transition: all 1s ease 0.6s;
-    }
+  /* video container */
+  .video-container { margin-top:20px; border-radius:12px; overflow:hidden; border:1px solid rgba(255,255,255,0.06); box-shadow:0 5px 20px rgba(0,0,0,0.55); transition:transform .3s ease; }
+  iframe { width:100%; height:290px; border:0; display:block; }
 
-    .card.show .icon-row {
-      opacity: 1;
-      transform: translateY(0);
-    }
+  /* hologram reflection: duplicate text below with blur & translate */
+  .holo-wrap { position:relative; margin-top:6px; }
+  .reflection {
+    transform:translateY(8px) scaleY(-1);
+    opacity:0.14; filter:blur(6px) saturate(.8);
+    background:linear-gradient(180deg, rgba(255,255,255,0.55), rgba(255,255,255,0.18));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    animation:reflectRipple 4s ease-in-out infinite;
+    pointer-events:none;
+  }
+  @keyframes reflectRipple { 0%{ transform:translateY(8px) scaleY(-1) translateX(0) } 50%{ transform:translateY(12px) scaleY(-1) translateX(4px) } 100%{ transform:translateY(8px) scaleY(-1) translateX(0) } }
 
-    .icon {
-      width: 45px;
-      height: 45px;
-      border-radius: 10px;
-      background: rgba(255,255,255,0.03);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all .3s ease;
-      border: 1px solid rgba(255,255,255,0.04);
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-    }
+  /* glass reflection shimmer on card */
+  .glass-shine { position:absolute; top:-40%; left:-20%; width:140%; height:220%; pointer-events:none; z-index:2; transform:translateX(-30%) rotate(18deg); background:linear-gradient(90deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.08) 45%, rgba(255,255,255,0.02) 70%); mix-blend-mode:screen; opacity:0.0; transition:opacity .18s linear, transform .12s linear; border-radius:30px; }
 
-    .icon::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border-radius: 10px;
-      background: radial-gradient(circle, rgba(255,255,255,0.25), transparent 70%);
-      opacity: 0;
-      transition: opacity .3s ease, transform .3s ease;
-      transform: scale(0.8);
-    }
+  /* floating 3D cube (css fake 3d) */
+  .cube-wrap { position:fixed; right:6vw; top:18vh; z-index:2; pointer-events:none; transform-style:preserve-3d; width:120px; height:120px; display:grid; place-items:center; }
+  .cube { width:72px; height:72px; transform-style:preserve-3d; animation:spinCube 10s linear infinite; filter:drop-shadow(0 20px 40px rgba(0,0,0,0.6)); opacity:0.85; }
+  .cube-face { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; border-radius:8px; font-weight:700; font-size:30px; }
+  .f1 { background:linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02)); transform:translateZ(36px); }
+  .f2 { background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01)); transform:rotateY(90deg) translateZ(36px); }
+  .f3 { transform:rotateY(180deg) translateZ(36px); background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01)); }
+  .f4 { transform:rotateY(-90deg) translateZ(36px); background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)); }
+  .f5 { transform:rotateX(90deg) translateZ(36px); background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)); }
+  .f6 { transform:rotateX(-90deg) translateZ(36px); background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01)); }
 
-    .icon:hover::after {
-      opacity: 1;
-      transform: scale(1.2);
-    }
+  @keyframes spinCube { 0%{ transform: rotateX(-12deg) rotateY(0deg) rotateZ(0) } 50%{ transform: rotateX(12deg) rotateY(180deg) } 100%{ transform: rotateX(-12deg) rotateY(360deg) } }
 
-    .icon:hover {
-      transform: scale(1.1);
-      box-shadow: 0 0 15px rgba(255,255,255,0.1);
-    }
+  /* UI small: theme toggle (we default to B/W) */
+  .ui-top { position:fixed; left:20px; top:20px; z-index:999; display:flex; gap:12px; align-items:center; }
+  .toggle { padding:8px 12px; border-radius:10px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.04); color:#fff; cursor:pointer; font-size:13px; }
 
-    .icon img {
-      width: 24px;
-      height: 24px;
-      opacity: 0.9;
-      object-fit: contain;
-      z-index: 1;
-    }
+  /* responsive */
+  @media (max-width:520px){ .cube-wrap{ display:none } .card { padding:28px 18px } iframe{ height:220px } }
 
-    .video-container {
-      margin-top: 25px;
-      border-radius: 12px;
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.06);
-      box-shadow: 0 5px 20px rgba(0,0,0,0.5);
-      opacity: 0;
-      transform: translateY(15px);
-      transition: all 1s ease 1.2s;
-    }
+  /* small visualizer bars (fallback/idle and mic reactive) */
+  .viz { width:100%; height:36px; display:block; margin-top:14px; position:relative; z-index:4; }
+  .viz canvas { width:100%; height:100%; display:block; }
 
-    .card.show .video-container {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    iframe {
-      width: 100%;
-      height: 280px;
-      border: none;
-    }
-
-    #enterScreen {
-      position: fixed;
-      inset: 0;
-      background: #000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      z-index: 999;
-      transition: opacity 1s ease;
-      cursor: pointer;
-    }
-
-    #enterScreen.fade {
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    #enterScreen h2 {
-      font-size: 1.6rem;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      border: 1px solid rgba(255,255,255,0.2);
-      padding: 14px 30px;
-      border-radius: 14px;
-      transition: all 0.3s ease;
-      animation: pulse 2s infinite;
-    }
-
-    #enterScreen h2:hover {
-      background: rgba(255,255,255,0.1);
-      transform: scale(1.05);
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 0.6; }
-      50% { opacity: 1; }
-    }
-
-    @media (max-width: 480px) {
-      .card {
-        width: 90%;
-        padding: 30px 20px;
-      }
-      iframe {
-        height: 200px;
-      }
-    }
-  </style>
+</style>
 </head>
 <body>
-  <div id="enterScreen">
-    <h2>Click to Enter</h2>
+
+  <!-- Background GIF -->
+  <img src="https://media.tenor.com/Ua5qB1eng_oAAAAC/black-and-white-night-city.gif" class="bg" alt="bg">
+
+  <!-- fog canvas (slow drifting fog) -->
+  <canvas id="fogCanvas"></canvas>
+
+  <!-- particle/trail/spark canvas -->
+  <canvas id="effectCanvas"></canvas>
+
+  <!-- overlay dim and spotlight -->
+  <div class="overlay"></div>
+  <div class="spotlight" id="spotlight"></div>
+
+  <!-- UI -->
+  <div class="ui-top">
+    <button id="themeBtn" class="toggle" title="Toggle theme (default B/W)">Theme: B/W</button>
+    <button id="micBtn" class="toggle" title="Enable microphone visualizer">Visualizer: mic (optional)</button>
   </div>
 
-  <img src="https://media.tenor.com/Ua5qB1eng_oAAAAC/black-and-white-night-city.gif" alt="Night City" class="bg" />
-  <div class="overlay"></div>
-  <canvas id="particles"></canvas>
+  <!-- floating cube -->
+  <div class="cube-wrap" aria-hidden="true">
+    <div class="cube" id="cube">
+      <div class="cube-face f1">3</div>
+      <div class="cube-face f2">3</div>
+      <div class="cube-face f3">3</div>
+      <div class="cube-face f4">3</div>
+      <div class="cube-face f5">3</div>
+      <div class="cube-face f6">3</div>
+    </div>
+  </div>
 
-  <div class="card" id="mainCard">
+  <!-- custom cursor -->
+  <div class="cursor" id="cursor"></div>
+
+  <!-- main UI card -->
+  <div class="card" id="mainCard" role="main" aria-label="Main">
+    <div class="glass-shine" id="glassShine"></div>
+
     <div class="pfp">
       <img src="https://i.imgur.com/OJeD12w.jpeg" alt="pfp">
     </div>
 
-    <h1>333</h1>
+    <div class="holo-wrap">
+      <h1 class="title">333</h1>
+      <div class="reflection title reflection">333</div>
+    </div>
+
     <div class="divider"></div>
 
     <div class="icon-row">
-      <a href="https://discord.com" target="_blank" class="icon">
+      <a class="icon" href="https://discord.com" target="_blank" rel="noreferrer">
+        <div class="spark-anchor"></div>
         <img src="https://cdn-icons-png.flaticon.com/512/2111/2111370.png" alt="Discord">
       </a>
-      <a href="https://t.me" target="_blank" class="icon">
+      <a class="icon" href="https://t.me" target="_blank" rel="noreferrer">
+        <div class="spark-anchor"></div>
         <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="Telegram">
       </a>
     </div>
 
-    <div class="video-container">
-      <iframe 
-        id="musicFrame"
-        src=""
-        allow="autoplay; encrypted-media"
-        allowfullscreen>
-      </iframe>
+    <div class="video-container" aria-hidden="false">
+      <iframe id="musicFrame" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    </div>
+
+    <!-- audio visualizer area (bars) -->
+    <div class="viz">
+      <canvas id="vizCanvas"></canvas>
     </div>
   </div>
 
-  <script>
-    const enterScreen = document.getElementById('enterScreen');
-    const mainCard = document.getElementById('mainCard');
-    const musicFrame = document.getElementById('musicFrame');
-    const bg = document.querySelector('.bg');
+<script>
+/* =========================
+   Entry & card reveal + keep user's video setting
+   ========================= */
+(function initReveal(){
+  const main = document.getElementById('mainCard');
+  // small staged reveal
+  requestAnimationFrame(()=> setTimeout(()=> main.classList.add('show'), 180));
+  // keep the user's chosen video (same as before)
+  const musicFrame = document.getElementById('musicFrame');
+  musicFrame.src = "https://www.youtube.com/embed/OAyixxm4yXw?autoplay=1&mute=0&controls=0&loop=1&playlist=OAyixxm4yXw";
+})();
 
-    enterScreen.addEventListener('click', () => {
-      enterScreen.classList.add('fade');
-      setTimeout(() => {
-        enterScreen.style.display = 'none';
-        mainCard.classList.add('show');
-        musicFrame.src = "https://www.youtube.com/embed/OAyixxm4yXw?autoplay=1&mute=0&controls=0&loop=1&playlist=OAyixxm4yXw";
-      }, 1000);
+/* =========================
+   CANVAS LAYERS: fog + effects (particles/trail/sparks)
+   ========================= */
+const fogCanvas = document.getElementById('fogCanvas');
+const fxCanvas = document.getElementById('effectCanvas');
+const dpr = Math.min(window.devicePixelRatio || 1, 2);
+const fogCtx = fogCanvas.getContext('2d');
+const fxCtx = fxCanvas.getContext('2d');
+
+function resizeCanvases(){
+  fogCanvas.width = innerWidth * dpr; fogCanvas.height = innerHeight * dpr;
+  fogCanvas.style.width = innerWidth + 'px'; fogCanvas.style.height = innerHeight + 'px';
+  fxCanvas.width = innerWidth * dpr; fxCanvas.height = innerHeight * dpr;
+  fxCanvas.style.width = innerWidth + 'px'; fxCanvas.style.height = innerHeight + 'px';
+  fogCtx.scale(dpr,dpr);
+  fxCtx.scale(dpr,dpr);
+}
+window.addEventListener('resize', resizeCanvases);
+resizeCanvases();
+
+/* ---- Fog (smooth moving gradient blobs) ---- */
+const fogBlobs = [];
+for(let i=0;i<6;i++){
+  fogBlobs.push({
+    x: Math.random()*innerWidth,
+    y: Math.random()*innerHeight,
+    size: (innerWidth/2) * (0.2 + Math.random()*0.6),
+    speedX: (Math.random()-0.5)*0.05,
+    speedY: (Math.random()-0.5)*0.03,
+    alpha: 0.06 + Math.random()*0.08,
+    phase: Math.random()*Math.PI*2
+  });
+}
+function drawFog(t){
+  fogCtx.clearRect(0,0,innerWidth,innerHeight);
+  fogBlobs.forEach(b=>{
+    b.x += b.speedX * Math.cos(t*0.0005 + b.phase);
+    b.y += b.speedY * Math.sin(t*0.0004 + b.phase);
+    // soft radial gradient
+    const g = fogCtx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.size);
+    g.addColorStop(0, `rgba(255,255,255,${b.alpha})`);
+    g.addColorStop(0.35, `rgba(255,255,255,${b.alpha*0.45})`);
+    g.addColorStop(1, 'rgba(255,255,255,0)');
+    fogCtx.fillStyle = g;
+    fogCtx.beginPath();
+    fogCtx.rect(0,0,innerWidth,innerHeight);
+    fogCtx.fill();
+    fogCtx.fillStyle = g;
+    fogCtx.beginPath();
+    fogCtx.arc(b.x, b.y, b.size, 0, Math.PI*2);
+    fogCtx.fill();
+  });
+}
+
+/* ---- Particles (slow drifting small lights) ---- */
+const particles = [];
+const P_COUNT = Math.max(60, Math.floor((innerWidth*innerHeight)/7000));
+for(let i=0;i<P_COUNT;i++){
+  particles.push({
+    x: Math.random()*innerWidth,
+    y: Math.random()*innerHeight,
+    r: Math.random()*1.6 + 0.3,
+    vy: 0.05 + Math.random()*0.35,
+    alpha: 0.15 + Math.random()*0.45
+  });
+}
+
+/* ---- Cursor trail ---- */
+const trail = [];
+const TRAIL_MAX = 55;
+
+/* ---- Sparks pool (for icon hover) ---- */
+const sparks = [];
+function spawnSparks(screenX, screenY, color='255,255,255'){
+  for(let i=0;i<18;i++){
+    sparks.push({
+      x: screenX + (Math.random()-0.5)*18,
+      y: screenY + (Math.random()-0.5)*18,
+      vx: (Math.random()-0.5)*3.6,
+      vy: (Math.random()-1.6)*3.8,
+      life: 26 + Math.random()*18,
+      r: 0.6 + Math.random()*1.6,
+      color
     });
+  }
+}
 
-    // Parallax background movement
-    document.addEventListener('mousemove', (e) => {
-      const x = (window.innerWidth / 2 - e.pageX) / 80;
-      const y = (window.innerHeight / 2 - e.pageY) / 80;
-      bg.style.transform = `translate(${x}px, ${y}px) scale(1.05)`;
+/* main fx draw loop */
+function drawFX(t){
+  fxCtx.clearRect(0,0,innerWidth,innerHeight);
+
+  // draw particles
+  fxCtx.globalCompositeOperation = 'lighter';
+  particles.forEach(p=>{
+    fxCtx.beginPath();
+    fxCtx.fillStyle = `rgba(255,255,255,${p.alpha})`;
+    fxCtx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+    fxCtx.fill();
+    p.y += p.vy;
+    if(p.y > innerHeight + 10) p.y = -8;
+    if(p.y < -20) p.y = innerHeight + 6;
+  });
+
+  // draw trail
+  for(let i=0;i<trail.length;i++){
+    const s = trail[i];
+    const f = (i / trail.length);
+    fxCtx.beginPath();
+    fxCtx.fillStyle = `rgba(255,255,255,${0.85*(1-f)})`;
+    fxCtx.arc(s.x, s.y, (6 * (1-f)) + 1.2, 0, Math.PI*2);
+    fxCtx.fill();
+  }
+
+  // draw sparks
+  for(let i=sparks.length-1;i>=0;i--){
+    const sp = sparks[i];
+    fxCtx.beginPath();
+    fxCtx.fillStyle = `rgba(${sp.color},${Math.max(sp.life/60,0)})`;
+    fxCtx.arc(sp.x, sp.y, sp.r, 0, Math.PI*2);
+    fxCtx.fill();
+    sp.x += sp.vx; sp.y += sp.vy; sp.vy += 0.06; sp.vx *= 0.99; sp.life -= 1.8;
+    sp.r *= 0.997;
+    if(sp.life <= 0) sparks.splice(i,1);
+  }
+  fxCtx.globalCompositeOperation = 'source-over';
+}
+
+/* animate all canvas elements */
+let lastT = 0;
+function loop(t){
+  drawFog(t);
+  drawFX(t);
+  drawVisualizer(); // separate visualizer draw
+  lastT = t;
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+/* =========================
+   Cursor, spotlight, glass shine
+   ========================= */
+const cursorEl = document.getElementById('cursor');
+const spotlight = document.getElementById('spotlight');
+const bg = document.querySelector('.bg');
+const glass = document.getElementById('glassShine');
+let mx = innerWidth/2, my = innerHeight/2;
+window.addEventListener('pointermove', e=>{
+  mx = e.clientX; my = e.clientY;
+  // cursor position
+  cursorEl.style.left = mx + 'px';
+  cursorEl.style.top = my + 'px';
+
+  // trail push
+  trail.unshift({ x: mx + (Math.random()-0.5)*6, y: my + (Math.random()-0.5)*6, life:Date.now() });
+  if(trail.length > TRAIL_MAX) trail.pop();
+
+  // spotlight follow
+  spotlight.style.setProperty('--mx', (mx / innerWidth * 100) + '%');
+  spotlight.style.setProperty('--my', (my / innerHeight * 100) + '%');
+
+  // background parallax subtle
+  bg.style.transform = `translate(${(innerWidth/2 - mx)/80}px, ${(innerHeight/2 - my)/80}px) scale(1.05)`;
+
+  // glass shine follow (compute percent)
+  const card = document.getElementById('mainCard');
+  const rect = card.getBoundingClientRect();
+  const rx = (mx - rect.left) / rect.width;
+  const ry = (my - rect.top) / rect.height;
+  // map to translate
+  glass.style.opacity = 1;
+  glass.style.transform = `translateX(${(rx-0.5)*60}px) rotate(18deg)`;
+});
+
+/* click pulse for cursor */
+window.addEventListener('pointerdown', () => {
+  cursorEl.style.transform = 'translate(-50%,-50%) scale(1.65)';
+  setTimeout(()=> cursorEl.style.transform = 'translate(-50%,-50%) scale(1)', 160);
+});
+
+/* =========================
+   Icon hover -> sparks
+   ========================= */
+document.querySelectorAll('.icon').forEach(icon=>{
+  icon.addEventListener('mouseenter', (ev)=>{
+    // find screen coords center
+    const r = icon.getBoundingClientRect();
+    spawnSparks(r.left + r.width/2, r.top + r.height/2);
+  });
+  icon.addEventListener('click', (ev)=>{
+    const r = icon.getBoundingClientRect();
+    spawnSparks(r.left + r.width/2, r.top + r.height/2);
+  });
+});
+
+/* hide glass shine on mouse leave of card after small delay */
+const card = document.getElementById('mainCard');
+card.addEventListener('mouseleave', ()=>{ setTimeout(()=> glass.style.opacity = 0, 220); });
+
+/* =========================
+   Visualizer (mic or idle)
+   ========================= */
+const vizCanvas = document.getElementById('vizCanvas');
+const vizCtx = vizCanvas.getContext('2d');
+function resizeViz(){ vizCanvas.width = vizCanvas.clientWidth * dpr; vizCanvas.height = vizCanvas.clientHeight * dpr; vizCtx.scale(dpr,dpr); }
+window.addEventListener('resize', resizeViz);
+resizeViz();
+
+let audioContext = null, analyser = null, dataArray = null, sourceNode = null;
+let micActive = false;
+const micBtn = document.getElementById('micBtn');
+
+micBtn.addEventListener('click', ()=> {
+  if(micActive){ stopMic(); micBtn.textContent = 'Visualizer: mic (optional)'; }
+  else startMic();
+});
+
+/* start microphone */
+async function startMic(){
+  try{
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const stream = await navigator.mediaDevices.getUserMedia({ audio:true, video:false });
+    sourceNode = audioContext.createMediaStreamSource(stream);
+    analyser = audioContext.createAnalyser();
+    analyser.fftSize = 256;
+    sourceNode.connect(analyser);
+    dataArray = new Uint8Array(analyser.frequencyBinCount);
+    micActive = true;
+    micBtn.textContent = 'Visualizer: mic (on)';
+  } catch(e){
+    micActive = false;
+    micBtn.textContent = 'Visualizer: mic (denied)';
+    console.warn('Mic denied or error:', e);
+  }
+}
+
+/* stop mic (if used) */
+function stopMic(){
+  if(sourceNode && sourceNode.mediaStream){
+    const tracks = sourceNode.mediaStream.getTracks();
+    tracks.forEach(t=>t.stop());
+  }
+  if(audioContext) { try{ audioContext.close(); }catch(e){} }
+  audioContext = null; analyser = null; dataArray = null; sourceNode = null; micActive = false;
+}
+
+/* draw visualizer bars */
+function drawVisualizer(){
+  const w = vizCanvas.clientWidth;
+  const h = vizCanvas.clientHeight;
+  vizCtx.clearRect(0,0,w,h);
+  const barCount = 32;
+  let values;
+  if(analyser){
+    analyser.getByteFrequencyData(dataArray);
+    values = Array.from({length:barCount}, (_,i) => {
+      const idx = Math.floor(i * (dataArray.length / barCount));
+      return dataArray[idx] / 255;
     });
+  } else {
+    // idle subtle animation fallback (pulse)
+    const t = performance.now() * 0.001;
+    values = Array.from({length:barCount}, (_,i) => (0.12 + 0.08*Math.sin(t*1.2 + i*0.45) + 0.06*Math.cos(t*0.6 + i*0.22)));
+  }
+  const bw = w / (barCount*1.6);
+  for(let i=0;i<barCount;i++){
+    const val = Math.max(0, Math.min(1, values[i]));
+    const barH = val * h;
+    const x = i * (bw*1.45);
+    // gradient fill
+    const g = vizCtx.createLinearGradient(x, h, x, h-barH);
+    g.addColorStop(0, 'rgba(255,255,255,0.08)');
+    g.addColorStop(0.6, 'rgba(255,255,255,0.24)');
+    g.addColorStop(1, 'rgba(255,255,255,0.6)');
+    vizCtx.fillStyle = g;
+    vizCtx.fillRect(x, h-barH, bw, barH);
+  }
+}
 
-    // Particle animation
-    const canvas = document.getElementById('particles');
-    const ctx = canvas.getContext('2d');
-    let particles = [];
-    const particleCount = 80;
+/* =========================
+   Theme toggle (B/W / neon-blue) - user chose B/W default
+   ========================= */
+const themeBtn = document.getElementById('themeBtn');
+let isNeon = false;
+themeBtn.addEventListener('click', ()=>{
+  isNeon = !isNeon;
+  document.documentElement.style.setProperty('--neon', isNeon ? '1' : '0');
+  themeBtn.textContent = isNeon ? 'Theme: Neon' : 'Theme: B/W';
+  // when neon, tint BG slightly cyan and boost glow
+  if(isNeon){
+    document.querySelector('.bg').style.filter = 'brightness(0.28) contrast(1.25) saturate(1.25) hue-rotate(170deg)';
+    document.querySelectorAll('.pfp::before').forEach?.(n=>{}); // noop - for clarity
+    cursorEl.style.boxShadow = '0 0 30px rgba(0,200,255,0.9), inset 0 0 8px rgba(0,200,255,0.22)';
+  } else {
+    document.querySelector('.bg').style.filter = 'brightness(0.28) contrast(1.2)';
+    cursorEl.style.boxShadow = '0 0 18px rgba(255,255,255,0.65), inset 0 0 6px rgba(255,255,255,0.2)';
+  }
+});
 
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+/* =========================
+   Idle init: small zaps to make scene lively
+   ========================= */
+(function idleInit(){
+  // occasionally spawn small sparks near icons
+  setInterval(()=>{
+    const icons = document.querySelectorAll('.icon');
+    const idx = Math.floor(Math.random()*icons.length);
+    const box = icons[idx].getBoundingClientRect();
+    if(box.width){
+      spawnSparks(box.left + box.width/2 + (Math.random()-0.5)*20, box.top + box.height/2 + (Math.random()-0.5)*20, '255,255,255');
     }
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
+  }, 2400);
+})();
 
-    for (let i = 0; i < particleCount; i++) {
-      particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        radius: Math.random() * 1.2,
-        speedY: Math.random() * 0.3 + 0.1
-      });
-    }
+/* =========================
+   Lightweight smoothing to keep trail short & nice
+   ========================= */
+setInterval(()=> {
+  // shrink trail gradually (remove old entries)
+  if(trail.length > TRAIL_MAX) trail.splice(TRAIL_MAX);
+}, 120);
 
-    function animateParticles() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = 'rgba(255,255,255,0.35)';
-      particles.forEach(p => {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fill();
-        p.y += p.speedY;
-        if (p.y > canvas.height) p.y = 0;
-      });
-      requestAnimationFrame(animateParticles);
-    }
-    animateParticles();
-  </script>
+/* =========================
+   Accessibility & cleanup on page hide
+   ========================= */
+document.addEventListener('visibilitychange', ()=> { if(document.hidden) stopMic(); });
+
+/* end of script */
+</script>
 </body>
 </html>
