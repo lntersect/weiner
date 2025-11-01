@@ -4,14 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>3 - Guns.lol Style</title>
+
 <style>
-  /* Reset & base styles */
   * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
   body, html { width: 100%; height: 100%; overflow: hidden; }
 
   /* Background GIF */
   body {
-    background: url('https://media.tenor.com/1ZpXEx5Lyt4AAAAC/night.gif') no-repeat center center fixed;
+    background: url('https://media.tenor.com/fDpLh_dGvB8AAAAC/black-and-white-night-city.gif') no-repeat center center fixed;
     background-size: cover;
     display: flex;
     justify-content: center;
@@ -21,7 +21,6 @@
     flex-direction: column;
   }
 
-  /* Profile card */
   .card {
     backdrop-filter: blur(15px);
     background-color: rgba(0,0,0,0.4);
@@ -37,7 +36,6 @@
     100% { box-shadow: 0 0 40px #00ffff; }
   }
 
-  /* Avatar */
   .avatar {
     width: 120px;
     height: 120px;
@@ -49,12 +47,11 @@
   h1 { font-size: 2.5rem; margin-bottom: 10px; }
   p { font-size: 1.2rem; color: #00f5ff; margin-bottom: 30px; }
 
-  /* Links container */
   .links {
     display: flex;
     gap: 30px;
     justify-content: center;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
   }
 
   .links a {
@@ -63,29 +60,65 @@
     justify-content: center;
     width: 60px; height: 60px;
     border-radius: 50%;
-    background: rgba(0,255,255,0.2);
+    background: rgba(0,255,255,0.15);
     color: #00f5ff;
-    font-size: 1.8rem;
+    font-size: 2rem;
     transition: 0.3s;
     box-shadow: 0 0 10px #00dfff;
   }
 
   .links a:hover {
-    transform: scale(1.2);
+    transform: scale(1.15);
     box-shadow: 0 0 20px #00ffff;
   }
 
-  /* Music player */
+  .links svg {
+    width: 30px;
+    height: 30px;
+    fill: #00f5ff;
+  }
+
+  /* Music Player */
   .music-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    color: #00f5ff;
+  }
+
+  .controls {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-top: 20px;
+  }
+
+  .controls button {
+    background: rgba(0,255,255,0.1);
+    border: none;
     color: #00f5ff;
+    padding: 10px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  .controls button:hover {
+    background: rgba(0,255,255,0.3);
   }
 
   input[type="range"] {
     width: 200px;
+    accent-color: #00dfff;
+  }
+
+  /* Viewer Counter */
+  .view-count {
+    margin-top: 15px;
+    font-size: 0.9rem;
+    color: #00ffff;
+    opacity: 0.8;
   }
 </style>
 </head>
@@ -101,15 +134,77 @@
 
   <!-- Links -->
   <div class="links">
-    <a href="https://discord.com/users/l.ung" target="_blank" title="Discord">💬</a>
-    <a href="https://lntersect" target="_blank" title="Telegram">✈️</a>
+    <a href="https://discord.com/users/l.ung" target="_blank" title="Discord">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 245 240"><path d="M104.4 104.4c-5.7 0-10.2 4.9-10.2 11s4.6 11 10.2 11 10.3-4.9 10.2-11c0-6.1-4.6-11-10.2-11zm36.2 0c-5.7 0-10.2 4.9-10.2 11s4.6 11 10.2 11 10.3-4.9 10.2-11c0-6.1-4.5-11-10.2-11z"/><path d="M189.5 20h-134C34.7 20 25 29.8 25 41.2v134.7c0 11.5 9.7 21.3 30.5 21.3h104.2l-4.9-17 11.8 11 11.2 10.4 19.7 17V41.2C197.5 29.8 198.5 20 189.5 20zM160 155s-3.5-4.1-6.4-7.7c12.7-3.6 17.5-11.6 17.5-11.6-3.9 2.6-7.6 4.4-10.9 5.6-4.7 2-9.1 3.3-13.4 4-8.9 1.7-17 1.3-23.9-.1-5.3-1-9.8-2.4-13.6-4-2.1-.8-4.5-1.9-6.9-3.3-.3-.2-.6-.3-.9-.5-.2-.1-.3-.2-.5-.3-.7-.4-1.1-.7-1.1-.7s4.7 8 17.1 11.6c-2.9 3.7-6.5 7.9-6.5 7.9-21.5-.7-29.7-14.8-29.7-14.8 0-31.3 14-56.8 14-56.8 14-10.4 27.3-10.1 27.3-10.1l1 1.2c-17.5 5-25.5 12.6-25.5 12.6s2.1-1.1 5.6-2.6c10.2-4.3 18.3-5.5 21.7-5.8.6-.1 1.2-.2 1.8-.2 6.4-.9 13.7-1.2 21.2-.2 10 1.2 20.7 4.1 31.7 10.1 0 0-7.7-7.3-24.3-12.3l1.4-1.6s13.3-.3 27.3 10.1c0 0 14 25.5 14 56.8 0 0-8.3 14.1-29.8 14.8z"/></svg>
+    </a>
+
+    <a href="https://lntersect" target="_blank" title="Telegram">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240"><path d="M120 0C53.7 0 0 53.7 0 120s53.7 120 120 120 120-53.7 120-120S186.3 0 120 0zM177.5 85.5l-20.6 97.4c-1.5 6.8-5.5 8.4-11.1 5.2l-30.6-22.5-14.8 14.2c-1.6 1.6-2.9 2.9-5.9 2.9l2.1-31.2 56.8-51.3c2.5-2.2-.6-3.5-3.8-1.3l-70.2 44-30.3-9.5c-6.6-2.1-6.8-6.6 1.4-9.8l118.5-45.7c5.5-2 10.3 1.3 8.5 9.7z"/></svg>
+    </a>
   </div>
 
-  <!-- Music Player -->
+  <!-- Custom Music Player -->
   <div class="music-container">
-    <iframe id="ytplayer" width="300" height="50" src="https://www.youtube.com/embed/cteaMVDbpig?autoplay=1&loop=1&playlist=cteaMVDbpig" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    <audio id="audio" src="https://www.dropbox.com/scl/fi/your-song.mp3?raw=1"></audio>
+
+    <div class="controls">
+      <button id="play-pause">▶️</button>
+      <input type="range" id="progress" value="0" min="0" max="100">
+      <input type="range" id="volume" value="50" min="0" max="100">
+    </div>
   </div>
+
+  <!-- Viewer Counter -->
+  <div class="view-count" id="viewCount">👁️ 0 visitors</div>
 </div>
+
+<script>
+  // === Music Controls ===
+  const audio = document.getElementById('audio');
+  const playPauseBtn = document.getElementById('play-pause');
+  const progress = document.getElementById('progress');
+  const volume = document.getElementById('volume');
+
+  let isPlaying = false;
+
+  playPauseBtn.addEventListener('click', () => {
+    if (isPlaying) {
+      audio.pause();
+      playPauseBtn.textContent = '▶️';
+    } else {
+      audio.play();
+      playPauseBtn.textContent = '⏸️';
+    }
+    isPlaying = !isPlaying;
+  });
+
+  audio.addEventListener('timeupdate', () => {
+    progress.value = (audio.currentTime / audio.duration) * 100 || 0;
+  });
+
+  progress.addEventListener('input', () => {
+    audio.currentTime = (progress.value / 100) * audio.duration;
+  });
+
+  volume.addEventListener('input', () => {
+    audio.volume = volume.value / 100;
+  });
+
+  // Auto play music
+  window.addEventListener('load', () => {
+    audio.volume = 0.5;
+    audio.play().catch(() => {
+      console.log("Autoplay blocked by browser.");
+    });
+  });
+
+  // === Viewer Counter (local simulation) ===
+  let views = localStorage.getItem('viewCount');
+  if (!views) views = 0;
+  views++;
+  localStorage.setItem('viewCount', views);
+  document.getElementById('viewCount').textContent = `👁️ ${views} visitors`;
+</script>
 
 </body>
 </html>
