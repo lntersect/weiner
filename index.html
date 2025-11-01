@@ -1,17 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>333</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Inter', sans-serif;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
 
     body {
       height: 100vh;
@@ -23,16 +18,15 @@
       justify-content: center;
     }
 
-    /* Background GIF */
+    /* Fixed background GIF */
     .bg {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       object-fit: cover;
       z-index: 0;
-      filter: brightness(0.3) contrast(1.1);
+      filter: brightness(0.3) contrast(1.2);
+      background: #000;
     }
 
     .overlay {
@@ -125,7 +119,7 @@
       object-fit: contain;
     }
 
-    /* Click to Enter Screen */
+    /* Click to Enter */
     #enterScreen {
       position: fixed;
       inset: 0;
@@ -174,25 +168,22 @@
   </style>
 </head>
 <body>
-
   <!-- Click to Enter -->
   <div id="enterScreen">
     <h2>Click to Enter</h2>
   </div>
 
-  <!-- Background GIF -->
-  <img src="https://media.tenor.com/Ua5qB1eng_oAAAPo/black-and-white-night-city.gif" alt="Night City" class="bg">
+  <!-- Fixed Background GIF (direct CDN link) -->
+  <img src="https://media.tenor.com/Ua5qB1eng_oAAAAC/black-and-white-night-city.gif" alt="Night City" class="bg" />
 
   <div class="overlay"></div>
 
-  <!-- Main Card -->
   <div class="card" id="mainCard">
     <div class="pfp">
       <img src="https://cdn.discordapp.com/attachments/1431809720431280282/1434030714940166205/fde005003e6ecd6ca3e7b8886da6e6d7.jpg" alt="pfp">
     </div>
 
     <h1>333</h1>
-
     <div class="divider"></div>
 
     <div class="icon-row">
@@ -212,11 +203,10 @@
     enterScreen.addEventListener('click', () => {
       enterScreen.classList.add('fade');
       setTimeout(() => {
-        enterScreen.style.display = "none";
+        enterScreen.style.display = 'none';
         mainCard.classList.add('show');
       }, 1000);
     });
   </script>
-
 </body>
 </html>
