@@ -118,6 +118,29 @@
       object-fit: contain;
     }
 
+    /* YouTube video embed */
+    .video-container {
+      margin-top: 25px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.06);
+      box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+      opacity: 0;
+      transform: translateY(15px);
+      transition: all 1s ease;
+    }
+
+    .card.show .video-container {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    iframe {
+      width: 100%;
+      height: 280px;
+      border: none;
+    }
+
     /* Click to Enter */
     #enterScreen {
       position: fixed;
@@ -163,6 +186,9 @@
         width: 90%;
         padding: 30px 20px;
       }
+      iframe {
+        height: 200px;
+      }
     }
   </style>
 </head>
@@ -192,6 +218,14 @@
       <a href="https://t.me" target="_blank" class="icon">
         <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="Telegram">
       </a>
+    </div>
+
+    <div class="video-container">
+      <iframe 
+        src="https://www.youtube.com/embed/OAyixxm4yXw?autoplay=1&mute=1&controls=0&loop=1&playlist=OAyixxm4yXw"
+        allow="autoplay; encrypted-media"
+        allowfullscreen>
+      </iframe>
     </div>
   </div>
 
