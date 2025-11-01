@@ -144,6 +144,76 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
 .copy-popup.show { opacity: 1; }
 .icon.discord-copy { position: relative; }
 
+
+/* ===== Sigil + aura (black & white only, stronger pulse) ===== */
+.title-row {
+  display:flex;
+  align-items:center;
+  gap:14px;
+  justify-content:center;
+  z-index:11;
+  position:relative;
+}
+.sigil-wrap {
+  position:relative;
+  width:54px;
+  height:54px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  pointer-events:auto;
+}
+.sigil {
+  width:40px;
+  height:40px;
+  display:block;
+  object-fit:contain;
+  z-index:12;
+  filter:grayscale(1) contrast(40) brightness(2.6);
+  mix-blend-mode:screen;
+  transition:transform 220ms cubic-bezier(.2,.9,.2,1), opacity 220ms;
+  opacity:0.98;
+}
+.sigil:hover { transform: scale(1.08); }
+
+/* stronger white pulsing aura behind sigil */
+.sigil-aura{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:110px;
+  height:110px;
+  border-radius:50%;
+  z-index:10;
+  pointer-events:none;
+  background: radial-gradient(circle, rgba(255,255,255,0.36) 0%, rgba(255,255,255,0.24) 25%, rgba(255,255,255,0.08) 55%, rgba(255,255,255,0) 100%);
+  filter: blur(18px);
+  opacity:0.85;
+  animation: sigilPulse 3.0s ease-in-out infinite;
+  will-change: opacity, transform, filter;
+}
+@keyframes sigilPulse {
+  0% { transform: translate(-50%,-50%) scale(0.92); opacity:0.6; filter:blur(12px); }
+  45% { transform: translate(-50%,-50%) scale(1.12); opacity:1; filter:blur(26px); }
+  100% { transform: translate(-50%,-50%) scale(0.92); opacity:0.6; filter:blur(12px); }
+}
+
+/* Glass reflection under center card */
+#center::after {
+  content: "";
+  position: absolute;
+  bottom: -120px;
+  left: 0;
+  width: 100%;
+  height: 120px;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.08), transparent);
+  transform: scaleY(-1);
+  opacity: 0.15;
+  filter: blur(6px);
+  pointer-events: none;
+}
+
 </style>
 <style>
 /* ===== ADDED: Cinematic subtle enhancements ===== */
@@ -241,7 +311,15 @@ h1 { transition: text-shadow 220ms ease, transform 220ms cubic-bezier(.2,.9,.2,1
 <div class="pfp" id="pfp">
 <img alt="pfp" src="https://i.imgur.com/OJeD12w.jpeg"/>
 </div>
-<h1 id="title">333</h1>
+
+  <div class="title-row">
+    <h1 id="title">333</h1>
+    <div class="sigil-wrap" aria-hidden="true">
+      <div class="sigil-aura" aria-hidden="true"></div>
+      <img src="dwewef.png" alt="sigil" class="sigil"/>
+    </div>
+  </div>
+
 <div class="icon-row" id="icons">
 <div class="icon discord-copy" title="Copy Discord"><img alt="discord" src="https://cdn-icons-png.flaticon.com/512/2111/2111370.png"/><div class="copy-popup" id="copyPopup">Copied!</div></div>
 <a class="icon" href="https://t.me/lntersect" rel="noreferrer" target="_blank"><img alt="telegram" src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png"/></a>
@@ -797,5 +875,45 @@ if (discordIcon) {
   }catch(err){ console.warn('Cinematic extras failed:', err); }
 })();
 </script>
+
+<!-- === Cinematic Quote === -->
+<style>
+#voidQuote {
+  position: fixed;
+  bottom: 60px;
+  left: 80px;
+  font-size: 0.9rem;
+  font-style: italic;
+  letter-spacing: 1.2px;
+  color: rgba(255,255,255,0.9);
+  opacity: 0;
+  z-index: 8;
+  line-height: 1.6;
+  filter: drop-shadow(0 0 14px rgba(255,255,255,0.15));
+  transition: opacity 2s ease;
+}
+#voidQuote.show { opacity: 1; }
+@keyframes quotePulse {
+  0%,100% { text-shadow: 0 0 6px rgba(255,255,255,0.25), 0 0 14px rgba(255,255,255,0.08); }
+  50% { text-shadow: 0 0 18px rgba(255,255,255,0.55), 0 0 34px rgba(255,255,255,0.18); }
+}
+#voidQuote.pulse { animation: quotePulse 6s ease-in-out infinite; }
+</style>
+
+<div id="voidQuote"><i>I disappeared into the dark so I could see what light was left in me.</i></div>
+
+<script>
+// fade and pulse quote after Enter-the-Void
+const quote = document.getElementById('voidQuote');
+const oldStart = startExperience;
+startExperience = function(){
+  oldStart();
+  setTimeout(()=>{
+    quote.classList.add('show');
+    setTimeout(()=>quote.classList.add('pulse'),1000);
+  }, 1200);
+};
+</script>
+
 </body>
 </html>
