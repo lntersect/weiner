@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
@@ -6,157 +6,153 @@
 <title>333 — cinematic</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  /* --- Base / layout --- */
-  * { box-sizing: border-box; margin:0; padding:0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color:transparent; }
-  html,body { height:100%; background:#000; color:#fff; overflow:hidden; }
-  body { display:flex; align-items:center; justify-content:center; }
+  :root{
+    --bg-filter: brightness(0.28) contrast(1.2);
+    --accent-glow: rgba(255,255,255,0.9);
+    --soft-accent: rgba(255,255,255,0.06);
+    --card-bg: rgba(18,18,18,0.92);
+    --icon-bg: rgba(255,255,255,0.02);
+    --particle-alpha: 0.2;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;background:#000;color:#fff;overflow:hidden}
+  body{display:flex;align-items:center;justify-content:center}
 
   /* background gif */
-  .bg { position:fixed; inset:0; width:100%; height:100%; object-fit:cover; z-index:0; filter:brightness(0.28) contrast(1.2); transition:transform .18s ease-out; }
+  .bg{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;filter:var(--bg-filter);transition:transform .18s ease-out}
 
-  /* overlay layers order:
-     bg (z0) -> fog canvas (z1) -> particles/trail/sparks canvas (z1.5) -> overlay dim (z2) -> card & cube (z3) -> UI (z4)
-   */
-  canvas, .bg { -webkit-user-select:none; user-select:none; pointer-events:none; }
+  /* canvases */
+  canvas, .bg{pointer-events:none;user-select:none}
+  #fogCanvas{position:fixed;inset:0;z-index:1}
+  #effectCanvas{position:fixed;inset:0;z-index:1.5}
 
-  #fogCanvas { position:fixed; inset:0; z-index:1; }
-  #effectCanvas { position:fixed; inset:0; z-index:1.5; }
-  .overlay { position:fixed; inset:0; background:rgba(0,0,0,0.45); backdrop-filter:blur(2px); z-index:2; pointer-events:none; }
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);backdrop-filter:blur(2px);z-index:2;pointer-events:none}
 
-  /* small radial spotlight that follows cursor */
-  .spotlight { position:fixed; inset:0; z-index:2.1; pointer-events:none; background:radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(255,255,255,0.06), transparent 10%, transparent 30%); mix-blend-mode:screen; transition:background .06s linear; }
+  /* spotlight */
+  .spotlight{position:fixed;inset:0;z-index:2.1;pointer-events:none;
+    background:radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(255,255,255,0.06), transparent 8%, transparent 28%);
+    mix-blend-mode:screen; transition:background .06s linear}
 
   /* custom cursor */
-  .cursor {
-    position:fixed; width:18px; height:18px; border-radius:50%;
-    transform:translate(-50%,-50%) scale(1);
-    pointer-events:none; z-index:9999;
-    box-shadow:0 0 18px rgba(255,255,255,0.65), inset 0 0 6px rgba(255,255,255,0.2);
-    transition:transform .12s ease-out, width .12s ease, height .12s ease;
-    mix-blend-mode:screen;
-    background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.15) 40%, transparent 60%);
-  }
+  .cursor{position:fixed;width:18px;height:18px;border-radius:50%;
+    transform:translate(-50%,-50%);pointer-events:none;z-index:9999;
+    box-shadow:0 0 18px var(--accent-glow), inset 0 0 6px rgba(255,255,255,0.18);
+    background:radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.12) 40%, transparent 60%);
+    mix-blend-mode:screen;transition:transform .12s ease-out,width .12s,height .12s}
 
-  /* hide default cursor */
-  html,body { cursor:none; }
+  html,body{cursor:none}
+
+  /* ENTER SCREEN */
+  #enterScreen{position:fixed;inset:0;z-index:999;display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(180deg, rgba(0,0,0,0.68), rgba(0,0,0,0.78));backdrop-filter: blur(2px);overflow:hidden}
+  #enterText{font-size:1.6rem;letter-spacing:3px;text-transform:lowercase;color:transparent;
+    -webkit-text-stroke:0.6px rgba(255,255,255,0.85);position:relative;padding:18px 28px;border-radius:12px;
+    transition:transform .28s cubic-bezier(.2,.9,.2,1),opacity .6s ease;mix-blend-mode:screen}
+  #enterText .inner{background:linear-gradient(90deg,#fff,#bfbfbf);background-clip:text;-webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;animation:enterPulse 2s infinite}
+  @keyframes enterPulse{0%{opacity:.85}50%{opacity:1;transform:translateY(-2px)}100%{opacity:.85}}
+  /* subtle particles behind enter */
+  #enterParticles{position:absolute;inset:0;z-index:998;pointer-events:none}
 
   /* main card */
-  .card {
-    position:relative; z-index:3; width:520px; max-width:92vw;
-    background:linear-gradient(180deg, rgba(18,18,18,0.92), rgba(12,12,12,0.85));
-    border-radius:20px; padding:40px 34px; text-align:center;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.7);
-    border:1px solid rgba(255,255,255,0.04);
-    backdrop-filter:blur(8px);
-    transform:translateY(20px); opacity:0; transition:opacity .9s ease, transform .9s cubic-bezier(.2,.9,.2,1);
-    overflow:visible;
-  }
-  .card.show { transform:none; opacity:1; }
+  .card{position:relative;z-index:3;width:540px;max-width:92vw;background:var(--card-bg);border-radius:20px;
+    padding:40px 36px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.75);border:1px solid rgba(255,255,255,0.04);
+    backdrop-filter: blur(8px);transform:translateY(20px);opacity:0;transition:opacity .9s ease,transform .9s cubic-bezier(.2,.9,.2,1);overflow:visible}
+  .card.show{transform:none;opacity:1}
 
-  /* profile */
-  .pfp { width:108px; height:108px; border-radius:50%; margin:0 auto 18px; overflow:hidden; position:relative; }
-  .pfp img { width:100%; height:100%; object-fit:cover; display:block; }
+  .pfp{width:110px;height:110px;border-radius:50%;margin:0 auto 18px;overflow:hidden;position:relative}
+  .pfp img{width:100%;height:100%;object-fit:cover;display:block}
+  .pfp::before{content:"";position:absolute;inset:-6px;border-radius:50%;
+    background:radial-gradient(circle,var(--accent-glow) 0%, rgba(255,255,255,0.12) 30%, transparent 55%);
+    filter:blur(6px);opacity:.85;animation:pulseGlow 2.5s infinite;z-index:0}
+  @keyframes pulseGlow{0%{transform:scale(1);opacity:.45}50%{transform:scale(1.08);opacity:1}100%{transform:scale(1);opacity:.45}}
 
-  /* glowing ring (larger and sharper) */
-  .pfp::before {
-    content:""; position:absolute; inset:-6px; border-radius:50%;
-    background: radial-gradient(circle, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.12) 30%, transparent 55%);
-    filter:blur(6px); opacity:.9; animation:pulseGlow 2.8s infinite;
-    z-index:0;
-  }
-  @keyframes pulseGlow { 0%{ transform:scale(1); opacity:0.45 } 50%{ transform:scale(1.08); opacity:1 } 100%{ transform:scale(1); opacity:0.45 } }
+  .holo-wrap{position:relative;margin-top:4px}
+  h1.title{font-size:2.05rem;font-weight:600;letter-spacing:1px;background:linear-gradient(90deg,#fff 0%, #cfcfcf 50%, #fff 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 3s linear infinite;position:relative;z-index:2}
+  @keyframes shimmer{from{background-position:0% 50%}to{background-position:200% 50%}}
+  .reflection{transform:translateY(8px) scaleY(-1);opacity:0.12;filter:blur(6px) saturate(.9);background:linear-gradient(180deg, rgba(255,255,255,0.55), rgba(255,255,255,0.18));-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:reflectRipple 4s ease-in-out infinite;pointer-events:none}
+  @keyframes reflectRipple{0%{transform:translateY(8px) scaleY(-1)}50%{transform:translateY(12px) scaleY(-1) translateX(4px)}100%{transform:translateY(8px) scaleY(-1)}}
 
-  h1.title {
-    font-size:2rem; font-weight:600; letter-spacing:1px; text-transform:none;
-    /* shimmer text */
-    background:linear-gradient(90deg,#fff 0%, #cfcfcf 40%, #fff 100%);
-    background-size:200% auto; -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-    animation:shimmer 3s linear infinite;
-    position:relative; z-index:2;
-  }
-  @keyframes shimmer { from{background-position:0% 50%} to{background-position:200% 50%} }
+  .divider{height:1px;width:80%;margin:14px auto;background:var(--soft-accent)}
 
-  .divider { height:1px; width:80%; margin:14px auto; background:rgba(255,255,255,0.05); }
+  .icon-row{display:flex;gap:18px;justify-content:center;margin-top:16px;align-items:center;z-index:5}
+  .icon{width:48px;height:48px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;background:var(--icon-bg);border:1px solid rgba(255,255,255,0.04);cursor:pointer;position:relative;overflow:visible;transition:transform .22s cubic-bezier(.2,.9,.2,1),box-shadow .22s}
+  .icon img{width:26px;height:26px;display:block;filter:grayscale(0) brightness(1.1);pointer-events:none}
+  .icon:hover{transform:translateY(-6px) scale(1.06);box-shadow:0 10px 30px rgba(255,255,255,0.06)}
 
-  .icon-row { display:flex; gap:18px; justify-content:center; margin-top:16px; align-items:center; z-index:5; }
-  .icon {
-    width:48px; height:48px; border-radius:12px; display:inline-flex; align-items:center; justify-content:center;
-    background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04); cursor:pointer; position:relative; overflow:visible;
-    transition:transform .22s cubic-bezier(.2,.9,.2,1), box-shadow .22s ease;
-  }
-  .icon img { width:26px; height:26px; display:block; filter:grayscale(0) brightness(1.1); pointer-events:none; }
+  .video-container{margin-top:20px;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.06);box-shadow:0 5px 20px rgba(0,0,0,0.55);transition:transform .3s}
+  iframe{width:100%;height:290px;border:0;display:block}
 
-  .icon:hover { transform:translateY(-6px) scale(1.06); box-shadow:0 8px 30px rgba(255,255,255,0.06); }
-  /* small spark emitter anchor */
-  .icon .spark-anchor { position:absolute; inset:0; z-index:1; pointer-events:none; }
+  .glass-shine{position:absolute;top:-40%;left:-20%;width:140%;height:220%;pointer-events:none;z-index:2;transform:translateX(-30%) rotate(18deg);background:linear-gradient(90deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.08) 45%, rgba(255,255,255,0.02) 70%);mix-blend-mode:screen;opacity:0;border-radius:30px;transition:opacity .18s linear,transform .12s linear}
 
-  /* video container */
-  .video-container { margin-top:20px; border-radius:12px; overflow:hidden; border:1px solid rgba(255,255,255,0.06); box-shadow:0 5px 20px rgba(0,0,0,0.55); transition:transform .3s ease; }
-  iframe { width:100%; height:290px; border:0; display:block; }
+  /* cube */
+  .cube-wrap{position:fixed;right:6vw;top:18vh;z-index:2;pointer-events:none;transform-style:preserve-3d;width:120px;height:120px;display:grid;place-items:center}
+  .cube{width:72px;height:72px;transform-style:preserve-3d;animation:spinCube 10s linear infinite;filter:drop-shadow(0 20px 40px rgba(0,0,0,0.6));opacity:0.85}
+  .cube-face{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;border-radius:8px;font-weight:700;font-size:30px}
+  .f1{background:linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));transform:translateZ(36px)}
+  .f2{background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01));transform:rotateY(90deg) translateZ(36px)}
+  .f3{transform:rotateY(180deg) translateZ(36px);background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01))}
+  .f4{transform:rotateY(-90deg) translateZ(36px);background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02))}
+  .f5{transform:rotateX(90deg) translateZ(36px);background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))}
+  .f6{transform:rotateX(-90deg) translateZ(36px);background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01))}
+  @keyframes spinCube{0%{transform:rotateX(-12deg) rotateY(0deg)}50%{transform:rotateX(12deg) rotateY(180deg)}100%{transform:rotateX(-12deg) rotateY(360deg)}}
 
-  /* hologram reflection: duplicate text below with blur & translate */
-  .holo-wrap { position:relative; margin-top:6px; }
-  .reflection {
-    transform:translateY(8px) scaleY(-1);
-    opacity:0.14; filter:blur(6px) saturate(.8);
-    background:linear-gradient(180deg, rgba(255,255,255,0.55), rgba(255,255,255,0.18));
-    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-    animation:reflectRipple 4s ease-in-out infinite;
-    pointer-events:none;
-  }
-  @keyframes reflectRipple { 0%{ transform:translateY(8px) scaleY(-1) translateX(0) } 50%{ transform:translateY(12px) scaleY(-1) translateX(4px) } 100%{ transform:translateY(8px) scaleY(-1) translateX(0) } }
+  /* UI top */
+  .ui-top{position:fixed;left:20px;top:20px;z-index:999;display:flex;gap:12px;align-items:center}
+  .toggle{padding:8px 12px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.04);color:#fff;cursor:pointer;font-size:13px}
 
-  /* glass reflection shimmer on card */
-  .glass-shine { position:absolute; top:-40%; left:-20%; width:140%; height:220%; pointer-events:none; z-index:2; transform:translateX(-30%) rotate(18deg); background:linear-gradient(90deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.08) 45%, rgba(255,255,255,0.02) 70%); mix-blend-mode:screen; opacity:0.0; transition:opacity .18s linear, transform .12s linear; border-radius:30px; }
-
-  /* floating 3D cube (css fake 3d) */
-  .cube-wrap { position:fixed; right:6vw; top:18vh; z-index:2; pointer-events:none; transform-style:preserve-3d; width:120px; height:120px; display:grid; place-items:center; }
-  .cube { width:72px; height:72px; transform-style:preserve-3d; animation:spinCube 10s linear infinite; filter:drop-shadow(0 20px 40px rgba(0,0,0,0.6)); opacity:0.85; }
-  .cube-face { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; border-radius:8px; font-weight:700; font-size:30px; }
-  .f1 { background:linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02)); transform:translateZ(36px); }
-  .f2 { background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01)); transform:rotateY(90deg) translateZ(36px); }
-  .f3 { transform:rotateY(180deg) translateZ(36px); background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01)); }
-  .f4 { transform:rotateY(-90deg) translateZ(36px); background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)); }
-  .f5 { transform:rotateX(90deg) translateZ(36px); background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)); }
-  .f6 { transform:rotateX(-90deg) translateZ(36px); background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01)); }
-
-  @keyframes spinCube { 0%{ transform: rotateX(-12deg) rotateY(0deg) rotateZ(0) } 50%{ transform: rotateX(12deg) rotateY(180deg) } 100%{ transform: rotateX(-12deg) rotateY(360deg) } }
-
-  /* UI small: theme toggle (we default to B/W) */
-  .ui-top { position:fixed; left:20px; top:20px; z-index:999; display:flex; gap:12px; align-items:center; }
-  .toggle { padding:8px 12px; border-radius:10px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.04); color:#fff; cursor:pointer; font-size:13px; }
+  /* visualizer */
+  .viz{width:100%;height:46px;display:block;margin-top:14px;position:relative;z-index:4}
+  .viz canvas{width:100%;height:100%;display:block}
 
   /* responsive */
-  @media (max-width:520px){ .cube-wrap{ display:none } .card { padding:28px 18px } iframe{ height:220px } }
+  @media (max-width:520px){.cube-wrap{display:none}.card{padding:28px 18px}iframe{height:220px}}
 
-  /* small visualizer bars (fallback/idle and mic reactive) */
-  .viz { width:100%; height:36px; display:block; margin-top:14px; position:relative; z-index:4; }
-  .viz canvas { width:100%; height:100%; display:block; }
-
+  /* small entrance & glitch */
+  .glitch {
+    position:relative; display:inline-block;
+  }
+  .glitch::before, .glitch::after{
+    content:attr(data-text);
+    position:absolute; left:0; top:0; width:100%; height:100%; clip-path:inset(0);
+    opacity:0.9;
+  }
+  .glitch::before{transform:translate(-1.5px,-0.5px);opacity:0.85;filter:blur(.6px)}
+  .glitch::after{transform:translate(1.5px,0.6px);opacity:0.85;filter:blur(.6px)}
+  .enter-hide{opacity:0;transform:translateY(-6px) scale(.98);transition:opacity .5s ease,transform .5s ease}
 </style>
 </head>
 <body>
 
-  <!-- Background GIF -->
-  <img src="https://media.tenor.com/Ua5qB1eng_oAAAAC/black-and-white-night-city.gif" class="bg" alt="bg">
+  <!-- background GIF -->
+  <img class="bg" src="https://media.tenor.com/Ua5qB1eng_oAAAAC/black-and-white-night-city.gif" alt="night city">
 
-  <!-- fog canvas (slow drifting fog) -->
+  <!-- canvases -->
   <canvas id="fogCanvas"></canvas>
-
-  <!-- particle/trail/spark canvas -->
   <canvas id="effectCanvas"></canvas>
 
-  <!-- overlay dim and spotlight -->
   <div class="overlay"></div>
   <div class="spotlight" id="spotlight"></div>
 
-  <!-- UI -->
-  <div class="ui-top">
-    <button id="themeBtn" class="toggle" title="Toggle theme (default B/W)">Theme: B/W</button>
-    <button id="micBtn" class="toggle" title="Enable microphone visualizer">Visualizer: mic (optional)</button>
+  <!-- custom cursor -->
+  <div class="cursor" id="cursor"></div>
+
+  <!-- ENTER SCREEN -->
+  <div id="enterScreen" role="dialog" aria-label="Enter">
+    <canvas id="enterParticles"></canvas>
+    <div id="enterText" aria-hidden="false" class="glitch" data-text="enter the void">
+      <span class="inner">enter the void</span>
+    </div>
   </div>
 
-  <!-- floating cube -->
+  <!-- UI controls -->
+  <div class="ui-top" aria-hidden="false">
+    <button id="themeBtn" class="toggle" title="Toggle theme">Theme: B/W</button>
+    <button id="micBtn" class="toggle" title="Mic visualizer (optional)">Visualizer: mic (optional)</button>
+  </div>
+
+  <!-- cube -->
   <div class="cube-wrap" aria-hidden="true">
     <div class="cube" id="cube">
       <div class="cube-face f1">3</div>
@@ -168,11 +164,8 @@
     </div>
   </div>
 
-  <!-- custom cursor -->
-  <div class="cursor" id="cursor"></div>
-
-  <!-- main UI card -->
-  <div class="card" id="mainCard" role="main" aria-label="Main">
+  <!-- main card -->
+  <div class="card" id="mainCard" role="main" aria-label="Main content">
     <div class="glass-shine" id="glassShine"></div>
 
     <div class="pfp">
@@ -198,75 +191,62 @@
     </div>
 
     <div class="video-container" aria-hidden="false">
-      <iframe id="musicFrame" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+      <iframe id="musicFrame" src="https://www.youtube.com/embed/OAyixxm4yXw?controls=0&loop=1&playlist=OAyixxm4yXw" allow="autoplay; encrypted-media" allowfullscreen></iframe>
     </div>
 
-    <!-- audio visualizer area (bars) -->
     <div class="viz">
       <canvas id="vizCanvas"></canvas>
     </div>
   </div>
 
+  <!-- hidden audio element pointing to your uploaded mp3 file (must be in same folder as HTML) -->
+  <audio id="bgAudio" src="Destroy Lonely - stfu (Official Audio).mp3" preload="auto" crossorigin="anonymous"></audio>
+
 <script>
-/* =========================
-   Entry & card reveal + keep user's video setting
-   ========================= */
-(function initReveal(){
-  const main = document.getElementById('mainCard');
-  // small staged reveal
-  requestAnimationFrame(()=> setTimeout(()=> main.classList.add('show'), 180));
-  // keep the user's chosen video (same as before)
-  const musicFrame = document.getElementById('musicFrame');
-  musicFrame.src = "https://www.youtube.com/embed/OAyixxm4yXw?autoplay=1&mute=0&controls=0&loop=1&playlist=OAyixxm4yXw";
-})();
-
-/* =========================
-   CANVAS LAYERS: fog + effects (particles/trail/sparks)
-   ========================= */
-const fogCanvas = document.getElementById('fogCanvas');
-const fxCanvas = document.getElementById('effectCanvas');
+/* ----------------------------
+   Utilities & canvas sizing
+   ---------------------------- */
 const dpr = Math.min(window.devicePixelRatio || 1, 2);
-const fogCtx = fogCanvas.getContext('2d');
-const fxCtx = fxCanvas.getContext('2d');
+const fogCanvas = document.getElementById('fogCanvas'), fogCtx = fogCanvas.getContext('2d');
+const fxCanvas = document.getElementById('effectCanvas'), fxCtx = fxCanvas.getContext('2d');
+const enterParticles = document.getElementById('enterParticles'), enterP = enterParticles.getContext('2d');
 
-function resizeCanvases(){
-  fogCanvas.width = innerWidth * dpr; fogCanvas.height = innerHeight * dpr;
-  fogCanvas.style.width = innerWidth + 'px'; fogCanvas.style.height = innerHeight + 'px';
-  fxCanvas.width = innerWidth * dpr; fxCanvas.height = innerHeight * dpr;
-  fxCanvas.style.width = innerWidth + 'px'; fxCanvas.style.height = innerHeight + 'px';
-  fogCtx.scale(dpr,dpr);
-  fxCtx.scale(dpr,dpr);
+function resizeAll(){
+  const w = innerWidth, h = innerHeight;
+  [fogCanvas, fxCanvas, enterParticles].forEach(c=>{
+    c.width = w * dpr; c.height = h * dpr;
+    c.style.width = w + 'px'; c.style.height = h + 'px';
+    const ctx = c.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0);
+  });
+  resizeViz();
 }
-window.addEventListener('resize', resizeCanvases);
-resizeCanvases();
+window.addEventListener('resize', resizeAll);
+resizeAll();
 
-/* ---- Fog (smooth moving gradient blobs) ---- */
+/* ----------------------------
+   Fog blobs (slow drifting)
+   ---------------------------- */
 const fogBlobs = [];
 for(let i=0;i<6;i++){
   fogBlobs.push({
     x: Math.random()*innerWidth,
     y: Math.random()*innerHeight,
-    size: (innerWidth/2) * (0.2 + Math.random()*0.6),
-    speedX: (Math.random()-0.5)*0.05,
-    speedY: (Math.random()-0.5)*0.03,
-    alpha: 0.06 + Math.random()*0.08,
-    phase: Math.random()*Math.PI*2
+    size:(innerWidth/2)*(0.18+Math.random()*0.6),
+    speedX:(Math.random()-0.5)*0.06,
+    speedY:(Math.random()-0.5)*0.03,
+    alpha:0.05+Math.random()*0.08,
+    phase:Math.random()*Math.PI*2
   });
 }
 function drawFog(t){
   fogCtx.clearRect(0,0,innerWidth,innerHeight);
   fogBlobs.forEach(b=>{
-    b.x += b.speedX * Math.cos(t*0.0005 + b.phase);
+    b.x += b.speedX * Math.cos(t*0.0006 + b.phase);
     b.y += b.speedY * Math.sin(t*0.0004 + b.phase);
-    // soft radial gradient
     const g = fogCtx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.size);
     g.addColorStop(0, `rgba(255,255,255,${b.alpha})`);
     g.addColorStop(0.35, `rgba(255,255,255,${b.alpha*0.45})`);
     g.addColorStop(1, 'rgba(255,255,255,0)');
-    fogCtx.fillStyle = g;
-    fogCtx.beginPath();
-    fogCtx.rect(0,0,innerWidth,innerHeight);
-    fogCtx.fill();
     fogCtx.fillStyle = g;
     fogCtx.beginPath();
     fogCtx.arc(b.x, b.y, b.size, 0, Math.PI*2);
@@ -274,93 +254,74 @@ function drawFog(t){
   });
 }
 
-/* ---- Particles (slow drifting small lights) ---- */
-const particles = [];
-const P_COUNT = Math.max(60, Math.floor((innerWidth*innerHeight)/7000));
-for(let i=0;i<P_COUNT;i++){
-  particles.push({
-    x: Math.random()*innerWidth,
-    y: Math.random()*innerHeight,
-    r: Math.random()*1.6 + 0.3,
-    vy: 0.05 + Math.random()*0.35,
-    alpha: 0.15 + Math.random()*0.45
-  });
-}
+/* ----------------------------
+   Slow ambient particles behind card (drifting lights)
+   ---------------------------- */
+const particles = []; const P_COUNT = Math.max(60, Math.floor((innerWidth*innerHeight)/7000));
+for(let i=0;i<P_COUNT;i++){ particles.push({ x:Math.random()*innerWidth, y:Math.random()*innerHeight, r:Math.random()*1.6+0.3, vy:0.05+Math.random()*0.35, alpha:0.12+Math.random()*0.45 }) }
 
-/* ---- Cursor trail ---- */
-const trail = [];
-const TRAIL_MAX = 55;
-
-/* ---- Sparks pool (for icon hover) ---- */
+/* ----------------------------
+   cursor trail & sparks
+   ---------------------------- */
+const trail = []; const TRAIL_MAX = 55;
 const sparks = [];
-function spawnSparks(screenX, screenY, color='255,255,255'){
-  for(let i=0;i<18;i++){
-    sparks.push({
-      x: screenX + (Math.random()-0.5)*18,
-      y: screenY + (Math.random()-0.5)*18,
-      vx: (Math.random()-0.5)*3.6,
-      vy: (Math.random()-1.6)*3.8,
-      life: 26 + Math.random()*18,
-      r: 0.6 + Math.random()*1.6,
-      color
-    });
-  }
-}
+function spawnSparks(x,y,color='255,255,255'){ for(let i=0;i<18;i++){ sparks.push({ x:x+(Math.random()-0.5)*18, y:y+(Math.random()-0.5)*18, vx:(Math.random()-0.5)*3.6, vy:(Math.random()-1.6)*3.8, life:26+Math.random()*18, r:0.6+Math.random()*1.6, color }) }}
 
-/* main fx draw loop */
-function drawFX(t){
+/* main FX draw */
+function drawFX(){
   fxCtx.clearRect(0,0,innerWidth,innerHeight);
-
-  // draw particles
   fxCtx.globalCompositeOperation = 'lighter';
   particles.forEach(p=>{
     fxCtx.beginPath();
     fxCtx.fillStyle = `rgba(255,255,255,${p.alpha})`;
-    fxCtx.arc(p.x, p.y, p.r, 0, Math.PI*2);
-    fxCtx.fill();
-    p.y += p.vy;
-    if(p.y > innerHeight + 10) p.y = -8;
-    if(p.y < -20) p.y = innerHeight + 6;
+    fxCtx.arc(p.x, p.y, p.r, 0, Math.PI*2); fxCtx.fill();
+    p.y += p.vy; if(p.y > innerHeight+10) p.y = -8;
   });
 
-  // draw trail
+  // trail
   for(let i=0;i<trail.length;i++){
-    const s = trail[i];
-    const f = (i / trail.length);
-    fxCtx.beginPath();
-    fxCtx.fillStyle = `rgba(255,255,255,${0.85*(1-f)})`;
-    fxCtx.arc(s.x, s.y, (6 * (1-f)) + 1.2, 0, Math.PI*2);
-    fxCtx.fill();
+    const s = trail[i]; const f = i/trail.length;
+    fxCtx.beginPath(); fxCtx.fillStyle = `rgba(255,255,255,${0.86*(1-f)})`; fxCtx.arc(s.x, s.y, (6*(1-f))+1.2,0,Math.PI*2); fxCtx.fill();
   }
 
-  // draw sparks
+  // sparks
   for(let i=sparks.length-1;i>=0;i--){
     const sp = sparks[i];
-    fxCtx.beginPath();
-    fxCtx.fillStyle = `rgba(${sp.color},${Math.max(sp.life/60,0)})`;
-    fxCtx.arc(sp.x, sp.y, sp.r, 0, Math.PI*2);
-    fxCtx.fill();
-    sp.x += sp.vx; sp.y += sp.vy; sp.vy += 0.06; sp.vx *= 0.99; sp.life -= 1.8;
-    sp.r *= 0.997;
+    fxCtx.beginPath(); fxCtx.fillStyle = `rgba(${sp.color},${Math.max(sp.life/60,0)})`; fxCtx.arc(sp.x, sp.y, sp.r, 0, Math.PI*2); fxCtx.fill();
+    sp.x += sp.vx; sp.y += sp.vy; sp.vy += 0.06; sp.vx *= 0.99; sp.life -= 1.8; sp.r *= 0.997;
     if(sp.life <= 0) sparks.splice(i,1);
   }
   fxCtx.globalCompositeOperation = 'source-over';
 }
 
-/* animate all canvas elements */
-let lastT = 0;
+/* ----------------------------
+   Enter screen particles
+   ---------------------------- */
+const enterPts = [];
+for(let i=0;i<80;i++){
+  enterPts.push({ x:Math.random()*innerWidth, y:Math.random()*innerHeight, r:Math.random()*1.8+0.6, vy:0.08+Math.random()*0.4, alpha:0.08+Math.random()*0.26 });
+}
+function drawEnterParticles(){
+  enterP.clearRect(0,0,innerWidth,innerHeight);
+  enterPts.forEach(pt=>{
+    enterP.beginPath(); enterP.fillStyle = `rgba(255,255,255,${pt.alpha})`; enterP.arc(pt.x, pt.y, pt.r, 0, Math.PI*2); enterP.fill();
+    pt.y += pt.vy; if(pt.y > innerHeight+10) pt.y = -8;
+  });
+}
+
+/* loop */
 function loop(t){
   drawFog(t);
-  drawFX(t);
-  drawVisualizer(); // separate visualizer draw
-  lastT = t;
+  drawFX();
+  drawEnterParticles();
+  drawVisualizer(); // below
   requestAnimationFrame(loop);
 }
 requestAnimationFrame(loop);
 
-/* =========================
-   Cursor, spotlight, glass shine
-   ========================= */
+/* ----------------------------
+   Cursor, spotlight, glass shine interactions
+   ---------------------------- */
 const cursorEl = document.getElementById('cursor');
 const spotlight = document.getElementById('spotlight');
 const bg = document.querySelector('.bg');
@@ -368,185 +329,182 @@ const glass = document.getElementById('glassShine');
 let mx = innerWidth/2, my = innerHeight/2;
 window.addEventListener('pointermove', e=>{
   mx = e.clientX; my = e.clientY;
-  // cursor position
-  cursorEl.style.left = mx + 'px';
-  cursorEl.style.top = my + 'px';
-
-  // trail push
+  cursorEl.style.left = mx + 'px'; cursorEl.style.top = my + 'px';
   trail.unshift({ x: mx + (Math.random()-0.5)*6, y: my + (Math.random()-0.5)*6, life:Date.now() });
   if(trail.length > TRAIL_MAX) trail.pop();
-
-  // spotlight follow
-  spotlight.style.setProperty('--mx', (mx / innerWidth * 100) + '%');
-  spotlight.style.setProperty('--my', (my / innerHeight * 100) + '%');
-
-  // background parallax subtle
+  spotlight.style.setProperty('--mx', (mx/innerWidth*100)+'%'); spotlight.style.setProperty('--my', (my/innerHeight*100)+'%');
   bg.style.transform = `translate(${(innerWidth/2 - mx)/80}px, ${(innerHeight/2 - my)/80}px) scale(1.05)`;
-
-  // glass shine follow (compute percent)
-  const card = document.getElementById('mainCard');
-  const rect = card.getBoundingClientRect();
-  const rx = (mx - rect.left) / rect.width;
-  const ry = (my - rect.top) / rect.height;
-  // map to translate
-  glass.style.opacity = 1;
-  glass.style.transform = `translateX(${(rx-0.5)*60}px) rotate(18deg)`;
+  const card = document.getElementById('mainCard'); const rect = card.getBoundingClientRect();
+  const rx = (mx - rect.left) / rect.width; const ry = (my - rect.top) / rect.height;
+  glass.style.opacity = 1; glass.style.transform = `translateX(${(rx-0.5)*60}px) rotate(18deg)`;
 });
 
-/* click pulse for cursor */
-window.addEventListener('pointerdown', () => {
-  cursorEl.style.transform = 'translate(-50%,-50%) scale(1.65)';
-  setTimeout(()=> cursorEl.style.transform = 'translate(-50%,-50%) scale(1)', 160);
-});
+/* click pulse */
+window.addEventListener('pointerdown', ()=>{ cursorEl.style.transform = 'translate(-50%,-50%) scale(1.6)'; setTimeout(()=> cursorEl.style.transform = 'translate(-50%,-50%) scale(1)',160) });
 
-/* =========================
-   Icon hover -> sparks
-   ========================= */
+/* hover sparks for icons */
 document.querySelectorAll('.icon').forEach(icon=>{
-  icon.addEventListener('mouseenter', (ev)=>{
-    // find screen coords center
-    const r = icon.getBoundingClientRect();
-    spawnSparks(r.left + r.width/2, r.top + r.height/2);
-  });
-  icon.addEventListener('click', (ev)=>{
-    const r = icon.getBoundingClientRect();
-    spawnSparks(r.left + r.width/2, r.top + r.height/2);
-  });
+  icon.addEventListener('mouseenter', (ev)=>{ const r = icon.getBoundingClientRect(); spawnSparks(r.left + r.width/2, r.top + r.height/2); });
+  icon.addEventListener('click', (ev)=>{ const r = icon.getBoundingClientRect(); spawnSparks(r.left + r.width/2, r.top + r.height/2); });
 });
 
-/* hide glass shine on mouse leave of card after small delay */
+/* tiny idle zaps */
+setInterval(()=>{ const icons = document.querySelectorAll('.icon'); const idx = Math.floor(Math.random()*icons.length); const box = icons[idx].getBoundingClientRect(); if(box.width) spawnSparks(box.left + box.width/2 + (Math.random()-0.5)*20, box.top + box.height/2 + (Math.random()-0.5)*20); }, 2400);
+
+/* cleanup */
+setInterval(()=>{ if(trail.length > TRAIL_MAX) trail.splice(TRAIL_MAX); }, 120);
+
+/* hide glass on card leave */
 const card = document.getElementById('mainCard');
 card.addEventListener('mouseleave', ()=>{ setTimeout(()=> glass.style.opacity = 0, 220); });
 
-/* =========================
-   Visualizer (mic or idle)
-   ========================= */
-const vizCanvas = document.getElementById('vizCanvas');
-const vizCtx = vizCanvas.getContext('2d');
-function resizeViz(){ vizCanvas.width = vizCanvas.clientWidth * dpr; vizCanvas.height = vizCanvas.clientHeight * dpr; vizCtx.scale(dpr,dpr); }
+/* ----------------------------
+   Enter screen reveal -> starts audio & visualizer
+   ---------------------------- */
+const enterScreen = document.getElementById('enterScreen');
+const enterText = document.getElementById('enterText');
+const mainCard = document.getElementById('mainCard');
+const audioEl = document.getElementById('bgAudio');
+
+function startExperience(){
+  // play audio (user initiated)
+  const p = audioEl.play();
+  if(p && p.catch) p.catch(()=>{ /* ignore play errors */ });
+
+  // animate enter text (glitch + fade)
+  enterText.classList.add('enter-hide');
+  enterText.style.transition = 'all .6s cubic-bezier(.2,.9,.2,1)';
+  // quick screen flash
+  document.body.style.transition = 'background .15s linear';
+  document.body.style.background = '#000';
+  setTimeout(()=> { enterScreen.style.opacity = 0; enterScreen.style.pointerEvents = 'none'; enterScreen.style.display = 'none'; mainCard.classList.add('show'); }, 420);
+
+  // start audio analyser
+  initAudioGraph(audioEl);
+}
+enterText.addEventListener('pointerdown', startExperience);
+enterText.addEventListener('keydown', (e)=>{ if(e.key==='Enter'||e.key===' ') startExperience(); });
+
+/* also allow clicking anywhere on enter screen to start */
+enterScreen.addEventListener('pointerdown', (ev)=>{ if(ev.target === enterScreen) startExperience(); });
+
+/* ----------------------------
+   Visualizer (uses the <audio> element) - real audio from your mp3
+   ---------------------------- */
+const vizCanvas = document.getElementById('vizCanvas'), vizCtx = vizCanvas.getContext('2d');
+function resizeViz(){ vizCanvas.width = vizCanvas.clientWidth * dpr; vizCanvas.height = vizCanvas.clientHeight * dpr; vizCtx.setTransform(dpr,0,0,dpr,0,0); }
 window.addEventListener('resize', resizeViz);
 resizeViz();
 
-let audioContext = null, analyser = null, dataArray = null, sourceNode = null;
-let micActive = false;
+let audioCtx=null, analyser=null, sourceNode=null, dataArray=null, micSource=null;
 const micBtn = document.getElementById('micBtn');
 
-micBtn.addEventListener('click', ()=> {
-  if(micActive){ stopMic(); micBtn.textContent = 'Visualizer: mic (optional)'; }
-  else startMic();
-});
-
-/* start microphone */
-async function startMic(){
+async function initAudioGraph(audioElement){
   try{
-    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    const stream = await navigator.mediaDevices.getUserMedia({ audio:true, video:false });
-    sourceNode = audioContext.createMediaStreamSource(stream);
-    analyser = audioContext.createAnalyser();
-    analyser.fftSize = 256;
-    sourceNode.connect(analyser);
+    if(audioCtx) return; // already initiated
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    analyser = audioCtx.createAnalyser(); analyser.fftSize = 2048;
     dataArray = new Uint8Array(analyser.frequencyBinCount);
-    micActive = true;
-    micBtn.textContent = 'Visualizer: mic (on)';
-  } catch(e){
-    micActive = false;
-    micBtn.textContent = 'Visualizer: mic (denied)';
-    console.warn('Mic denied or error:', e);
+    // create source from audio element
+    sourceNode = audioCtx.createMediaElementSource(audioElement);
+    sourceNode.connect(analyser);
+    analyser.connect(audioCtx.destination);
+    // kick the ctx if necessary
+    if(audioCtx.state === 'suspended') await audioCtx.resume();
+  }catch(err){
+    console.warn('Audio graph error:', err);
   }
 }
 
-/* stop mic (if used) */
+/* mic toggle to optionally use microphone instead of file */
+micBtn.addEventListener('click', async ()=>{
+  if(micSource){ stopMic(); micBtn.textContent = 'Visualizer: mic (optional)'; return; }
+  try{
+    const stream = await navigator.mediaDevices.getUserMedia({audio:true, video:false});
+    if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    micSource = audioCtx.createMediaStreamSource(stream);
+    if(!analyser){ analyser = audioCtx.createAnalyser(); analyser.fftSize = 2048; dataArray = new Uint8Array(analyser.frequencyBinCount); }
+    micSource.connect(analyser);
+    analyser.connect(audioCtx.destination);
+    micBtn.textContent = 'Visualizer: mic (on)';
+  }catch(e){ console.warn('mic denied', e); micBtn.textContent = 'Visualizer: mic (denied)'; }
+});
+
 function stopMic(){
-  if(sourceNode && sourceNode.mediaStream){
-    const tracks = sourceNode.mediaStream.getTracks();
-    tracks.forEach(t=>t.stop());
-  }
-  if(audioContext) { try{ audioContext.close(); }catch(e){} }
-  audioContext = null; analyser = null; dataArray = null; sourceNode = null; micActive = false;
+  if(micSource && micSource.mediaStream){ micSource.mediaStream.getTracks().forEach(t=>t.stop()); micSource = null; }
+  micBtn.textContent = 'Visualizer: mic (optional)';
 }
 
 /* draw visualizer bars */
 function drawVisualizer(){
-  const w = vizCanvas.clientWidth;
-  const h = vizCanvas.clientHeight;
+  const w = vizCanvas.clientWidth, h = vizCanvas.clientHeight;
   vizCtx.clearRect(0,0,w,h);
-  const barCount = 32;
+  const barCount = 40;
   let values;
   if(analyser){
     analyser.getByteFrequencyData(dataArray);
-    values = Array.from({length:barCount}, (_,i) => {
+    values = Array.from({length:barCount}, (_,i)=> {
       const idx = Math.floor(i * (dataArray.length / barCount));
       return dataArray[idx] / 255;
     });
   } else {
-    // idle subtle animation fallback (pulse)
+    // idle animation
     const t = performance.now() * 0.001;
-    values = Array.from({length:barCount}, (_,i) => (0.12 + 0.08*Math.sin(t*1.2 + i*0.45) + 0.06*Math.cos(t*0.6 + i*0.22)));
+    values = Array.from({length:barCount}, (_,i)=> (0.12 + 0.08*Math.sin(t*1.2 + i*0.45) + 0.06*Math.cos(t*0.6 + i*0.22)));
   }
-  const bw = w / (barCount*1.6);
+  const bw = w/(barCount*1.6);
   for(let i=0;i<barCount;i++){
     const val = Math.max(0, Math.min(1, values[i]));
     const barH = val * h;
-    const x = i * (bw*1.45);
-    // gradient fill
+    const x = i*(bw*1.45);
     const g = vizCtx.createLinearGradient(x, h, x, h-barH);
-    g.addColorStop(0, 'rgba(255,255,255,0.08)');
-    g.addColorStop(0.6, 'rgba(255,255,255,0.24)');
+    g.addColorStop(0, 'rgba(255,255,255,0.06)');
+    g.addColorStop(0.6, 'rgba(255,255,255,0.22)');
     g.addColorStop(1, 'rgba(255,255,255,0.6)');
     vizCtx.fillStyle = g;
+    // slight glow by drawing blurred rects (cheap)
     vizCtx.fillRect(x, h-barH, bw, barH);
   }
 }
 
-/* =========================
-   Theme toggle (B/W / neon-blue) - user chose B/W default
-   ========================= */
+/* ----------------------------
+   Theme toggle (applies across scene)
+   ---------------------------- */
 const themeBtn = document.getElementById('themeBtn');
-let isNeon = false;
+let neon = false;
 themeBtn.addEventListener('click', ()=>{
-  isNeon = !isNeon;
-  document.documentElement.style.setProperty('--neon', isNeon ? '1' : '0');
-  themeBtn.textContent = isNeon ? 'Theme: Neon' : 'Theme: B/W';
-  // when neon, tint BG slightly cyan and boost glow
-  if(isNeon){
-    document.querySelector('.bg').style.filter = 'brightness(0.28) contrast(1.25) saturate(1.25) hue-rotate(170deg)';
-    document.querySelectorAll('.pfp::before').forEach?.(n=>{}); // noop - for clarity
+  neon = !neon;
+  themeBtn.textContent = neon ? 'Theme: Neon' : 'Theme: B/W';
+  if(neon){
+    document.documentElement.style.setProperty('--bg-filter','brightness(0.26) contrast(1.25) saturate(1.25) hue-rotate(170deg)');
+    document.documentElement.style.setProperty('--accent-glow','rgba(0,240,255,0.95)');
+    document.documentElement.style.setProperty('--soft-accent','rgba(0,200,255,0.06)');
+    document.documentElement.style.setProperty('--icon-bg','rgba(0,200,255,0.02)');
+    document.querySelector('.bg').style.filter = 'brightness(0.26) contrast(1.25) saturate(1.25) hue-rotate(170deg)';
     cursorEl.style.boxShadow = '0 0 30px rgba(0,200,255,0.9), inset 0 0 8px rgba(0,200,255,0.22)';
   } else {
+    document.documentElement.style.setProperty('--bg-filter','brightness(0.28) contrast(1.2)');
+    document.documentElement.style.setProperty('--accent-glow','rgba(255,255,255,0.9)');
+    document.documentElement.style.setProperty('--soft-accent','rgba(255,255,255,0.06)');
+    document.documentElement.style.setProperty('--icon-bg','rgba(255,255,255,0.02)');
     document.querySelector('.bg').style.filter = 'brightness(0.28) contrast(1.2)';
-    cursorEl.style.boxShadow = '0 0 18px rgba(255,255,255,0.65), inset 0 0 6px rgba(255,255,255,0.2)';
+    cursorEl.style.boxShadow = '0 0 18px rgba(255,255,255,0.65), inset 0 0 6px rgba(255,255,255,0.18)';
   }
 });
 
-/* =========================
-   Idle init: small zaps to make scene lively
-   ========================= */
-(function idleInit(){
-  // occasionally spawn small sparks near icons
-  setInterval(()=>{
-    const icons = document.querySelectorAll('.icon');
-    const idx = Math.floor(Math.random()*icons.length);
-    const box = icons[idx].getBoundingClientRect();
-    if(box.width){
-      spawnSparks(box.left + box.width/2 + (Math.random()-0.5)*20, box.top + box.height/2 + (Math.random()-0.5)*20, '255,255,255');
-    }
-  }, 2400);
+/* ----------------------------
+   small accessibility & cleanup
+   ---------------------------- */
+document.addEventListener('visibilitychange', ()=>{ if(document.hidden && audioCtx) audioCtx.suspend?.(); if(!document.hidden && audioCtx) audioCtx.resume?.(); });
+
+/* ----------------------------
+   final init: reveal main card after small delay (once enter clicked)
+   ---------------------------- */
+(function initReveal(){
+  // nothing visible until enter clicked
+  // but we keep cube animating and particles so page feels alive
 })();
 
-/* =========================
-   Lightweight smoothing to keep trail short & nice
-   ========================= */
-setInterval(()=> {
-  // shrink trail gradually (remove old entries)
-  if(trail.length > TRAIL_MAX) trail.splice(TRAIL_MAX);
-}, 120);
-
-/* =========================
-   Accessibility & cleanup on page hide
-   ========================= */
-document.addEventListener('visibilitychange', ()=> { if(document.hidden) stopMic(); });
-
-/* end of script */
 </script>
 </body>
 </html>
