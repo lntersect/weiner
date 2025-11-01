@@ -23,7 +23,8 @@
       justify-content: center;
     }
 
-    video.bg-video {
+    /* Background GIF */
+    .bg {
       position: fixed;
       top: 0;
       left: 0;
@@ -31,7 +32,7 @@
       height: 100%;
       object-fit: cover;
       z-index: 0;
-      filter: brightness(0.35) contrast(1.1);
+      filter: brightness(0.3) contrast(1.1);
     }
 
     .overlay {
@@ -53,14 +54,14 @@
       text-align: center;
       box-shadow: 0 10px 30px rgba(0,0,0,0.7);
       backdrop-filter: blur(10px);
-      transition: all .4s ease, opacity 1s ease;
       opacity: 0;
-      pointer-events: none;
+      transform: translateY(30px);
+      transition: opacity 1s ease, transform 1s ease;
     }
 
     .card.show {
       opacity: 1;
-      pointer-events: all;
+      transform: translateY(0);
     }
 
     .pfp {
@@ -124,38 +125,44 @@
       object-fit: contain;
     }
 
-    /* --- CLICK TO ENTER SCREEN --- */
-    .enter-screen {
+    /* Click to Enter Screen */
+    #enterScreen {
       position: fixed;
       inset: 0;
-      z-index: 10;
       background: #000;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-direction: column;
-      color: #fff;
+      z-index: 999;
       transition: opacity 1s ease;
+      cursor: pointer;
     }
 
-    .enter-screen.fade-out {
+    #enterScreen.fade {
       opacity: 0;
       pointer-events: none;
     }
 
-    .enter-text {
-      font-size: 1.5rem;
-      letter-spacing: 2px;
-      cursor: pointer;
+    #enterScreen h2 {
+      font-size: 1.6rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
       border: 1px solid rgba(255,255,255,0.2);
-      padding: 12px 25px;
-      border-radius: 12px;
+      padding: 14px 30px;
+      border-radius: 14px;
       transition: all 0.3s ease;
+      animation: pulse 2s infinite;
     }
 
-    .enter-text:hover {
+    #enterScreen h2:hover {
       background: rgba(255,255,255,0.1);
       transform: scale(1.05);
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
     }
 
     @media (max-width: 480px) {
@@ -168,14 +175,17 @@
 </head>
 <body>
 
-  <!-- video background -->
-  <video id="bgVideo" class="bg-video" loop playsinline>
-    <source src="https://www.youtube.com/watch?v=OAyixxm4yXw" type="video/mp4">
-  </video>
+  <!-- Click to Enter -->
+  <div id="enterScreen">
+    <h2>Click to Enter</h2>
+  </div>
+
+  <!-- Background GIF -->
+  <img src="https://media.tenor.com/Ua5qB1eng_oAAAPo/black-and-white-night-city.gif" alt="Night City" class="bg">
 
   <div class="overlay"></div>
 
-  <!-- main content -->
+  <!-- Main Card -->
   <div class="card" id="mainCard">
     <div class="pfp">
       <img src="https://cdn.discordapp.com/attachments/1431809720431280282/1434030714940166205/fde005003e6ecd6ca3e7b8886da6e6d7.jpg" alt="pfp">
@@ -187,31 +197,24 @@
 
     <div class="icon-row">
       <a href="https://discord.com" target="_blank" class="icon">
-        <img src="https://cdn-icons-png.flaticon.com/512/2111/2111370.png" alt="discord">
+        <img src="https://cdn-icons-png.flaticon.com/512/2111/2111370.png" alt="Discord">
       </a>
       <a href="https://t.me" target="_blank" class="icon">
-        <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="telegram">
+        <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="Telegram">
       </a>
     </div>
   </div>
 
-  <!-- click to enter overlay -->
-  <div class="enter-screen" id="enterScreen">
-    <div class="enter-text" id="enterBtn">Click to Enter</div>
-  </div>
-
   <script>
-    const enterBtn = document.getElementById('enterBtn');
     const enterScreen = document.getElementById('enterScreen');
-    const video = document.getElementById('bgVideo');
     const mainCard = document.getElementById('mainCard');
 
-    enterBtn.addEventListener('click', () => {
-      enterScreen.classList.add('fade-out');
-      mainCard.classList.add('show');
-      // Enable video audio and play
-      video.muted = false;
-      video.play();
+    enterScreen.addEventListener('click', () => {
+      enterScreen.classList.add('fade');
+      setTimeout(() => {
+        enterScreen.style.display = "none";
+        mainCard.classList.add('show');
+      }, 1000);
     });
   </script>
 
