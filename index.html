@@ -1,10 +1,11 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1" name="viewport"/>
 <title>333 — Night Void (Final Cut) — Cursor Final</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;display=swap" rel="stylesheet"/>
 <style>
 :root{
   --white:#ffffff;
@@ -15,14 +16,19 @@
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif}
 html,body{height:100%;background:#000;color:var(--white);overflow:hidden}
 body{display:flex;align-items:center;justify-content:center;}
+
+/* hide the system cursor on non-touch devices — we'll manage the custom dot in JS */
 body.no-cursor{cursor:none}
-a,button,input,select,textarea,[role="button"],.btn,.icon{cursor:none!important}
+
+/* ensure clickable elements also hide system cursor */
+ a, button, input, select, textarea, [role="button"], .btn, .icon { cursor: none !important; }
+
 
 /* BACKGROUND + LAYERS */
 .bg{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;filter:brightness(0.26) contrast(1.14);transition:transform .25s ease-out}
-canvas#waves,canvas#particles,canvas#snow,canvas#fog,canvas#grain{position:fixed;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+canvas#waves, canvas#particles,canvas#snow,canvas#fog,canvas#grain{position:fixed;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
 .overlay{position:fixed;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0.35),rgba(0,0,0,0.6));backdrop-filter:blur(2px);z-index:2;pointer-events:none}
-.vignette{position:fixed;inset:0;z-index:45;pointer-events:none;background:radial-gradient(ellipse at center,rgba(0,0,0,0)30%,rgba(0,0,0,0.45)100%);mix-blend-mode:multiply;opacity:0.9}
+.vignette{position:fixed;inset:0;z-index:45;pointer-events:none;background:radial-gradient(ellipse at center, rgba(0,0,0,0) 30%, rgba(0,0,0,0.45) 100%);mix-blend-mode:multiply;opacity:0.9}
 .scanlines{position:fixed;inset:0;z-index:4;pointer-events:none;background:repeating-linear-gradient(to bottom,rgba(255,255,255,0.02)0px,rgba(255,255,255,0.02)1px,transparent 2px,transparent 3px);mix-blend-mode:overlay;opacity:0.18}
 
 /* ENTER SCREEN */
@@ -31,15 +37,21 @@ canvas#waves,canvas#particles,canvas#snow,canvas#fog,canvas#grain{position:fixed
 #enterText:hover{transform:scale(1.03)}
 #enterScreen.fade{opacity:0;pointer-events:none;transition:opacity .9s ease}
 
-/* CENTER */
+/* CENTER content */
 #center{position:relative;z-index:10;display:flex;align-items:center;flex-direction:column;gap:10px;pointer-events:auto;transform:translateY(20px);opacity:0;transition:transform 900ms cubic-bezier(.2,.9,.2,1),opacity 900ms ease}
 #center.show{transform:none;opacity:1}
 
 /* PFP/AURA */
 .pfp{width:120px;height:120px;border-radius:999px;overflow:visible;position:relative;z-index:11}
 .pfp img{width:120px;height:120px;border-radius:999px;object-fit:cover;display:block;filter:grayscale(1) contrast(1.02)}
-.aura{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;width:420px;height:420px;border-radius:50%;z-index:9;mix-blend-mode:screen;filter:blur(34px);opacity:0.9;background:radial-gradient(circle at 40% 30%,rgba(180,210,255,0.14),rgba(140,170,255,0.06)18%,rgba(255,255,255,0)50%);transition:transform .25s linear,opacity .25s linear}
-@keyframes auraPulse{0%{transform:translate(-50%,-50%)scale(.98);opacity:.88}50%{transform:translate(-50%,-50%)scale(1.04);opacity:1}100%{transform:translate(-50%,-50%)scale(.98);opacity:.88}}
+.aura{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;width:420px;height:420px;border-radius:50%;z-index:9;mix-blend-mode:screen;filter:blur(34px);opacity:0.9;background:radial-gradient(circle at 40% 30%,rgba(180,210,255,0.14),rgba(140,170,255,0.06)18%,rgba(255,255,255,0.00)50%);transition:transform .25s linear,opacity .25s linear}
+
+/* subtle pulse */
+@keyframes auraPulse{
+  0%{ transform: translate(-50%,-50%) scale(0.98); opacity:0.88 }
+  50%{ transform: translate(-50%,-50%) scale(1.04); opacity:1 }
+  100%{ transform: translate(-50%,-50%) scale(0.98); opacity:0.88 }
+}
 
 /* TITLE */
 h1{font-size:2.2rem;letter-spacing:6px;margin-top:6px;background:linear-gradient(90deg,#fff,#bdbdbd,#fff);background-size:220% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 3.2s linear infinite;z-index:11;transition:transform .18s ease}
@@ -48,12 +60,12 @@ h1{font-size:2.2rem;letter-spacing:6px;margin-top:6px;background:linear-gradient
 /* ICONS */
 .icon-row{display:flex;gap:18px;margin-top:14px;z-index:11}
 .icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.04);transition:transform .25s,box-shadow .25s;cursor:pointer}
-.icon img{width:22px;height:22px;filter:grayscale(1);opacity:.95}
-.icon:hover{transform:translateY(-6px)scale(1.08);box-shadow:0 12px 40px rgba(255,255,255,0.04)}
+.icon img{width:22px;height:22px;filter:grayscale(1);opacity:0.95}
+.icon:hover{transform:translateY(-6px) scale(1.08);box-shadow:0 12px 40px rgba(255,255,255,0.04)}
 
 /* VISUALIZER */
 #visualizer{display:flex;gap:4px;margin-top:20px;align-items:flex-end;height:44px;z-index:11}
-.vbar{width:6px;background:linear-gradient(to top,#fff,#bdbdbd);border-radius:3px;opacity:.8;transform-origin:bottom center;transition:height .08s linear}
+.vbar{width:6px;background:linear-gradient(to top,#fff,#bdbdbd);border-radius:3px;opacity:0.8;transform-origin:bottom center;transition:height .08s linear}
 
 /* CONTROLS */
 #controls{position:fixed;left:50%;transform:translateX(-50%);bottom:22px;z-index:40;display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:999px;background:rgba(0,0,0,0.25);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.04)}
@@ -61,75 +73,729 @@ h1{font-size:2.2rem;letter-spacing:6px;margin-top:6px;background:linear-gradient
 .btn:hover{transform:scale(1.06);background:rgba(255,255,255,0.08)}
 .icon-white{width:18px;height:18px;filter:invert(1) grayscale(1) brightness(1.2)}
 
-/* volume cursor fix */
-#vol,#vol:hover,#vol:active,input[type="range"],input[type="range"]::-webkit-slider-thumb{cursor:none!important}
+/* VISIBLE WHITE VOLUME */
 input[type="range"]{width:140px;-webkit-appearance:none;background:transparent;margin-left:8px}
+/* FIX: Prevent default click cursor on volume slider */
+#vol,
+#vol:hover,
+#vol:active,
+input[type="range"],
+input[type="range"]::-webkit-slider-thumb {
+  cursor: none !important;
+}
+
 input[type=range]::-webkit-slider-runnable-track{height:5px;background:rgba(255,255,255,0.45);border-radius:999px}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:#fff;margin-top:-4px;box-shadow:0 0 12px rgba(255,255,255,0.7);cursor:pointer}
 
-/* CURSOR */
-.cursor{position:fixed;width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,0.95);box-shadow:0 0 18px rgba(255,255,255,0.75),0 0 40px rgba(255,255,255,0.06);pointer-events:none;z-index:9999;transform:translate(-50%,-50%) scale(1);opacity:0;transition:opacity .28s ease,transform .16s cubic-bezier(.2,.9,.2,1),box-shadow .16s ease}
+/* CUSTOM CURSOR DOT */
+.cursor{
+  position:fixed;
+  width:14px;height:14px;border-radius:50%;
+  background:rgba(255,255,255,0.95);
+  box-shadow:0 0 18px rgba(255,255,255,0.75),0 0 40px rgba(255,255,255,0.06);
+  pointer-events:none;
+  z-index:9999;
+  transform:translate(-50%,-50%) scale(1);
+  opacity:0;
+  transition:opacity .28s ease, transform .16s cubic-bezier(.2,.9,.2,1), box-shadow .16s ease;
+  will-change:transform,opacity;
+}
+
+/* visible state */
 .cursor.visible{opacity:1}
-.cursor.hover{transform:translate(-50%,-50%) scale(1.85);box-shadow:0 0 36px rgba(255,255,255,0.95),0 0 86px rgba(180,210,255,0.08)}
-.cursor.idle{transform:translate(-50%,-50%) scale(0.9);opacity:.82}
 
-/* flicker */
+/* hover / interactive bloom */
+.cursor.hover{
+  transform:translate(-50%,-50%) scale(1.85);
+  box-shadow:0 0 36px rgba(255,255,255,0.95),0 0 86px rgba(180,210,255,0.08);
+}
+
+/* small idle shrink for subtlety (when visible but not moving) */
+.cursor.idle{
+  transform:translate(-50%,-50%) scale(0.9);
+  opacity:0.82;
+}
+
+/* subtle sweep (unchanged) */
 .flicker{position:fixed;left:-10%;top:0;width:30%;height:100%;transform:skewX(-12deg);background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,0.04),rgba(255,255,255,0));mix-blend-mode:screen;z-index:8;pointer-events:none;opacity:0;transition:opacity .12s ease}
-.copy-popup{position:absolute;bottom:54px;left:50%;transform:translateX(-50%);color:black;font-weight:600;background:rgba(255,255,255,0.95);font-size:12px;padding:4px 10px;border-radius:6px;opacity:0;pointer-events:none;transition:opacity .3s ease;backdrop-filter:blur(4px)}
-.copy-popup.show{opacity:1}
-.icon.discord-copy{position:relative}
-</style>
 
+@media(max-width:520px){
+ .pfp{width:96px;height:96px}.pfp img{width:96px;height:96px}
+ h1{font-size:1.6rem}
+ #visualizer{height:34px}
+ #controls{bottom:14px}
+}
+
+.copy-popup {
+  position: absolute;
+  bottom: 54px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255,255,255,0.1);
+  color: black; font-weight: 600; background: rgba(255,255,255,0.95);
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  backdrop-filter: blur(4px);
+}
+.copy-popup.show { opacity: 1; }
+.icon.discord-copy { position: relative; }
+
+</style>
 <style>
-/* cinematic + scaling */
-:root{--cinema-glow:rgba(180,210,255,0.12);--pulse-speed:.22s}
-#center.show .pfp,#center.show h1,#center.show .icon-row{animation:cineEnter .82s cubic-bezier(.2,.9,.2,1) both}
-#center.show .pfp{animation-delay:.12s}#center.show h1{animation-delay:.22s}#center.show .icon-row{animation-delay:.35s}
-@keyframes cineEnter{0%{opacity:0;transform:translateY(18px)scale(.98);filter:blur(6px)saturate(.85)}60%{opacity:1;transform:translateY(-6px)scale(1.02);filter:blur(0)saturate(1.06)}100%{opacity:1;transform:translateY(0)scale(1);filter:none}}
-body{animation:cameraDrift 28s ease-in-out infinite}
-@keyframes cameraDrift{0%{transform:translateY(0)}50%{transform:translateY(-6px)}100%{transform:translateY(0)}}
-h1:hover{text-shadow:0 6px 42px rgba(180,210,255,0.06),0 2px 8px rgba(0,0,0,0.35);transform:scale(1.02)}
-.icon:hover{box-shadow:0 18px 54px rgba(180,210,255,0.04),inset 0 1px 0 rgba(255,255,255,0.02);transform:translateY(-6px)scale(1.06)rotateZ(-.6deg)}
-.cursor-ripple{position:fixed;width:18px;height:18px;border-radius:50%;pointer-events:none;transform:translate(-50%,-50%)scale(.2);opacity:.32;box-shadow:0 0 28px rgba(180,210,255,0.12),0 0 6px rgba(255,255,255,0.06) inset;transition:transform .42s cubic-bezier(.2,.9,.2,1),opacity .42s ease;z-index:9998}
-.cursor-ripple.expand{transform:translate(-50%,-50%)scale(3.6);opacity:0}
-#aura{transition:transform .42s linear,opacity .28s ease}
-.aura-rotate{animation:auraRotate 24s linear infinite}
-@keyframes auraRotate{0%{transform:translate(-50%,-50%)rotate(0)}100%{transform:translate(-50%,-50%)rotate(360deg)}}
-#center{transform:scale(1.5);transform-origin:center center}
-#enterText{cursor:none!important}
+/* ===== ADDED: Cinematic subtle enhancements ===== */
+:root{
+  --cinema-glow: rgba(180,210,255,0.12);
+  --pulse-speed: 0.22s;
+}
+/* Entrance */
+#center.show .pfp, #center.show h1, #center.show .icon-row { 
+  animation: cineEnter 820ms cubic-bezier(.2,.9,.2,1) both;
+  will-change: transform, opacity, filter;
+}
+#center.show .pfp { animation-delay: 120ms; }
+#center.show h1 { animation-delay: 220ms; }
+#center.show .icon-row { animation-delay: 350ms; }
+
+@keyframes cineEnter{
+  0%{ opacity:0; transform: translateY(18px) scale(.98); filter:blur(6px) saturate(.85) }
+  60%{ opacity:1; transform: translateY(-6px) scale(1.02); filter:blur(0px) saturate(1.06) }
+  100%{ opacity:1; transform: translateY(0) scale(1); filter:none }
+}
+
+/* slow subtle camera drift */
+body { transition: transform 8s ease-in-out; }
+@keyframes cameraDrift {
+  0%{ transform: translateY(0) }
+  50%{ transform: translateY(-6px) }
+  100%{ transform: translateY(0) }
+}
+body { animation: cameraDrift 28s ease-in-out infinite; }
+
+/* title hover flicker */
+h1:hover { text-shadow: 0 6px 42px rgba(180,210,255,0.06), 0 2px 8px rgba(0,0,0,0.35); transform:scale(1.02); }
+h1 { transition: text-shadow 220ms ease, transform 220ms cubic-bezier(.2,.9,.2,1); }
+
+/* icon subtle glow on hover */
+.icon:hover { box-shadow: 0 18px 54px rgba(180,210,255,0.04), inset 0 1px 0 rgba(255,255,255,0.02); transform: translateY(-6px) scale(1.06) rotateZ(-0.6deg); }
+.icon:active { transform: translateY(-2px) scale(1.03) rotateZ(-0.2deg); }
+
+/* cursor ripple */
+.cursor-ripple {
+  position: fixed;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%,-50%) scale(0.2);
+  opacity: 0.32;
+  box-shadow: 0 0 28px rgba(180,210,255,0.12), 0 0 6px rgba(255,255,255,0.06) inset;
+  transition: transform 420ms cubic-bezier(.2,.9,.2,1), opacity 420ms ease;
+  z-index: 9998;
+}
+.cursor-ripple.expand { transform: translate(-50%,-50%) scale(3.6); opacity: 0; }
+
+/* film grain subtle fade toggle */
+.filmgrain-fade { transition: opacity 1.2s ease; opacity:0.18; }
+
+/* enter screen ripple */
+.enter-ripple { position: absolute; inset:0; display:block; pointer-events:none; mix-blend-mode:screen; }
+.enter-ripple .r { position:absolute; width:120px; height:120px; border-radius:50%; background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 40%); left:50%; top:50%; transform:translate(-50%,-50%) scale(0.6); opacity:0; }
+.enter-ripple.play .r { animation: enterRipple 820ms cubic-bezier(.18,.9,.2,1) forwards; }
+@keyframes enterRipple { 0%{ transform:translate(-50%,-50%) scale(0.6); opacity:0.45 } 60%{ transform:translate(-50%,-50%) scale(2.6); opacity:0.18 } 100%{ transform:translate(-50%,-50%) scale(3.6); opacity:0 } }
+
+/* subtle aura rotation and shimmer */
+#aura { transition: transform 420ms linear, opacity 280ms ease; will-change: transform, opacity, filter; }
+.aura-rotate { animation: auraRotate 24s linear infinite; }
+@keyframes auraRotate { 0%{ transform: translate(-50%,-50%) rotate(0deg) } 100%{ transform: translate(-50%,-50%) rotate(360deg) } }
+</style>
+<style>
+/* ===== ENHANCEMENT: Bigger card + fixed custom cursor on enter ===== */
+#center {
+  transform: scale(1.5);
+  transform-origin: center center;
+}
+#enterText { cursor: none !important; }
 </style>
 </head>
 <body>
+<!-- ENTER -->
 <div id="enterScreen"><div id="enterText" tabindex="0">Enter the Void</div></div>
+<!-- BACKGROUND + CANVASES -->
 <img alt="night city" class="bg" src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExbjQ0YTB6YzBlNnh2NHhzY3lzbjR0MXE1Nm5meXIzbzZxdmF6ZW84cSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/uvfaWDpUbfUvAi5HQe/giphy.gif"/>
-<canvas id="waves"></canvas><canvas id="particles"></canvas><canvas id="snow"></canvas><canvas id="fog"></canvas><canvas id="grain"></canvas>
-<div class="overlay"></div><div class="vignette"></div><div class="scanlines"></div><div class="flicker" id="flick"></div>
-
-<div id="center" aria-hidden="true">
+<canvas id="waves"></canvas>
+<canvas id="particles"></canvas>
+<canvas id="snow"></canvas>
+<canvas id="fog"></canvas>
+<canvas id="grain"></canvas>
+<div class="overlay"></div>
+<div class="vignette"></div>
+<div class="scanlines"></div>
+<div class="flicker" id="flick"></div>
+<!-- CENTER -->
+<div aria-hidden="true" id="center">
 <div class="aura" id="aura"></div>
-<div class="pfp"><img src="https://i.imgur.com/OJeD12w.jpeg" alt="pfp"/></div>
+<div class="pfp" id="pfp">
+<img alt="pfp" src="https://i.imgur.com/OJeD12w.jpeg"/>
+</div>
 <h1 id="title">333</h1>
-<div class="icon-row">
-<div class="icon discord-copy" title="Copy Discord"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111370.png"/><div class="copy-popup" id="copyPopup">Copied!</div></div>
-<a class="icon" href="https://t.me/lntersect" target="_blank"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png"/></a>
+<div class="icon-row" id="icons">
+<div class="icon discord-copy" title="Copy Discord"><img alt="discord" src="https://cdn-icons-png.flaticon.com/512/2111/2111370.png"/><div class="copy-popup" id="copyPopup">Copied!</div></div>
+<a class="icon" href="https://t.me/lntersect" rel="noreferrer" target="_blank"><img alt="telegram" src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png"/></a>
 </div>
-<div id="visualizer">
-<!-- bars -->
-<div class="vbar" style="height:8px"></div><div class="vbar" style="height:10px"></div><div class="vbar" style="height:7px"></div><div class="vbar" style="height:9px"></div><div class="vbar" style="height:11px"></div><div class="vbar" style="height:8px"></div><div class="vbar" style="height:7px"></div><div class="vbar" style="height:10px"></div><div class="vbar" style="height:9px"></div><div class="vbar" style="height:8px"></div><div class="vbar" style="height:7px"></div><div class="vbar" style="height:10px"></div><div class="vbar" style="height:9px"></div><div class="vbar" style="height:8px"></div><div class="vbar" style="height:11px"></div><div class="vbar" style="height:7px"></div><div class="vbar" style="height:8px"></div><div class="vbar" style="height:9px"></div><div class="vbar" style="height:7px"></div><div class="vbar" style="height:8px"></div>
+<div aria-hidden="true" id="visualizer">
+<!-- 20 bars -->
+<div class="vbar" style="height:8px"></div><div class="vbar" style="height:10px"></div><div class="vbar" style="height:7px"></div><div class="vbar" style="height:9px"></div>
+<div class="vbar" style="height:11px"></div><div class="vbar" style="height:8px"></div><div class="vbar" style="height:7px"></div><div class="vbar" style="height:10px"></div>
+<div class="vbar" style="height:9px"></div><div class="vbar" style="height:8px"></div><div class="vbar" style="height:7px"></div><div class="vbar" style="height:10px"></div>
+<div class="vbar" style="height:9px"></div><div class="vbar" style="height:8px"></div><div class="vbar" style="height:11px"></div><div class="vbar" style="height:7px"></div>
+<div class="vbar" style="height:8px"></div><div class="vbar" style="height:9px"></div><div class="vbar" style="height:7px"></div><div class="vbar" style="height:8px"></div>
 </div>
 </div>
-
-<div id="controls" aria-hidden="true" style="display:none">
-<button class="btn" id="playBtn" title="Play/Pause"><svg fill="none" height="18" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4" viewBox="0 0 24 24" width="18"><path d="M5 3v18l15-9L5 3z"/></svg></button>
-<button class="btn" id="muteBtn" title="Mute/Unmute"><svg fill="none" height="14" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4" viewBox="0 0 24 24" width="14"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M19 9a4 4 0 010 6"/></svg></button>
-<input id="vol" type="range" min="0" max="100" value="70"/>
+<!-- CONTROLS -->
+<div aria-hidden="true" id="controls" style="display:none">
+<button aria-label="Play/Pause" aria-pressed="false" class="btn" id="playBtn" title="Play/Pause">
+<svg fill="none" height="18" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4" viewbox="0 0 24 24" width="18"><path d="M5 3v18l15-9L5 3z"></path></svg>
+</button>
+<button aria-label="Mute/Unmute" aria-pressed="false" class="btn" id="muteBtn" title="Mute/Unmute">
+<svg fill="none" height="14" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4" viewbox="0 0 24 24" width="14"><path d="M11 5L6 9H3v6h3l5 4V5z"></path><path d="M19 9a4 4 0 010 6"></path></svg>
+</button>
+<input aria-label="Volume" id="vol" max="100" min="0" type="range" value="70"/>
 </div>
-<div class="cursor" id="cursorEl"></div>
+<div aria-hidden="true" class="cursor" id="cursorEl"></div>
 <div id="ytHost" style="width:1px;height:1px;overflow:hidden;position:fixed;left:-9999px;top:-9999px;"></div>
-
 <script>
-/* everything JS (same as uploaded file) */
-<!-- The entire JavaScript from your file is included here -->
+/* ======= Utilities & DOM ======= */
+const enterScreen = document.getElementById('enterScreen');
+const enterText = document.getElementById('enterText');
+const center = document.getElementById('center');
+const bg = document.querySelector('.bg');
+const cursorEl = document.getElementById('cursorEl');
+const controls = document.getElementById('controls');
+const playBtn = document.getElementById('playBtn');
+const muteBtn = document.getElementById('muteBtn');
+const volRange = document.getElementById('vol');
+const visualizer = document.getElementById('visualizer');
+const flick = document.getElementById('flick');
+const aura = document.getElementById('aura');
+const title = document.getElementById('title');
+
+let ytPlayer = null;
+let isPlaying = false;
+let isMuted = false;
+
+/* ======= YouTube IFrame API (lazy load after user gesture) ======= */
+function loadYouTubeAPI(cb){
+  if(window.YT && window.YT.Player){ cb(); return; }
+  const s = document.createElement('script');
+  s.src = "https://www.youtube.com/iframe_api";
+  document.head.appendChild(s);
+  window.onYouTubeIframeAPIReady = cb;
+}
+
+/* create a hidden YT player (plays audio) */
+function createYTPlayer(){
+  const host = document.getElementById('ytHost');
+  const div = document.createElement('div'); div.id = 'ytPlayerEl'; host.appendChild(div);
+
+  ytPlayer = new YT.Player('ytPlayerEl', {
+    height: '1', width: '1',
+    videoId: 'OAyixxm4yXw',
+    playerVars: { autoplay: 1, controls: 0, loop: 1, playlist: 'OAyixxm4yXw', rel: 0, modestbranding: 1 },
+    events: {
+      onReady: (e) => {
+        const v = parseInt(volRange.value, 10);
+        ytPlayer.setVolume(v);
+        ytPlayer.playVideo();
+        isPlaying = true;
+        updatePlayIcon();
+        showControls();
+      },
+      onStateChange: (ev) => {
+        if(ev.data === YT.PlayerState.ENDED){
+          ytPlayer.playVideo();
+        }
+      }
+    }
+  });
+}
+
+/* ======= Enter flow ======= */
+enterText.addEventListener('click', () => startExperience());
+enterText.addEventListener('keydown', (e) => { if(e.key === 'Enter' || e.key === ' ') startExperience(); });
+
+function startExperience(){
+  // fade enter screen
+  enterScreen.classList.add('fade');
+  setTimeout(()=> enterScreen.style.display='none',900);
+
+  // reveal content
+  center.classList.add('show');
+  center.style.animation = 'breathe 8s ease-in-out infinite';
+  center.removeAttribute('aria-hidden');
+
+  // small flick
+  flick.style.opacity = 0.22;
+  setTimeout(()=> flick.style.opacity = 0, 240);
+
+  // start canvases/particles
+  spawnSnow();
+  spawnFog();
+  drawGrain();
+  enableAuraPulse();
+
+  // load YT API and create player (user gesture allows audible playback)
+  loadYouTubeAPI(()=> createYTPlayer());
+}
+
+/* ======= Controls handling ======= */
+function showControls(){
+  controls.style.display = 'flex';
+  controls.setAttribute('aria-hidden','false');
+}
+
+function updatePlayIcon(){
+  playBtn.innerHTML = isPlaying
+    ? `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>`
+    : `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v18l15-9L5 3z"/></svg>`;
+  playBtn.setAttribute('aria-pressed', String(isPlaying));
+}
+
+playBtn.addEventListener('click', () => {
+  if(!ytPlayer) return;
+  if(isPlaying){ ytPlayer.pauseVideo(); isPlaying=false; }
+  else { ytPlayer.playVideo(); isPlaying=true; }
+  updatePlayIcon();
+});
+
+muteBtn.addEventListener('click', () => {
+  if(!ytPlayer) return;
+  if(isMuted){ ytPlayer.unMute(); isMuted=false; muteBtn.setAttribute('aria-pressed','false'); }
+  else { ytPlayer.mute(); isMuted=true; muteBtn.setAttribute('aria-pressed','true'); }
+});
+
+volRange.addEventListener('input', () => {
+  const v = parseInt(volRange.value,10) || 0;
+  if(ytPlayer) ytPlayer.setVolume(v);
+});
+
+/* Keyboard: space toggles play */
+document.addEventListener('keydown', (e) => {
+  if(e.code === 'Space'){ e.preventDefault(); if(ytPlayer){ if(isPlaying){ ytPlayer.pauseVideo(); isPlaying=false; } else { ytPlayer.playVideo(); isPlaying=true; } updatePlayIcon(); } }
+});
+
+/* ======= Fake visualizer (smooth, subtle) ======= */
+const vbars = Array.from(document.querySelectorAll('.vbar'));
+const VCOUNT = vbars.length;
+let vizStart = 0;
+function fakeEnergy(t){
+  const beat = 0.8 + 0.45 * Math.abs(Math.sin(t*0.004 + 0.02));
+  const rhythm = 0.5 + 0.45 * Math.abs(Math.sin(t*0.011 + 0.7));
+  const bursts = (Math.sin(t*0.02) > 0.82) ? (0.4 + Math.random()*0.9) : (0.02*Math.random());
+  return Math.min(1, (0.55*beat + 0.35*rhythm + 0.9*bursts) * (0.95 + 0.2*Math.random()));
+}
+function stepViz(t){
+  if(!vizStart) vizStart = t;
+  const elapsed = t - vizStart;
+  const E = fakeEnergy(elapsed);
+  for(let i=0;i<VCOUNT;i++){
+    const idx = i/VCOUNT;
+    const local = E * (0.6 + 0.6*(1-idx)) + 0.12*Math.sin(elapsed*0.007*(1+idx*2)+i);
+    const transient = (Math.random() < 0.02) ? (0.2 + Math.random()*0.8) : 0;
+    const val = Math.min(1, Math.max(0, local + transient));
+    const px = Math.max(6, Math.round(val * (46 - idx*14)));
+    vbars[i].style.height = px + 'px';
+    vbars[i].style.opacity = 0.42 + (val*0.62);
+  }
+  // subtle title scale to energy
+  const strongest = Math.max(...Array.from(vbars).map(b => parseFloat(b.style.height)));
+  const scale = 1 + (strongest/120);
+  title.style.transform = `scale(${scale})`;
+  // aura intensity
+  aura.style.opacity = 0.7 + Math.min(0.35, E*0.6);
+}
+
+/* ======= Cursor: fade in/out, hide on touch, hover bloom ======= */
+const HIDE_IDLE_MS = 1000;
+let idleTimer = null;
+let isTouch = (('ontouchstart' in window) || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0);
+if(!isTouch){
+  // hide system cursor and show custom dot
+  document.body.classList.add('no-cursor');
+} else {
+  // on touch devices, ensure the system cursor remains default and hide our dot
+  cursorEl.style.display = 'none';
+  document.body.classList.remove('no-cursor');
+}
+
+function showCursorImmediate(){
+  cursorEl.classList.add('visible');
+  cursorEl.classList.remove('idle');
+  // reset idle timer
+  clearTimeout(idleTimer);
+  idleTimer = setTimeout(()=> {
+    cursorEl.classList.remove('visible');
+    cursorEl.classList.remove('hover');
+  }, HIDE_IDLE_MS);
+}
+
+function setCursorPos(x,y){
+  // smooth follow; immediate set for responsiveness
+  cursorEl.style.left = x + 'px';
+  cursorEl.style.top = y + 'px';
+}
+
+function updateHoverState(e){
+  // determine if hovered element is interactive
+  const el = document.elementFromPoint(e.clientX, e.clientY);
+  if(!el) return false;
+  const interactive = el.closest && (el.closest('a,button,input,select,textarea,[role="button"],.btn,.icon'));
+  if(interactive){
+    cursorEl.classList.add('hover');
+  } else {
+    cursorEl.classList.remove('hover');
+  }
+}
+
+/* pointermove handler */
+window.addEventListener('pointermove', (e) => {
+  if(isTouch) return;
+  // show and position
+  showCursorImmediate();
+  setCursorPos(e.clientX, e.clientY);
+  // decide hover bloom
+  updateHoverState(e);
+});
+
+/* also adjust hover on pointerover/out to catch element changes without movement */
+document.addEventListener('pointerover', (e) => {
+  if(isTouch) return;
+  // check target
+  const tgt = e.target;
+  if(tgt && tgt.closest && tgt.closest('a,button,input,select,textarea,[role="button"],.btn,.icon')){
+    cursorEl.classList.add('hover');
+    showCursorImmediate();
+  }
+});
+document.addEventListener('pointerout', (e) => {
+  if(isTouch) return;
+  const tgt = e.target;
+  if(tgt && tgt.closest && tgt.closest('a,button,input,select,textarea,[role="button"],.btn,.icon')){
+    cursorEl.classList.remove('hover');
+  }
+});
+
+/* on pointerdown give a tiny press feedback */
+document.addEventListener('pointerdown', (e) => {
+  if(isTouch) return;
+  cursorEl.style.transform = 'translate(-50%,-50%) scale(0.9)';
+});
+document.addEventListener('pointerup', (e) => {
+  if(isTouch) return;
+  cursorEl.style.transform = cursorEl.classList.contains('hover') ? 'translate(-50%,-50%) scale(1.85)' : 'translate(-50%,-50%) scale(1)';
+});
+
+/* ======= CANVAS: waves / particles / snow / fog / grain ======= */
+const waves = document.getElementById('waves');
+const particles = document.getElementById('particles');
+const snow = document.getElementById('snow');
+const fog = document.getElementById('fog');
+const grain = document.getElementById('grain');
+
+const wctx = waves.getContext('2d');
+const pctx = particles.getContext('2d');
+const sctx = snow.getContext('2d');
+const fctx = fog.getContext('2d');
+const gctx = grain.getContext('2d');
+
+let W = innerWidth, H = innerHeight;
+function resizeAll(){ W = innerWidth; H = innerHeight; [waves,particles,snow,fog,grain].forEach(c=>{ c.width = W; c.height = H; }); }
+window.addEventListener('resize', resizeAll);
+resizeAll();
+
+/* moving background waves */
+let wavesArr = [];
+for(let i=0;i<6;i++){
+  wavesArr.push({y: H*0.2 + i*(H*0.12), amp: 20 + Math.random()*36, speed: 0.0006 + Math.random()*0.0012, phase: Math.random()*Math.PI*2 });
+}
+
+function drawWaves(t){
+  wctx.clearRect(0,0,W,H);
+  wctx.globalCompositeOperation = 'lighter';
+  for(let i=0;i<wavesArr.length;i++){
+    const w = wavesArr[i];
+    w.phase += w.speed * (t%10000);
+    const grad = wctx.createLinearGradient(0,w.y-80,0,w.y+80);
+    grad.addColorStop(0, 'rgba(180,200,255,0)');
+    grad.addColorStop(0.4, 'rgba(180,200,255,0.02)');
+    grad.addColorStop(1, 'rgba(180,200,255,0)');
+    wctx.fillStyle = grad;
+    wctx.beginPath();
+    wctx.moveTo(0,H);
+    for(let x=0;x<=W;x+=24){
+      const y = w.y + Math.sin((x*0.006) + (w.phase*0.005)) * w.amp * Math.sin(t*0.0005 + i);
+      wctx.lineTo(x, y);
+    }
+    wctx.lineTo(W,H);
+    wctx.closePath();
+    wctx.fill();
+  }
+  wctx.globalCompositeOperation = 'source-over';
+}
+
+/* small floating particles */
+let smalls = [];
+for(let i=0;i<90;i++){
+  smalls.push({ x: Math.random()*W, y: Math.random()*H, r: Math.random()*1.6, vy: 0.2+Math.random()*0.7 });
+}
+
+/* snowflakes */
+let flakes = [];
+for(let i=0;i<60;i++){
+  flakes.push({ x: Math.random()*W, y: Math.random()*H, r: Math.random()*2+0.8, vy:0.4+Math.random()*0.8, sway:Math.random()*1.6 });
+}
+
+/* fog blobs */
+let fogBlobs = [];
+for(let i=0;i<6;i++){
+  fogBlobs.push({ x: Math.random()*W, y: Math.random()*H, s: (W/2)*(0.12+Math.random()*0.5), vx:(Math.random()-0.5)*0.06, vy:(Math.random()-0.5)*0.03, alpha:0.02+Math.random()*0.06, phase:Math.random()*Math.PI*2 });
+}
+
+/* draw frames */
+function drawParticles(){
+  pctx.clearRect(0,0,W,H);
+  pctx.fillStyle = 'rgba(255,255,255,0.28)';
+  for(let p of smalls){
+    pctx.beginPath();
+    pctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    pctx.fill();
+    p.y -= p.vy * 0.25;
+    if(p.y < -10){ p.y = H + 10; p.x = Math.random()*W; }
+  }
+}
+
+function drawSnow(){
+  sctx.clearRect(0,0,W,H);
+  sctx.fillStyle = 'rgba(255,255,255,0.28)';
+  sctx.beginPath();
+  for(let f of flakes){
+    sctx.moveTo(f.x,f.y);
+    sctx.arc(f.x,f.y,f.r,0,Math.PI*2);
+  }
+  sctx.fill();
+  for(let f of flakes){
+    f.y += f.vy;
+    f.x += Math.sin((f.y+f.sway)*0.008)*1.6;
+    if(f.y > H + 8){ f.y = -6; f.x = Math.random()*W; }
+  }
+}
+
+function drawFog(t){
+  fctx.clearRect(0,0,W,H);
+  for(let b of fogBlobs){
+    b.x += b.vx * Math.cos(t*0.0007 + b.phase) * 0.8;
+    b.y += b.vy * Math.sin(t*0.0004 + b.phase) * 0.8;
+    const g = fctx.createRadialGradient(b.x,b.y,0,b.x,b.y,b.s);
+    g.addColorStop(0, `rgba(255,255,255,${b.alpha})`);
+    g.addColorStop(0.35, `rgba(255,255,255,${b.alpha*0.45})`);
+    g.addColorStop(1, 'rgba(255,255,255,0)');
+    fctx.fillStyle = g;
+    fctx.beginPath();
+    fctx.arc(b.x,b.y,b.s,0,Math.PI*2);
+    fctx.fill();
+  }
+}
+
+function drawGrain(){
+  gctx.clearRect(0,0,W,H);
+  gctx.fillStyle = 'rgba(255,255,255,0.02)';
+  const dots = Math.round(W*H/7000);
+  for(let i=0;i<dots;i++){
+    const x = Math.random()*W, y = Math.random()*H;
+    gctx.fillRect(x,y,1,1);
+  }
+}
+
+/* animation loop */
+let last = performance.now();
+function frame(t){
+  const dt = t - last; last = t;
+  drawWaves(t);
+  drawParticles();
+  drawSnow();
+  drawFog(t);
+  drawGrain();
+  stepViz(t);
+  // occasional flick
+  if(Math.random() < 0.002){ flick.style.opacity = 0.28; setTimeout(()=> flick.style.opacity = 0, 140); }
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+/* spawn helpers */
+function spawnSnow(){ /* already running */ }
+function spawnFog(){ /* already running */ }
+function spawnGrain(){ drawGrain(); }
+
+/* expose debug */
+window.__VOID = { spawnSnow, spawnFog, spawnGrain };
+
+/* === Parallax (no center float) === */
+let tX = 0, tY = 0;
+let cX = 0, cY = 0;
+const strengthRotate = 10;
+const depthBg = 0.12;
+const depthFog = 0.3;
+const depthAura = 0.45;
+
+window.addEventListener('mousemove', (e) => {
+  const x = (e.clientX / window.innerWidth - 0.5) * 2;
+  const y = (e.clientY / window.innerHeight - 0.5) * 2;
+  tX = x; tY = y;
+});
+
+function animate3DParallax(){
+  cX += (tX - cX) * 0.08;
+  cY += (tY - cY) * 0.08;
+
+  const bgEl = document.querySelector('.bg');
+  const fogEl = document.getElementById('fog');
+  const auraEl = document.getElementById('aura');
+  const centerEl = document.getElementById('center');
+
+  const rotateX = cY * -strengthRotate;
+  const rotateY = cX * strengthRotate;
+
+  if(bgEl) bgEl.style.transform = `translate(${cX * 60 * depthBg}px, ${cY * 60 * depthBg}px) scale(1.06) rotateY(${rotateY*0.4}deg) rotateX(${rotateX*0.4}deg)`;
+  if(fogEl) fogEl.style.transform = `translate(${cX * 80 * depthFog}px, ${cY * 80 * depthFog}px) rotateY(${rotateY*0.6}deg) rotateX(${rotateX*0.6}deg)`;
+  if(auraEl) auraEl.style.transform = `translate(calc(-50% + ${cX * 100 * depthAura}px), calc(-50% + ${cY * 100 * depthAura}px)) rotateY(${rotateY*0.8}deg) rotateX(${rotateX*0.8}deg)`;
+
+  if(centerEl){
+    centerEl.style.transform = 'none';
+  }
+
+  requestAnimationFrame(animate3DParallax);
+}
+animate3DParallax();
+
+/* ======= Aura pulse enable ======= */
+function enableAuraPulse(){
+  aura.style.animation = 'auraPulse 6s ease-in-out infinite';
+  aura.style.opacity = 0.9;
+}
+
+/* Done enhancements */
+
+
+// ===== Discord copy handler =====
+const discordIcon = document.querySelector('.discord-copy');
+const popup = document.getElementById('copyPopup');
+if (discordIcon) {
+  discordIcon.addEventListener('click', () => {
+    navigator.clipboard.writeText('l.ung').then(() => {
+      popup.classList.add('show');
+      setTimeout(() => popup.classList.remove('show'), 500);
+    });
+  });
+}
+
+</script>
+<script>
+/* ===== ADDED: Cinematic JS enhancements ===== */
+(function(){
+  try{
+    // insert a ripple element into enter screen
+    const enterText = document.getElementById('enterText');
+    const enterScreen = document.getElementById('enterScreen');
+    const rippleWrap = document.createElement('div');
+    rippleWrap.className = 'enter-ripple';
+    rippleWrap.innerHTML = '<span class="r"></span>';
+    enterScreen.appendChild(rippleWrap);
+
+    enterText.addEventListener('pointerdown', ()=> {
+      rippleWrap.classList.remove('play');
+      void rippleWrap.offsetWidth;
+      rippleWrap.classList.add('play');
+    });
+
+    // create cursor ripple element
+    const ripple = document.createElement('div');
+    ripple.className = 'cursor-ripple';
+    document.body.appendChild(ripple);
+
+    window.addEventListener('pointerdown', (e)=> {
+      if(!ripple) return;
+      ripple.style.left = e.clientX + 'px';
+      ripple.style.top = e.clientY + 'px';
+      ripple.classList.remove('expand');
+      // trigger reflow
+      void ripple.offsetWidth;
+      ripple.classList.add('expand');
+      setTimeout(()=> ripple.classList.remove('expand'), 480);
+    });
+
+    // Make film grain slightly fade in after enter
+    const grain = document.getElementById('grain');
+    if(grain) grain.classList.add('filmgrain-fade');
+
+    // Tie aura brightness to visualizer energy by sampling bar heights
+    const auraEl = document.getElementById('aura');
+    auraEl.classList.add('aura-rotate');
+    let lastEnergy = 0;
+    function sampleEnergy(){
+      const bars = Array.from(document.querySelectorAll('.vbar'));
+      if(!bars.length) return 0;
+      // compute normalized energy from bar heights
+      const vals = bars.map(b=> parseFloat(b.style.height || 6));
+      const max = Math.max(...vals);
+      const energy = Math.min(1, Math.max(0, (max - 6) / 40));
+      return energy;
+    }
+    // smooth energy and apply to aura opacity & blur
+    let smooth = 0;
+    function auraTick(){
+      const target = sampleEnergy();
+      smooth += (target - smooth) * 0.22;
+      // set opacity range and slight scale on beat
+      const op = 0.55 + smooth * 0.78; // base + energy
+      const sc = 1 + smooth * 0.035;
+      auraEl.style.opacity = op;
+      auraEl.style.transform = `translate(calc(-50% + ${window.__VOID?.cX || 0}px), calc(-50% + ${window.__VOID?.cY || 0}px)) rotate(${(Date.now()%36000)/100}deg) scale(${sc})`;
+      // gentle filter for shimmer
+      auraEl.style.filter = `blur(${34 - smooth*6}px) saturate(${1 + smooth*0.12})`;
+      requestAnimationFrame(auraTick);
+    }
+    requestAnimationFrame(auraTick);
+
+    // gentle periodic glow on title synced a bit slower
+    const title = document.getElementById('title');
+    (function titleGlow(){
+      const e = sampleEnergy();
+      title.style.textShadow = `0 ${(4 + e*18)|0}px ${8 + e*36}px rgba(180,210,255,${0.06 + e*0.28})`;
+      requestAnimationFrame(titleGlow);
+    })();
+
+    // small particle pulsing with beat
+    const smallsPulse = window.__VOID;
+    let lastPulse = 0;
+    function pulseParticles(){
+      const e = sampleEnergy();
+      if(e > 0.48 && Date.now() - lastPulse > 160){
+        // nudge small particles velocity slightly
+        if(window.smalls) for(let p of window.smalls) p.vy += 0.02 * (0.6 + Math.random()*0.8);
+        lastPulse = Date.now();
+      }
+      requestAnimationFrame(pulseParticles);
+    }
+    requestAnimationFrame(pulseParticles);
+
+    // ensure our sampleEnergy plays nicely after DOM updates
+    setTimeout(()=>{ /* warm start */ },400);
+  }catch(err){ console.warn('Cinematic extras failed:', err); }
+})();
 </script>
 </body>
 </html>
