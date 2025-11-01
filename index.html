@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>333</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Inter", sans-serif;
+    }
 
     body {
       height: 100vh;
@@ -19,7 +24,7 @@
       position: relative;
     }
 
-    /* Click to enter screen */
+    /* Click to Enter */
     #enterScreen {
       position: fixed;
       inset: 0;
@@ -28,25 +33,29 @@
       align-items: center;
       justify-content: center;
       z-index: 999;
-      transition: opacity 1s ease;
       cursor: pointer;
+      transition: opacity 1s ease;
     }
 
     #enterScreen h1 {
-      font-size: 1.6rem;
-      font-weight: 600;
+      font-size: 1.8rem;
       letter-spacing: 2px;
       text-transform: uppercase;
       opacity: 0.7;
-      transition: opacity 0.3s ease;
+      transition: all 0.3s ease;
     }
 
-    #enterScreen:hover h1 { opacity: 1; }
+    #enterScreen:hover h1 {
+      opacity: 1;
+      text-shadow: 0 0 25px white;
+      transform: scale(1.05);
+    }
 
-    /* Background video or GIF */
+    /* Background */
     .bg {
       position: fixed;
-      top: 0; left: 0;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
@@ -57,7 +66,7 @@
     .overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.55);
+      background: rgba(0, 0, 0, 0.55);
       backdrop-filter: blur(3px);
       z-index: 1;
       opacity: 0;
@@ -67,34 +76,30 @@
     .card {
       position: relative;
       z-index: 2;
-      width: 380px;
-      background: rgba(18,18,18,0.85);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 18px;
-      padding: 40px 30px;
+      width: 520px; /* wider box */
+      background: rgba(18, 18, 18, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 20px;
+      padding: 50px 40px;
       text-align: center;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
       backdrop-filter: blur(10px);
-      transition: all .4s ease, opacity 1.2s ease;
+      transition: all 0.6s ease, opacity 1.2s ease;
       opacity: 0;
     }
 
-    .card.show { opacity: 1; }
-
-    .card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 0 25px rgba(255,255,255,0.3);
-      background: linear-gradient(145deg, rgba(40,40,40,0.85), rgba(20,20,20,0.85));
+    .card.show {
+      opacity: 1;
+      transform: scale(1);
     }
 
     .pfp {
-      width: 100px;
-      height: 100px;
+      width: 110px;
+      height: 110px;
       border-radius: 50%;
       overflow: hidden;
       margin: 0 auto 18px;
-      border: 1px solid rgba(255,255,255,0.08);
-      position: relative;
+      border: 1px solid rgba(255, 255, 255, 0.08);
     }
 
     .pfp img {
@@ -104,90 +109,99 @@
     }
 
     h1 {
-      font-size: 1.6rem;
+      font-size: 1.7rem;
       font-weight: 600;
       letter-spacing: 1px;
       color: #fff;
-      position: relative;
-      display: inline-block;
     }
 
     .divider {
       height: 1px;
       width: 80%;
-      margin: 18px auto;
-      background: rgba(255,255,255,0.06);
+      margin: 20px auto;
+      background: rgba(255, 255, 255, 0.06);
     }
 
     .icon-row {
       display: flex;
       justify-content: center;
-      gap: 16px;
-      margin-top: 18px;
+      gap: 18px;
+      margin-top: 20px;
     }
 
     .icon {
-      width: 42px;
-      height: 42px;
+      width: 48px;
+      height: 48px;
       border-radius: 10px;
-      background: rgba(255,255,255,0.03);
+      background: rgba(255, 255, 255, 0.03);
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all .2s ease;
-      border: 1px solid rgba(255,255,255,0.04);
+      transition: all 0.2s ease;
+      border: 1px solid rgba(255, 255, 255, 0.04);
       cursor: pointer;
     }
 
     .icon:hover {
-      background: rgba(255,255,255,0.08);
-      transform: scale(1.08);
+      background: rgba(255, 255, 255, 0.08);
+      transform: scale(1.1);
     }
 
     .icon img {
-      width: 22px;
-      height: 22px;
+      width: 26px;
+      height: 26px;
       filter: brightness(0) invert(1);
       object-fit: contain;
-      border-radius: 0; /* removes circular clipping */
+      border-radius: 0;
     }
 
-    /* YouTube embed inside card */
     .video-box {
-      margin-top: 25px;
-      border-radius: 12px;
+      margin-top: 30px;
+      border-radius: 14px;
       overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.08);
+      border: 1px solid rgba(255, 255, 255, 0.08);
       display: none;
     }
 
     .video-box iframe {
       width: 100%;
-      height: 200px;
+      height: 250px;
       border: none;
     }
 
     @media (max-width: 480px) {
-      .card { width: 90%; padding: 30px 20px; }
+      .card {
+        width: 90%;
+        padding: 30px 20px;
+      }
+      .video-box iframe {
+        height: 200px;
+      }
     }
   </style>
 </head>
 <body>
-
   <!-- Click to Enter -->
   <div id="enterScreen">
-    <h1>click to enter</h1>
+    <h1>Click to Enter</h1>
   </div>
 
-  <!-- Background GIF -->
-  <img src="https://media.tenor.com/Ua5qB1eng_oAAAPo/black-and-white-night-city.gif" alt="Night City" class="bg">
+  <!-- Background -->
+  <img
+    src="https://media.tenor.com/Ua5qB1eng_oAAAPo/black-and-white-night-city.gif"
+    alt="Night City"
+    class="bg"
+  />
 
   <div class="overlay" id="overlay"></div>
 
   <!-- Main Card -->
   <div class="card" id="mainCard">
     <div class="pfp">
-      <img src="https://cdn.discordapp.com/attachments/1431809720431280282/1434030714940166205/fde005003e6ecd6ca3e7b8886da6e6d7.jpg?ex=6906d8ad&is=6905872d&hm=752d975d24c39751445ef2cbca1b4271dda7ae6cd72438f43751ce203fea7321&" alt="pfp">
+      <img
+        src="https://cdn.discordapp.com/attachments/1431809720431280282/1434030714940166205/fde005003e6ecd6ca3e7b8886da6e6d7.jpg"
+        alt="pfp"
+      />
     </div>
 
     <h1>333</h1>
@@ -196,36 +210,45 @@
 
     <div class="icon-row">
       <a href="https://discord.com" target="_blank" class="icon">
-        <img src="https://cdn-icons-png.flaticon.com/512/2111/2111370.png" alt="Discord">
+        <img
+          src="https://cdn-icons-png.flaticon.com/512/2111/2111370.png"
+          alt="Discord"
+        />
       </a>
       <a href="https://t.me" target="_blank" class="icon">
-        <img src="https://cdn-icons-png.flaticon.com/512/5968/5968804.png" alt="Telegram">
+        <img
+          src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg"
+          alt="Telegram"
+        />
       </a>
     </div>
 
     <div class="video-box" id="videoBox">
-      <iframe id="ytplayer" allow="autoplay; fullscreen"></iframe>
+      <iframe
+        id="ytplayer"
+        allow="autoplay; fullscreen"
+      ></iframe>
     </div>
   </div>
 
   <script>
-    const enterScreen = document.getElementById('enterScreen');
-    const overlay = document.getElementById('overlay');
-    const card = document.getElementById('mainCard');
-    const ytPlayer = document.getElementById('ytplayer');
-    const videoBox = document.getElementById('videoBox');
+    const enterScreen = document.getElementById("enterScreen");
+    const overlay = document.getElementById("overlay");
+    const card = document.getElementById("mainCard");
+    const ytPlayer = document.getElementById("ytplayer");
+    const videoBox = document.getElementById("videoBox");
 
-    enterScreen.addEventListener('click', () => {
+    enterScreen.addEventListener("click", () => {
       enterScreen.style.opacity = "0";
-      setTimeout(() => enterScreen.style.display = "none", 1000);
+      setTimeout(() => (enterScreen.style.display = "none"), 1000);
 
       overlay.style.opacity = "1";
-      card.classList.add('show');
+      card.classList.add("show");
 
-      ytPlayer.src = "https://www.youtube.com/embed/OAyixxm4yXw?autoplay=1&mute=0&controls=0&modestbranding=1";
+      ytPlayer.src =
+        "https://www.youtube.com/embed/OAyixxm4yXw?autoplay=1&mute=0&controls=0&modestbranding=1";
       videoBox.style.display = "block";
     });
   </script>
-
 </body>
 </html>
