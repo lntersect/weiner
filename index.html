@@ -7,504 +7,346 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg-filter: brightness(0.28) contrast(1.2);
-    --accent-glow: rgba(255,255,255,0.9);
-    --soft-accent: rgba(255,255,255,0.06);
-    --card-bg: rgba(18,18,18,0.92);
-    --icon-bg: rgba(255,255,255,0.02);
-    --particle-alpha: 0.2;
+    --accent:255,255,255;
+    --bg-bright:0.30;
   }
-
-  *{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif;-webkit-tap-highlight-color:transparent}
+  *{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif}
   html,body{height:100%;background:#000;color:#fff;overflow:hidden}
-  body{display:flex;align-items:center;justify-content:center}
+  body{display:flex;align-items:center;justify-content:center;cursor:none}
 
-  /* background gif */
-  .bg{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;filter:var(--bg-filter);transition:transform .18s ease-out}
+  /* background */
+  .bg { position:fixed; inset:0; width:100%; height:100%; object-fit:cover; z-index:0;
+    filter: brightness(var(--bg-bright)) contrast(1.2); transition: transform .18s ease-out; }
+  .overlay { position:fixed; inset:0; background:rgba(0,0,0,0.45); backdrop-filter: blur(2px); z-index:1; }
 
-  /* canvases */
-  canvas, .bg{pointer-events:none;user-select:none}
-  #fogCanvas{position:fixed;inset:0;z-index:1}
-  #effectCanvas{position:fixed;inset:0;z-index:1.5}
+  /* canvas layers */
+  canvas { position:fixed; inset:0; z-index:1; pointer-events:none; }
 
-  .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);backdrop-filter:blur(2px);z-index:2;pointer-events:none}
+  /* enter screen */
+  #enterScreen { position:fixed; inset:0; z-index:999; display:flex; align-items:center; justify-content:center;
+    flex-direction:column; background:linear-gradient(180deg, rgba(0,0,0,0.82), rgba(0,0,0,0.88)); }
+  #enterText { font-size:2rem; letter-spacing:5px; text-transform:lowercase; color:transparent;
+    -webkit-text-stroke:0.8px rgba(255,255,255,0.9); text-align:center; cursor:pointer; user-select:none;
+    transition: transform .25s ease, opacity .5s ease; }
+  #enterText .inner { background:linear-gradient(90deg,#fff,#cfcfcf); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+    animation:enterPulse 2s infinite; }
+  @keyframes enterPulse { 0%{opacity:.82}50%{opacity:1;transform:translateY(-2px)}100%{opacity:.82} }
 
-  /* spotlight */
-  .spotlight{position:fixed;inset:0;z-index:2.1;pointer-events:none;
-    background:radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(255,255,255,0.06), transparent 8%, transparent 28%);
-    mix-blend-mode:screen; transition:background .06s linear}
+  /* card */
+  .card { position:relative; z-index:3; width:540px; max-width:92vw; background:rgba(12,12,12,0.86);
+    border-radius:18px; padding:36px; text-align:center; box-shadow: 0 18px 60px rgba(0,0,0,0.75);
+    border:1px solid rgba(255,255,255,0.04); backdrop-filter: blur(8px); transform: translateY(28px); opacity:0;
+    transition: opacity .9s ease, transform .9s cubic-bezier(.2,.9,.2,1); overflow:hidden; }
+  .card.show { transform:none; opacity:1; }
 
-  /* custom cursor */
-  .cursor{position:fixed;width:18px;height:18px;border-radius:50%;
-    transform:translate(-50%,-50%);pointer-events:none;z-index:9999;
-    box-shadow:0 0 18px var(--accent-glow), inset 0 0 6px rgba(255,255,255,0.18);
-    background:radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.12) 40%, transparent 60%);
-    mix-blend-mode:screen;transition:transform .12s ease-out,width .12s,height .12s}
+  .pfp { width:110px; height:110px; border-radius:50%; overflow:hidden; margin:0 auto 14px; position:relative; }
+  .pfp img { width:100%; height:100%; object-fit:cover; display:block; }
+  .pfp::before { content:""; position:absolute; inset:-6px; border-radius:50%; background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.12) 30%, transparent 55%); filter:blur(6px); animation:pg 2.6s infinite; z-index:0 }
+  @keyframes pg { 0%{transform:scale(1);opacity:.45}50%{transform:scale(1.06);opacity:1}100%{transform:scale(1);opacity:.45} }
 
-  html,body{cursor:none}
+  h1 { font-size:2rem; font-weight:600; letter-spacing:1px;
+    background:linear-gradient(90deg,#fff 0%, #bfbfbf 45%, #fff 100%); background-size:200% auto;
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; animation:shimmer 3s linear infinite; margin-bottom:6px; }
+  @keyframes shimmer { from{background-position:0% 50%} to{background-position:200% 50%} }
 
-  /* ENTER SCREEN */
-  #enterScreen{position:fixed;inset:0;z-index:999;display:flex;align-items:center;justify-content:center;
-    background:linear-gradient(180deg, rgba(0,0,0,0.68), rgba(0,0,0,0.78));backdrop-filter: blur(2px);overflow:hidden}
-  #enterText{font-size:1.6rem;letter-spacing:3px;text-transform:lowercase;color:transparent;
-    -webkit-text-stroke:0.6px rgba(255,255,255,0.85);position:relative;padding:18px 28px;border-radius:12px;
-    transition:transform .28s cubic-bezier(.2,.9,.2,1),opacity .6s ease;mix-blend-mode:screen}
-  #enterText .inner{background:linear-gradient(90deg,#fff,#bfbfbf);background-clip:text;-webkit-background-clip:text;
-    -webkit-text-fill-color:transparent;animation:enterPulse 2s infinite}
-  @keyframes enterPulse{0%{opacity:.85}50%{opacity:1;transform:translateY(-2px)}100%{opacity:.85}}
-  /* subtle particles behind enter */
-  #enterParticles{position:absolute;inset:0;z-index:998;pointer-events:none}
+  .divider { height:1px; width:80%; margin:12px auto; background:rgba(255,255,255,0.06); }
 
-  /* main card */
-  .card{position:relative;z-index:3;width:540px;max-width:92vw;background:var(--card-bg);border-radius:20px;
-    padding:40px 36px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.75);border:1px solid rgba(255,255,255,0.04);
-    backdrop-filter: blur(8px);transform:translateY(20px);opacity:0;transition:opacity .9s ease,transform .9s cubic-bezier(.2,.9,.2,1);overflow:visible}
-  .card.show{transform:none;opacity:1}
+  .icon-row { display:flex; gap:18px; justify-content:center; margin-top:14px; }
+  .icon { width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04); cursor:pointer; transition: transform .22s, box-shadow .22s; position:relative; overflow:visible; }
+  .icon img { width:26px; height:26px; display:block; }
+  .icon:hover { transform:translateY(-6px) scale(1.06); box-shadow: 0 8px 30px rgba(255,255,255,0.06); }
 
-  .pfp{width:110px;height:110px;border-radius:50%;margin:0 auto 18px;overflow:hidden;position:relative}
-  .pfp img{width:100%;height:100%;object-fit:cover;display:block}
-  .pfp::before{content:"";position:absolute;inset:-6px;border-radius:50%;
-    background:radial-gradient(circle,var(--accent-glow) 0%, rgba(255,255,255,0.12) 30%, transparent 55%);
-    filter:blur(6px);opacity:.85;animation:pulseGlow 2.5s infinite;z-index:0}
-  @keyframes pulseGlow{0%{transform:scale(1);opacity:.45}50%{transform:scale(1.08);opacity:1}100%{transform:scale(1);opacity:.45}}
+  /* glass shine */
+  .glass { position:absolute; top:-40%; left:-20%; width:140%; height:220%; pointer-events:none; z-index:2; transform:translateX(-30%) rotate(18deg); background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.08) 45%, rgba(255,255,255,0.02)); mix-blend-mode:screen; opacity:0; border-radius:28px; transition:opacity .18s linear, transform .12s linear; }
 
-  .holo-wrap{position:relative;margin-top:4px}
-  h1.title{font-size:2.05rem;font-weight:600;letter-spacing:1px;background:linear-gradient(90deg,#fff 0%, #cfcfcf 50%, #fff 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 3s linear infinite;position:relative;z-index:2}
-  @keyframes shimmer{from{background-position:0% 50%}to{background-position:200% 50%}}
-  .reflection{transform:translateY(8px) scaleY(-1);opacity:0.12;filter:blur(6px) saturate(.9);background:linear-gradient(180deg, rgba(255,255,255,0.55), rgba(255,255,255,0.18));-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:reflectRipple 4s ease-in-out infinite;pointer-events:none}
-  @keyframes reflectRipple{0%{transform:translateY(8px) scaleY(-1)}50%{transform:translateY(12px) scaleY(-1) translateX(4px)}100%{transform:translateY(8px) scaleY(-1)}}
+  /* video */
+  .video-container { margin-top:20px; border-radius:12px; overflow:hidden; border:1px solid rgba(255,255,255,0.06); box-shadow:0 6px 22px rgba(0,0,0,0.55); transition: all .9s ease; }
+  iframe { width:100%; height:280px; border:0; display:block; }
 
-  .divider{height:1px;width:80%;margin:14px auto;background:var(--soft-accent)}
+  /* visualizer (bottom) */
+  .viz-wrap { margin-top:14px; width:100%; height:56px; display:block; }
+  #vizCanvas { width:100%; height:100%; display:block; }
 
-  .icon-row{display:flex;gap:18px;justify-content:center;margin-top:16px;align-items:center;z-index:5}
-  .icon{width:48px;height:48px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;background:var(--icon-bg);border:1px solid rgba(255,255,255,0.04);cursor:pointer;position:relative;overflow:visible;transition:transform .22s cubic-bezier(.2,.9,.2,1),box-shadow .22s}
-  .icon img{width:26px;height:26px;display:block;filter:grayscale(0) brightness(1.1);pointer-events:none}
-  .icon:hover{transform:translateY(-6px) scale(1.06);box-shadow:0 10px 30px rgba(255,255,255,0.06)}
+  /* cursor trail particles */
+  .trail-dot { position:fixed; width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,0.9); pointer-events:none; filter:blur(.8px); transform:translate(-50%,-50%); z-index:9999; }
 
-  .video-container{margin-top:20px;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.06);box-shadow:0 5px 20px rgba(0,0,0,0.55);transition:transform .3s}
-  iframe{width:100%;height:290px;border:0;display:block}
-
-  .glass-shine{position:absolute;top:-40%;left:-20%;width:140%;height:220%;pointer-events:none;z-index:2;transform:translateX(-30%) rotate(18deg);background:linear-gradient(90deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.08) 45%, rgba(255,255,255,0.02) 70%);mix-blend-mode:screen;opacity:0;border-radius:30px;transition:opacity .18s linear,transform .12s linear}
-
-  /* cube */
-  .cube-wrap{position:fixed;right:6vw;top:18vh;z-index:2;pointer-events:none;transform-style:preserve-3d;width:120px;height:120px;display:grid;place-items:center}
-  .cube{width:72px;height:72px;transform-style:preserve-3d;animation:spinCube 10s linear infinite;filter:drop-shadow(0 20px 40px rgba(0,0,0,0.6));opacity:0.85}
-  .cube-face{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;border-radius:8px;font-weight:700;font-size:30px}
-  .f1{background:linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));transform:translateZ(36px)}
-  .f2{background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01));transform:rotateY(90deg) translateZ(36px)}
-  .f3{transform:rotateY(180deg) translateZ(36px);background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01))}
-  .f4{transform:rotateY(-90deg) translateZ(36px);background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02))}
-  .f5{transform:rotateX(90deg) translateZ(36px);background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01))}
-  .f6{transform:rotateX(-90deg) translateZ(36px);background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01))}
-  @keyframes spinCube{0%{transform:rotateX(-12deg) rotateY(0deg)}50%{transform:rotateX(12deg) rotateY(180deg)}100%{transform:rotateX(-12deg) rotateY(360deg)}}
-
-  /* UI top */
-  .ui-top{position:fixed;left:20px;top:20px;z-index:999;display:flex;gap:12px;align-items:center}
-  .toggle{padding:8px 12px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.04);color:#fff;cursor:pointer;font-size:13px}
-
-  /* visualizer */
-  .viz{width:100%;height:46px;display:block;margin-top:14px;position:relative;z-index:4}
-  .viz canvas{width:100%;height:100%;display:block}
-
-  /* responsive */
-  @media (max-width:520px){.cube-wrap{display:none}.card{padding:28px 18px}iframe{height:220px}}
-
-  /* small entrance & glitch */
-  .glitch {
-    position:relative; display:inline-block;
+  @media (max-width:520px) {
+    .card { width:92%; padding:28px; }
+    iframe { height:200px; }
+    #enterText { font-size:1.5rem; letter-spacing:3px; }
   }
-  .glitch::before, .glitch::after{
-    content:attr(data-text);
-    position:absolute; left:0; top:0; width:100%; height:100%; clip-path:inset(0);
-    opacity:0.9;
-  }
-  .glitch::before{transform:translate(-1.5px,-0.5px);opacity:0.85;filter:blur(.6px)}
-  .glitch::after{transform:translate(1.5px,0.6px);opacity:0.85;filter:blur(.6px)}
-  .enter-hide{opacity:0;transform:translateY(-6px) scale(.98);transition:opacity .5s ease,transform .5s ease}
 </style>
 </head>
 <body>
+  <!-- ENTER -->
+  <div id="enterScreen" aria-label="Enter screen">
+    <div id="enterText" role="button" tabindex="0"><span class="inner">enter the void</span></div>
+  </div>
 
-  <!-- background GIF -->
-  <img class="bg" src="https://media.tenor.com/Ua5qB1eng_oAAAAC/black-and-white-night-city.gif" alt="night city">
-
-  <!-- canvases -->
-  <canvas id="fogCanvas"></canvas>
-  <canvas id="effectCanvas"></canvas>
-
+  <!-- BG + canvases -->
+  <img class="bg" src="https://media.tenor.com/Ua5qB1eng_oAAAAC/black-and-white-night-city.gif" alt="bg">
   <div class="overlay"></div>
-  <div class="spotlight" id="spotlight"></div>
+  <canvas id="fogCanvas"></canvas>
+  <canvas id="trailCanvas"></canvas>
+  <canvas id="sparkCanvas"></canvas>
 
-  <!-- custom cursor -->
-  <div class="cursor" id="cursor"></div>
-
-  <!-- ENTER SCREEN -->
-  <div id="enterScreen" role="dialog" aria-label="Enter">
-    <canvas id="enterParticles"></canvas>
-    <div id="enterText" aria-hidden="false" class="glitch" data-text="enter the void">
-      <span class="inner">enter the void</span>
-    </div>
-  </div>
-
-  <!-- UI controls -->
-  <div class="ui-top" aria-hidden="false">
-    <button id="themeBtn" class="toggle" title="Toggle theme">Theme: B/W</button>
-    <button id="micBtn" class="toggle" title="Mic visualizer (optional)">Visualizer: mic (optional)</button>
-  </div>
-
-  <!-- cube -->
-  <div class="cube-wrap" aria-hidden="true">
-    <div class="cube" id="cube">
-      <div class="cube-face f1">3</div>
-      <div class="cube-face f2">3</div>
-      <div class="cube-face f3">3</div>
-      <div class="cube-face f4">3</div>
-      <div class="cube-face f5">3</div>
-      <div class="cube-face f6">3</div>
-    </div>
-  </div>
-
-  <!-- main card -->
+  <!-- MAIN CARD -->
   <div class="card" id="mainCard" role="main" aria-label="Main content">
-    <div class="glass-shine" id="glassShine"></div>
+    <div class="glass" id="glass"></div>
 
-    <div class="pfp">
-      <img src="https://i.imgur.com/OJeD12w.jpeg" alt="pfp">
-    </div>
-
-    <div class="holo-wrap">
-      <h1 class="title">333</h1>
-      <div class="reflection title reflection">333</div>
-    </div>
-
+    <div class="pfp"><img src="https://i.imgur.com/OJeD12w.jpeg" alt="pfp"></div>
+    <h1>333</h1>
     <div class="divider"></div>
 
     <div class="icon-row">
-      <a class="icon" href="https://discord.com" target="_blank" rel="noreferrer">
-        <div class="spark-anchor"></div>
-        <img src="https://cdn-icons-png.flaticon.com/512/2111/2111370.png" alt="Discord">
-      </a>
-      <a class="icon" href="https://t.me" target="_blank" rel="noreferrer">
-        <div class="spark-anchor"></div>
-        <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="Telegram">
-      </a>
+      <a class="icon" href="https://discord.com" target="_blank" rel="noreferrer"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111370.png" alt="discord"></a>
+      <a class="icon" href="https://t.me" target="_blank" rel="noreferrer"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="telegram"></a>
     </div>
 
-    <div class="video-container" aria-hidden="false">
-      <iframe id="musicFrame" src="https://www.youtube.com/embed/OAyixxm4yXw?controls=0&loop=1&playlist=OAyixxm4yXw" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    <div class="video-container" id="videoWrap" aria-hidden="false">
+      <!-- start muted so autoplay works; we'll unmute on click -->
+      <iframe id="ytFrame" src="https://www.youtube.com/embed/OAyixxm4yXw?autoplay=1&mute=1&controls=0&loop=1&playlist=OAyixxm4yXw" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
     </div>
 
-    <div class="viz">
+    <div class="viz-wrap">
       <canvas id="vizCanvas"></canvas>
     </div>
   </div>
 
-  <!-- hidden audio element pointing to your uploaded mp3 file (must be in same folder as HTML) -->
-  <audio id="bgAudio" src="Destroy Lonely - stfu (Official Audio).mp3" preload="auto" crossorigin="anonymous"></audio>
-
 <script>
-/* ----------------------------
-   Utilities & canvas sizing
-   ---------------------------- */
-const dpr = Math.min(window.devicePixelRatio || 1, 2);
-const fogCanvas = document.getElementById('fogCanvas'), fogCtx = fogCanvas.getContext('2d');
-const fxCanvas = document.getElementById('effectCanvas'), fxCtx = fxCanvas.getContext('2d');
-const enterParticles = document.getElementById('enterParticles'), enterP = enterParticles.getContext('2d');
+/* ====== Setup & sizing ====== */
+const enterScreen = document.getElementById('enterScreen');
+const enterText = document.getElementById('enterText');
+const mainCard = document.getElementById('mainCard');
+const glass = document.getElementById('glass');
+const bg = document.querySelector('.bg');
 
-function resizeAll(){
-  const w = innerWidth, h = innerHeight;
-  [fogCanvas, fxCanvas, enterParticles].forEach(c=>{
+// canvases
+const fogC = document.getElementById('fogCanvas'), fogCtx = fogC.getContext('2d');
+const trailC = document.getElementById('trailCanvas'), trailCtx = trailC.getContext('2d');
+const sparkC = document.getElementById('sparkCanvas'), sparkCtx = sparkC.getContext('2d');
+const viz = document.getElementById('vizCanvas'), vctx = viz.getContext('2d');
+
+let w=innerWidth, h=innerHeight, dpr=Math.min(devicePixelRatio||1,2);
+function resize(){
+  w = innerWidth; h = innerHeight;
+  [fogC, trailC, sparkC].forEach(c=>{
     c.width = w * dpr; c.height = h * dpr;
     c.style.width = w + 'px'; c.style.height = h + 'px';
     const ctx = c.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0);
   });
-  resizeViz();
+  viz.width = Math.floor(document.getElementById('vizCanvas').clientWidth * dpr);
+  viz.height = Math.floor(document.getElementById('vizCanvas').clientHeight * dpr);
+  vctx.setTransform(dpr,0,0,dpr,0,0);
 }
-window.addEventListener('resize', resizeAll);
-resizeAll();
+window.addEventListener('resize', resize);
+resize();
 
-/* ----------------------------
-   Fog blobs (slow drifting)
-   ---------------------------- */
+/* ====== Fog blobs ====== */
 const fogBlobs = [];
 for(let i=0;i<6;i++){
   fogBlobs.push({
-    x: Math.random()*innerWidth,
-    y: Math.random()*innerHeight,
-    size:(innerWidth/2)*(0.18+Math.random()*0.6),
-    speedX:(Math.random()-0.5)*0.06,
-    speedY:(Math.random()-0.5)*0.03,
-    alpha:0.05+Math.random()*0.08,
-    phase:Math.random()*Math.PI*2
+    x: Math.random()*w, y: Math.random()*h,
+    s: (w/2)*(0.18 + Math.random()*0.6),
+    vx: (Math.random()-0.5)*0.04, vy: (Math.random()-0.5)*0.03,
+    alpha: 0.04 + Math.random()*0.08,
+    phase: Math.random()*Math.PI*2
   });
 }
 function drawFog(t){
-  fogCtx.clearRect(0,0,innerWidth,innerHeight);
+  fogCtx.clearRect(0,0,w,h);
   fogBlobs.forEach(b=>{
-    b.x += b.speedX * Math.cos(t*0.0006 + b.phase);
-    b.y += b.speedY * Math.sin(t*0.0004 + b.phase);
-    const g = fogCtx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.size);
+    b.x += b.vx * Math.cos(t*0.0006 + b.phase);
+    b.y += b.vy * Math.sin(t*0.0004 + b.phase);
+    const g = fogCtx.createRadialGradient(b.x,b.y,0,b.x,b.y,b.s);
     g.addColorStop(0, `rgba(255,255,255,${b.alpha})`);
     g.addColorStop(0.35, `rgba(255,255,255,${b.alpha*0.45})`);
     g.addColorStop(1, 'rgba(255,255,255,0)');
     fogCtx.fillStyle = g;
     fogCtx.beginPath();
-    fogCtx.arc(b.x, b.y, b.size, 0, Math.PI*2);
+    fogCtx.arc(b.x,b.y,b.s,0,Math.PI*2);
     fogCtx.fill();
   });
 }
 
-/* ----------------------------
-   Slow ambient particles behind card (drifting lights)
-   ---------------------------- */
-const particles = []; const P_COUNT = Math.max(60, Math.floor((innerWidth*innerHeight)/7000));
-for(let i=0;i<P_COUNT;i++){ particles.push({ x:Math.random()*innerWidth, y:Math.random()*innerHeight, r:Math.random()*1.6+0.3, vy:0.05+Math.random()*0.35, alpha:0.12+Math.random()*0.45 }) }
+/* ====== Particle trail (cursor) ====== */
+const trailParticles = [];
+function spawnTrail(x,y){
+  trailParticles.push({x,y,r:4,life:28, vx:(Math.random()-0.5)*0.6, vy:(Math.random()-0.5)*0.6});
+  if(trailParticles.length>120) trailParticles.splice(0, trailParticles.length-100);
+}
+function drawTrail(){
+  trailCtx.clearRect(0,0,w,h);
+  for(let i=trailParticles.length-1;i>=0;i--){
+    const p = trailParticles[i];
+    trailCtx.beginPath();
+    trailCtx.fillStyle = `rgba(255,255,255,${p.life/36})`;
+    trailCtx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+    trailCtx.fill();
+    p.x += p.vx; p.y += p.vy; p.r *= 0.985; p.life -= 1.2;
+    if(p.life <= 0) trailParticles.splice(i,1);
+  }
+}
 
-/* ----------------------------
-   cursor trail & sparks
-   ---------------------------- */
-const trail = []; const TRAIL_MAX = 55;
+/* ====== Sparks on icon hover ====== */
 const sparks = [];
-function spawnSparks(x,y,color='255,255,255'){ for(let i=0;i<18;i++){ sparks.push({ x:x+(Math.random()-0.5)*18, y:y+(Math.random()-0.5)*18, vx:(Math.random()-0.5)*3.6, vy:(Math.random()-1.6)*3.8, life:26+Math.random()*18, r:0.6+Math.random()*1.6, color }) }}
-
-/* main FX draw */
-function drawFX(){
-  fxCtx.clearRect(0,0,innerWidth,innerHeight);
-  fxCtx.globalCompositeOperation = 'lighter';
-  particles.forEach(p=>{
-    fxCtx.beginPath();
-    fxCtx.fillStyle = `rgba(255,255,255,${p.alpha})`;
-    fxCtx.arc(p.x, p.y, p.r, 0, Math.PI*2); fxCtx.fill();
-    p.y += p.vy; if(p.y > innerHeight+10) p.y = -8;
+function spawnSparks(x,y,amount=14){
+  for(let i=0;i<amount;i++) sparks.push({
+    x: x + (Math.random()-0.5)*12,
+    y: y + (Math.random()-0.5)*12,
+    vx: (Math.random()-0.5)*3, vy: (Math.random()-1.8)*3.4,
+    r: 0.6+Math.random()*1.6, life: 22+Math.random()*24
   });
-
-  // trail
-  for(let i=0;i<trail.length;i++){
-    const s = trail[i]; const f = i/trail.length;
-    fxCtx.beginPath(); fxCtx.fillStyle = `rgba(255,255,255,${0.86*(1-f)})`; fxCtx.arc(s.x, s.y, (6*(1-f))+1.2,0,Math.PI*2); fxCtx.fill();
-  }
-
-  // sparks
+}
+function drawSparks(){
+  sparkCtx.clearRect(0,0,w,h);
   for(let i=sparks.length-1;i>=0;i--){
-    const sp = sparks[i];
-    fxCtx.beginPath(); fxCtx.fillStyle = `rgba(${sp.color},${Math.max(sp.life/60,0)})`; fxCtx.arc(sp.x, sp.y, sp.r, 0, Math.PI*2); fxCtx.fill();
-    sp.x += sp.vx; sp.y += sp.vy; sp.vy += 0.06; sp.vx *= 0.99; sp.life -= 1.8; sp.r *= 0.997;
-    if(sp.life <= 0) sparks.splice(i,1);
+    const s = sparks[i];
+    sparkCtx.beginPath();
+    sparkCtx.fillStyle = `rgba(255,255,255,${Math.max(s.life/28,0)})`;
+    sparkCtx.arc(s.x,s.y,s.r,0,Math.PI*2); sparkCtx.fill();
+    s.x += s.vx; s.y += s.vy; s.vy += 0.06; s.vx *= 0.995; s.life -= 1.6; s.r *= 0.993;
+    if(s.life <= 0) sparks.splice(i,1);
   }
-  fxCtx.globalCompositeOperation = 'source-over';
 }
 
-/* ----------------------------
-   Enter screen particles
-   ---------------------------- */
-const enterPts = [];
-for(let i=0;i<80;i++){
-  enterPts.push({ x:Math.random()*innerWidth, y:Math.random()*innerHeight, r:Math.random()*1.8+0.6, vy:0.08+Math.random()*0.4, alpha:0.08+Math.random()*0.26 });
+/* ====== Visualizer: fake-but-convincing model ======
+   We create an energy model driven by:
+   - a low-frequency beat oscillator (simulates kick)
+   - a medium-frequency rhythm oscillator
+   - randomized transient peaks tied to "visual energy"
+   We'll also slightly modulate by the video's playback rate (can't access audio directly).
+*/
+const vizBars = 48;
+const barVals = new Array(vizBars).fill(0);
+let vizStart = 0;
+function fakeAudioEnergy(t){
+  // base beat (0.9 - 1.2 Hz range)
+  const beat = 0.85 + 0.35 * Math.abs(Math.sin(t * 0.004 + 0.02));
+  // tempo flicker
+  const rhythm = 0.6 + 0.5 * Math.abs(Math.sin(t * 0.011 + 0.7));
+  // noise bursts
+  const bursts = (Math.sin(t * 0.02) > 0.8) ? (0.4 + Math.random()*0.8) : (0.04*Math.random());
+  const energy = Math.min(1, (0.55*beat + 0.35*rhythm + 0.9*bursts) * (0.9 + 0.2*Math.random()));
+  return energy;
 }
-function drawEnterParticles(){
-  enterP.clearRect(0,0,innerWidth,innerHeight);
-  enterPts.forEach(pt=>{
-    enterP.beginPath(); enterP.fillStyle = `rgba(255,255,255,${pt.alpha})`; enterP.arc(pt.x, pt.y, pt.r, 0, Math.PI*2); enterP.fill();
-    pt.y += pt.vy; if(pt.y > innerHeight+10) pt.y = -8;
+function drawViz(t){
+  if(!vizStart) vizStart = t;
+  const elapsed = t - vizStart;
+  // compute base energy
+  const E = fakeAudioEnergy(elapsed);
+  // fill barVals with smoothed random values around E
+  for(let i=0;i<vizBars;i++){
+    const idxFactor = i / vizBars;
+    // more movement near low bars (simulate bass)
+    const local = E * (0.6 + 0.6*(1 - idxFactor)) + 0.15*Math.sin(elapsed*0.007*(1+idxFactor*2) + i);
+    // occasional transient
+    const transient = (Math.random() < 0.02) ? (0.3 + Math.random()*0.9) : 0;
+    const target = Math.min(1, Math.max(0, local + transient));
+    barVals[i] += (target - barVals[i]) * (0.08 + 0.06*(1-idxFactor)); // smoothing
+    // decay tiny
+    barVals[i] *= 0.995;
+  }
+
+  // draw
+  const cw = viz.width / dpr, ch = viz.height / dpr;
+  vctx.clearRect(0,0,cw,ch);
+  const bw = cw / (vizBars * 1.2);
+  for(let i=0;i<vizBars;i++){
+    const val = barVals[i];
+    const h = Math.max(2, val * ch * (0.92 - i/(vizBars*2)));
+    const x = i * (bw*1.15);
+    // gradient
+    const g = vctx.createLinearGradient(x, ch, x, ch-h);
+    g.addColorStop(0, 'rgba(255,255,255,0.06)');
+    g.addColorStop(0.6, 'rgba(255,255,255,0.22)');
+    g.addColorStop(1, 'rgba(255,255,255,0.6)');
+    vctx.fillStyle = g;
+    // draw shadow-soft rect for glow
+    vctx.fillRect(x, ch-h, bw, h);
+    // subtle overlay to create banding
+    vctx.globalAlpha = 0.06;
+    vctx.fillRect(x, ch-h*0.45, bw, h*0.45);
+    vctx.globalAlpha = 1;
+  }
+}
+
+/* ====== Parallax + glass shine follow ====== */
+document.addEventListener('mousemove', (e) => {
+  const x = (innerWidth/2 - e.pageX) / 90;
+  const y = (innerHeight/2 - e.pageY) / 90;
+  bg.style.transform = `translate(${x}px, ${y}px) scale(1.05)`;
+  // glass follow
+  const rect = mainCard.getBoundingClientRect();
+  const rx = (e.clientX - rect.left) / rect.width;
+  glass.style.opacity = 1;
+  glass.style.transform = `translateX(${(rx-0.5)*60}px) rotate(18deg)`;
+});
+
+/* ====== Cursor trail and interaction ====== */
+window.addEventListener('pointermove', (e) => {
+  spawnTrail(e.clientX, e.clientY);
+});
+window.addEventListener('pointerdown', () => {
+  // small card "press" animation
+  mainCard.style.transform = 'translateY(2px)';
+  setTimeout(()=> mainCard.style.transform = '', 140);
+});
+
+/* ====== Icon hover sparks ====== */
+document.querySelectorAll('.icon').forEach(icon=>{
+  icon.addEventListener('mouseenter', (ev)=>{
+    const r = icon.getBoundingClientRect();
+    spawnSparks(r.left + r.width/2, r.top + r.height/2, 18);
   });
-}
+  icon.addEventListener('click', (ev)=>{
+    const r = icon.getBoundingClientRect();
+    spawnSparks(r.left + r.width/2, r.top + r.height/2, 22);
+  });
+});
 
-/* loop */
+/* ====== Main loop ====== */
+let last = 0;
 function loop(t){
   drawFog(t);
-  drawFX();
-  drawEnterParticles();
-  drawVisualizer(); // below
+  drawTrail();
+  drawSparks();
+  drawViz(t);
+  last = t;
   requestAnimationFrame(loop);
 }
 requestAnimationFrame(loop);
 
-/* ----------------------------
-   Cursor, spotlight, glass shine interactions
-   ---------------------------- */
-const cursorEl = document.getElementById('cursor');
-const spotlight = document.getElementById('spotlight');
-const bg = document.querySelector('.bg');
-const glass = document.getElementById('glassShine');
-let mx = innerWidth/2, my = innerHeight/2;
-window.addEventListener('pointermove', e=>{
-  mx = e.clientX; my = e.clientY;
-  cursorEl.style.left = mx + 'px'; cursorEl.style.top = my + 'px';
-  trail.unshift({ x: mx + (Math.random()-0.5)*6, y: my + (Math.random()-0.5)*6, life:Date.now() });
-  if(trail.length > TRAIL_MAX) trail.pop();
-  spotlight.style.setProperty('--mx', (mx/innerWidth*100)+'%'); spotlight.style.setProperty('--my', (my/innerHeight*100)+'%');
-  bg.style.transform = `translate(${(innerWidth/2 - mx)/80}px, ${(innerHeight/2 - my)/80}px) scale(1.05)`;
-  const card = document.getElementById('mainCard'); const rect = card.getBoundingClientRect();
-  const rx = (mx - rect.left) / rect.width; const ry = (my - rect.top) / rect.height;
-  glass.style.opacity = 1; glass.style.transform = `translateX(${(rx-0.5)*60}px) rotate(18deg)`;
+/* ====== Enter click behavior ====== */
+const ytFrame = document.getElementById('ytFrame');
+enterText.addEventListener('click', () => {
+  // fade out enter
+  enterScreen.style.opacity = 0;
+  enterScreen.style.pointerEvents = 'none';
+  setTimeout(()=> enterScreen.style.display = 'none', 900);
+  // reveal main card
+  mainCard.classList.add('show');
+  // unmute YouTube (reload iframe with mute=0) — user click allows unmuted playback
+  ytFrame.src = "https://www.youtube.com/embed/OAyixxm4yXw?autoplay=1&mute=0&controls=0&loop=1&playlist=OAyixxm4yXw";
 });
 
-/* click pulse */
-window.addEventListener('pointerdown', ()=>{ cursorEl.style.transform = 'translate(-50%,-50%) scale(1.6)'; setTimeout(()=> cursorEl.style.transform = 'translate(-50%,-50%) scale(1)',160) });
-
-/* hover sparks for icons */
-document.querySelectorAll('.icon').forEach(icon=>{
-  icon.addEventListener('mouseenter', (ev)=>{ const r = icon.getBoundingClientRect(); spawnSparks(r.left + r.width/2, r.top + r.height/2); });
-  icon.addEventListener('click', (ev)=>{ const r = icon.getBoundingClientRect(); spawnSparks(r.left + r.width/2, r.top + r.height/2); });
-});
-
-/* tiny idle zaps */
-setInterval(()=>{ const icons = document.querySelectorAll('.icon'); const idx = Math.floor(Math.random()*icons.length); const box = icons[idx].getBoundingClientRect(); if(box.width) spawnSparks(box.left + box.width/2 + (Math.random()-0.5)*20, box.top + box.height/2 + (Math.random()-0.5)*20); }, 2400);
-
-/* cleanup */
-setInterval(()=>{ if(trail.length > TRAIL_MAX) trail.splice(TRAIL_MAX); }, 120);
-
-/* hide glass on card leave */
-const card = document.getElementById('mainCard');
-card.addEventListener('mouseleave', ()=>{ setTimeout(()=> glass.style.opacity = 0, 220); });
-
-/* ----------------------------
-   Enter screen reveal -> starts audio & visualizer
-   ---------------------------- */
-const enterScreen = document.getElementById('enterScreen');
-const enterText = document.getElementById('enterText');
-const mainCard = document.getElementById('mainCard');
-const audioEl = document.getElementById('bgAudio');
-
-function startExperience(){
-  // play audio (user initiated)
-  const p = audioEl.play();
-  if(p && p.catch) p.catch(()=>{ /* ignore play errors */ });
-
-  // animate enter text (glitch + fade)
-  enterText.classList.add('enter-hide');
-  enterText.style.transition = 'all .6s cubic-bezier(.2,.9,.2,1)';
-  // quick screen flash
-  document.body.style.transition = 'background .15s linear';
-  document.body.style.background = '#000';
-  setTimeout(()=> { enterScreen.style.opacity = 0; enterScreen.style.pointerEvents = 'none'; enterScreen.style.display = 'none'; mainCard.classList.add('show'); }, 420);
-
-  // start audio analyser
-  initAudioGraph(audioEl);
+/* ====== Resize handler for viz canvas */ 
+function resizeViz(){
+  const rc = document.getElementById('vizCanvas').getBoundingClientRect();
+  viz.width = Math.round(rc.width * dpr);
+  viz.height = Math.round(rc.height * dpr);
+  vctx.setTransform(dpr,0,0,dpr,0,0);
 }
-enterText.addEventListener('pointerdown', startExperience);
-enterText.addEventListener('keydown', (e)=>{ if(e.key==='Enter'||e.key===' ') startExperience(); });
-
-/* also allow clicking anywhere on enter screen to start */
-enterScreen.addEventListener('pointerdown', (ev)=>{ if(ev.target === enterScreen) startExperience(); });
-
-/* ----------------------------
-   Visualizer (uses the <audio> element) - real audio from your mp3
-   ---------------------------- */
-const vizCanvas = document.getElementById('vizCanvas'), vizCtx = vizCanvas.getContext('2d');
-function resizeViz(){ vizCanvas.width = vizCanvas.clientWidth * dpr; vizCanvas.height = vizCanvas.clientHeight * dpr; vizCtx.setTransform(dpr,0,0,dpr,0,0); }
 window.addEventListener('resize', resizeViz);
 resizeViz();
 
-let audioCtx=null, analyser=null, sourceNode=null, dataArray=null, micSource=null;
-const micBtn = document.getElementById('micBtn');
+/* keep canvases sized correctly (in case) */
+window.addEventListener('resize', resize);
 
-async function initAudioGraph(audioElement){
-  try{
-    if(audioCtx) return; // already initiated
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    analyser = audioCtx.createAnalyser(); analyser.fftSize = 2048;
-    dataArray = new Uint8Array(analyser.frequencyBinCount);
-    // create source from audio element
-    sourceNode = audioCtx.createMediaElementSource(audioElement);
-    sourceNode.connect(analyser);
-    analyser.connect(audioCtx.destination);
-    // kick the ctx if necessary
-    if(audioCtx.state === 'suspended') await audioCtx.resume();
-  }catch(err){
-    console.warn('Audio graph error:', err);
-  }
-}
+/* ====== Accessibility: keyboard to start ===== */
+enterText.addEventListener('keydown', (e) => { if(e.key === 'Enter' || e.key === ' ') enterText.click(); });
 
-/* mic toggle to optionally use microphone instead of file */
-micBtn.addEventListener('click', async ()=>{
-  if(micSource){ stopMic(); micBtn.textContent = 'Visualizer: mic (optional)'; return; }
-  try{
-    const stream = await navigator.mediaDevices.getUserMedia({audio:true, video:false});
-    if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    micSource = audioCtx.createMediaStreamSource(stream);
-    if(!analyser){ analyser = audioCtx.createAnalyser(); analyser.fftSize = 2048; dataArray = new Uint8Array(analyser.frequencyBinCount); }
-    micSource.connect(analyser);
-    analyser.connect(audioCtx.destination);
-    micBtn.textContent = 'Visualizer: mic (on)';
-  }catch(e){ console.warn('mic denied', e); micBtn.textContent = 'Visualizer: mic (denied)'; }
-});
-
-function stopMic(){
-  if(micSource && micSource.mediaStream){ micSource.mediaStream.getTracks().forEach(t=>t.stop()); micSource = null; }
-  micBtn.textContent = 'Visualizer: mic (optional)';
-}
-
-/* draw visualizer bars */
-function drawVisualizer(){
-  const w = vizCanvas.clientWidth, h = vizCanvas.clientHeight;
-  vizCtx.clearRect(0,0,w,h);
-  const barCount = 40;
-  let values;
-  if(analyser){
-    analyser.getByteFrequencyData(dataArray);
-    values = Array.from({length:barCount}, (_,i)=> {
-      const idx = Math.floor(i * (dataArray.length / barCount));
-      return dataArray[idx] / 255;
-    });
-  } else {
-    // idle animation
-    const t = performance.now() * 0.001;
-    values = Array.from({length:barCount}, (_,i)=> (0.12 + 0.08*Math.sin(t*1.2 + i*0.45) + 0.06*Math.cos(t*0.6 + i*0.22)));
-  }
-  const bw = w/(barCount*1.6);
-  for(let i=0;i<barCount;i++){
-    const val = Math.max(0, Math.min(1, values[i]));
-    const barH = val * h;
-    const x = i*(bw*1.45);
-    const g = vizCtx.createLinearGradient(x, h, x, h-barH);
-    g.addColorStop(0, 'rgba(255,255,255,0.06)');
-    g.addColorStop(0.6, 'rgba(255,255,255,0.22)');
-    g.addColorStop(1, 'rgba(255,255,255,0.6)');
-    vizCtx.fillStyle = g;
-    // slight glow by drawing blurred rects (cheap)
-    vizCtx.fillRect(x, h-barH, bw, barH);
-  }
-}
-
-/* ----------------------------
-   Theme toggle (applies across scene)
-   ---------------------------- */
-const themeBtn = document.getElementById('themeBtn');
-let neon = false;
-themeBtn.addEventListener('click', ()=>{
-  neon = !neon;
-  themeBtn.textContent = neon ? 'Theme: Neon' : 'Theme: B/W';
-  if(neon){
-    document.documentElement.style.setProperty('--bg-filter','brightness(0.26) contrast(1.25) saturate(1.25) hue-rotate(170deg)');
-    document.documentElement.style.setProperty('--accent-glow','rgba(0,240,255,0.95)');
-    document.documentElement.style.setProperty('--soft-accent','rgba(0,200,255,0.06)');
-    document.documentElement.style.setProperty('--icon-bg','rgba(0,200,255,0.02)');
-    document.querySelector('.bg').style.filter = 'brightness(0.26) contrast(1.25) saturate(1.25) hue-rotate(170deg)';
-    cursorEl.style.boxShadow = '0 0 30px rgba(0,200,255,0.9), inset 0 0 8px rgba(0,200,255,0.22)';
-  } else {
-    document.documentElement.style.setProperty('--bg-filter','brightness(0.28) contrast(1.2)');
-    document.documentElement.style.setProperty('--accent-glow','rgba(255,255,255,0.9)');
-    document.documentElement.style.setProperty('--soft-accent','rgba(255,255,255,0.06)');
-    document.documentElement.style.setProperty('--icon-bg','rgba(255,255,255,0.02)');
-    document.querySelector('.bg').style.filter = 'brightness(0.28) contrast(1.2)';
-    cursorEl.style.boxShadow = '0 0 18px rgba(255,255,255,0.65), inset 0 0 6px rgba(255,255,255,0.18)';
-  }
-});
-
-/* ----------------------------
-   small accessibility & cleanup
-   ---------------------------- */
-document.addEventListener('visibilitychange', ()=>{ if(document.hidden && audioCtx) audioCtx.suspend?.(); if(!document.hidden && audioCtx) audioCtx.resume?.(); });
-
-/* ----------------------------
-   final init: reveal main card after small delay (once enter clicked)
-   ---------------------------- */
-(function initReveal(){
-  // nothing visible until enter clicked
-  // but we keep cube animating and particles so page feels alive
-})();
-
+/* ====== End of script ====== */
 </script>
 </body>
 </html>
