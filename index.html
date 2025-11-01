@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>333</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Cinzel+Decorative:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
 
@@ -16,10 +16,9 @@
       overflow: hidden;
       color: #fff;
       background: #000;
-      position: relative;
     }
 
-    /* Click to Enter screen */
+    /* Click to enter screen */
     #enterScreen {
       position: fixed;
       inset: 0;
@@ -28,112 +27,108 @@
       align-items: center;
       justify-content: center;
       z-index: 999;
-      cursor: pointer;
       transition: opacity 1s ease;
+      cursor: pointer;
     }
 
     #enterScreen h1 {
-      font-size: 1.8rem;
+      font-size: 1.6rem;
+      font-weight: 600;
+      letter-spacing: 2px;
       text-transform: uppercase;
-      letter-spacing: 3px;
       opacity: 0.7;
-      transition: opacity 0.3s ease, transform 0.3s ease;
+      transition: opacity 0.3s ease;
     }
 
     #enterScreen:hover h1 {
       opacity: 1;
-      transform: scale(1.05);
     }
 
-    /* Background GIF */
-    .bg {
+    .video-bg {
       position: fixed;
       top: 0; left: 0;
       width: 100%;
       height: 100%;
-      object-fit: cover;
       z-index: 0;
-      filter: brightness(0.25) contrast(1.1);
+      overflow: hidden;
+      opacity: 0;
+      transition: opacity 1.2s ease;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      object-fit: cover;
     }
 
     .overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.55);
+      background: rgba(0,0,0,0.45);
       backdrop-filter: blur(3px);
       z-index: 1;
       opacity: 0;
       transition: opacity 1.2s ease;
     }
 
-    /* Main card */
     .card {
       position: relative;
       z-index: 2;
-      width: 650px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 30px;
+      width: 380px;
       background: rgba(18,18,18,0.85);
       border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 20px;
-      padding: 40px;
+      border-radius: 18px;
+      padding: 40px 30px;
+      text-align: center;
       box-shadow: 0 10px 30px rgba(0,0,0,0.7);
       backdrop-filter: blur(10px);
-      opacity: 0;
       transition: all .4s ease, opacity 1.2s ease;
+      opacity: 0;
     }
 
-    .card.show { opacity: 1; }
+    .card.show {
+      opacity: 1;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 0 25px rgba(255,255,255,0.3);
+      background: linear-gradient(145deg, rgba(40,40,40,0.85), rgba(20,20,20,0.85));
+    }
 
     .pfp {
-      flex-shrink: 0;
-      width: 120px;
-      height: 120px;
+      width: 100px;
+      height: 100px;
       border-radius: 50%;
       overflow: hidden;
+      margin: 0 auto 18px;
       border: 1px solid rgba(255,255,255,0.08);
     }
 
-    .pfp img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .info {
-      flex: 1;
-      text-align: left;
-    }
+    .pfp img { width: 100%; height: 100%; object-fit: cover; }
 
     h1 {
-      font-family: 'Cinzel Decorative', serif;
-      font-size: 2.4rem;
+      font-size: 1.6rem;
+      font-weight: 600;
+      letter-spacing: 1px;
       color: #fff;
-      letter-spacing: 2px;
-      overflow: hidden;
-      border-right: .1em solid rgba(255,255,255,0.7);
-      white-space: nowrap;
-      margin: 0;
-      animation: blink 0.8s step-end infinite alternate;
-    }
-
-    @keyframes blink {
-      50% { border-color: transparent; }
+      position: relative;
+      display: inline-block;
     }
 
     .divider {
       height: 1px;
-      width: 100%;
-      margin: 15px 0;
+      width: 80%;
+      margin: 18px auto;
       background: rgba(255,255,255,0.06);
     }
 
     .icon-row {
       display: flex;
+      justify-content: center;
       gap: 16px;
-      margin-top: 10px;
+      margin-top: 18px;
     }
 
     .icon {
@@ -149,42 +144,12 @@
       cursor: pointer;
     }
 
-    .icon:hover {
-      background: rgba(255,255,255,0.08);
-      transform: scale(1.08);
-    }
+    .icon:hover { background: rgba(255,255,255,0.08); transform: scale(1.08); }
 
-    .icon img {
-      width: 22px;
-      height: 22px;
-      filter: brightness(0) invert(1);
-      object-fit: contain;
-      border-radius: 0;
-    }
+    .icon img { width: 22px; height: 22px; filter: brightness(0) invert(1); }
 
-    /* YouTube box */
-    .video-box {
-      margin-top: 25px;
-      border-radius: 12px;
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.08);
-      display: none;
-    }
-
-    .video-box iframe {
-      width: 100%;
-      height: 220px;
-      border: none;
-    }
-
-    @media (max-width: 700px) {
-      .card {
-        flex-direction: column;
-        width: 90%;
-        text-align: center;
-      }
-
-      .info { text-align: center; }
+    @media (max-width: 480px) {
+      .card { width: 90%; padding: 30px 20px; }
     }
   </style>
 </head>
@@ -195,82 +160,50 @@
     <h1>click to enter</h1>
   </div>
 
-  <!-- Background GIF -->
-  <img src="https://media.tenor.com/qNZekPzWvLkAAAAC/black-and-white-night-city.gif" alt="Night City" class="bg">
+  <!-- YouTube video background -->
+  <div class="video-bg" id="videoBg">
+    <iframe id="ytplayer" src="" allow="autoplay; fullscreen"></iframe>
+  </div>
 
   <div class="overlay" id="overlay"></div>
 
-  <!-- Main Card -->
   <div class="card" id="mainCard">
     <div class="pfp">
       <img src="https://cdn.discordapp.com/attachments/1431809720431280282/1434030714940166205/fde005003e6ecd6ca3e7b8886da6e6d7.jpg" alt="pfp">
     </div>
 
-    <div class="info">
-      <h1 id="typing"></h1>
+    <h1>333</h1>
 
-      <div class="divider"></div>
+    <div class="divider"></div>
 
-      <div class="icon-row">
-        <a href="https://discord.com" target="_blank" class="icon">
-          <img src="https://cdn-icons-png.flaticon.com/512/2111/2111370.png" alt="Discord">
-        </a>
-        <a href="https://t.me" target="_blank" class="icon">
-          <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="Telegram">
-        </a>
-      </div>
-
-      <div class="video-box" id="videoBox">
-        <iframe id="ytplayer" allow="autoplay; fullscreen"></iframe>
-      </div>
+    <div class="icon-row">
+      <a href="https://discord.com" target="_blank" class="icon">
+        <img src="https://cdn-icons-png.flaticon.com/512/2111/2111370.png" alt="discord">
+      </a>
+      <a href="https://t.me" target="_blank" class="icon">
+        <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="telegram">
+      </a>
     </div>
   </div>
 
   <script>
     const enterScreen = document.getElementById('enterScreen');
+    const videoBg = document.getElementById('videoBg');
     const overlay = document.getElementById('overlay');
     const card = document.getElementById('mainCard');
-    const ytPlayer = document.getElementById('ytplayer');
-    const videoBox = document.getElementById('videoBox');
+    const player = document.getElementById('ytplayer');
 
     enterScreen.addEventListener('click', () => {
+      // Set YouTube video with sound after user click
+      player.src = "https://www.youtube.com/embed/OAyixxm4yXw?autoplay=1&mute=0&controls=0&loop=1&playlist=OAyixxm4yXw&modestbranding=1&showinfo=0";
+      
       enterScreen.style.opacity = "0";
       setTimeout(() => enterScreen.style.display = "none", 1000);
-
+      
+      videoBg.style.opacity = "1";
       overlay.style.opacity = "1";
       card.classList.add('show');
-
-      ytPlayer.src = "https://www.youtube.com/embed/OAyixxm4yXw?autoplay=1&mute=0&controls=0&modestbranding=1";
-      videoBox.style.display = "block";
     });
-
-    // typewriter effect
-    const textElement = document.getElementById('typing');
-    const sequence = ["3", "33", "333"];
-    let i = 0;
-
-    function typeLoop() {
-      textElement.textContent = "";
-      let current = sequence[i];
-      let j = 0;
-
-      function type() {
-        if (j < current.length) {
-          textElement.textContent += current[j];
-          j++;
-          setTimeout(type, 180);
-        } else {
-          setTimeout(() => {
-            i = (i + 1) % sequence.length;
-            typeLoop();
-          }, 1200);
-        }
-      }
-
-      type();
-    }
-
-    typeLoop();
   </script>
 
 </body>
