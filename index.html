@@ -1,298 +1,140 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>333 — neon card</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>guns.lol style template</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
 
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600;800&display=swap" rel="stylesheet">
+    body {
+      background: url('https://images.unsplash.com/photo-1622495893017-9b88c92d5b04?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      color: #fff;
+    }
 
-<style>
-  :root{
-    --neon: #00faff;
-    --neon-2: #00d8ff;
-    --glass-bg: rgba(0,0,0,0.45);
-  }
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(8px);
+      z-index: 1;
+    }
 
-  /* page & background */
-  *{box-sizing:border-box}
-  html,body{height:100%;margin:0;font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
-  body{
-    background: center/cover no-repeat url("https://media.tenor.com/fDpLh_dGvB8AAAAC/black-and-white-night-city.gif");
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color:var(--neon);
-    -webkit-font-smoothing:antialiased;
-    -moz-osx-font-smoothing:grayscale;
-    overflow:hidden;
-  }
+    .card {
+      position: relative;
+      z-index: 2;
+      width: 380px;
+      background: rgba(18,18,18,0.85);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 18px;
+      padding: 40px 30px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+      backdrop-filter: blur(10px);
+      transition: all .3s ease;
+    }
 
-  /* tiny top-right music control */
-  .top-audio {
-    position:fixed;
-    right:22px;
-    top:18px;
-    z-index:60;
-    display:flex;
-    gap:10px;
-    align-items:center;
-    pointer-events:auto;
-  }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.8);
+    }
 
-  .audio-btn{
-    width:44px;height:44px;border-radius:10px;background:rgba(0,0,0,0.55);
-    display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);
-    box-shadow:0 6px 18px rgba(0,0,0,0.5), 0 0 14px rgba(0,0,0,0.4);
-    border:1px solid rgba(255,255,255,0.04);
-    cursor:pointer;
-    transition:transform .18s ease, box-shadow .18s;
-  }
-  .audio-btn:hover{transform:scale(1.06); box-shadow:0 10px 30px rgba(0,0,0,0.6)}
-  .audio-btn svg{width:18px;height:18px;fill:var(--neon)}
+    .pfp {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      overflow: hidden;
+      margin: 0 auto 18px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
 
-  .vol-pop {
-    width:160px;padding:10px;border-radius:12px;background:linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.45));
-    display:flex;align-items:center;gap:10px;backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.04);
-  }
-  .vol-pop input[type=range]{width:110px; accent-color:var(--neon);}
+    .pfp img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
 
-  /* center card */
-  .card-wrap{z-index:50}
-  .card{
-    width:min(720px,92vw);
-    border-radius:18px;
-    padding:44px 46px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    box-shadow: 0 10px 40px rgba(0,0,0,0.6), 0 0 40px rgba(0,216,255,0.03) inset;
-    border: 1px solid rgba(255,255,255,0.03);
-    backdrop-filter: blur(14px) saturate(120%);
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    position:relative;
-    overflow:visible;
-  }
+    .divider {
+      height: 1px;
+      width: 80%;
+      margin: 18px auto;
+      background: rgba(255,255,255,0.06);
+    }
 
-  /* inner dark vignette */
-  .card::before{
-    content:"";position:absolute;inset:0;border-radius:18px;
-    background: radial-gradient(circle at 50% 40%, rgba(0,0,0,0.1), rgba(0,0,0,0.45) 55%);
-    pointer-events:none;
-  }
+    .icon-row {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 18px;
+    }
 
-  /* avatar */
-  .avatar{
-    width:120px;height:120px;border-radius:50%;overflow:hidden;
-    display:block;border:3px solid rgba(255,255,255,0.06);
-    box-shadow: 0 8px 30px rgba(0,0,0,0.6), 0 0 18px rgba(0,216,255,0.06);
-    margin-top:-80px;background:linear-gradient(180deg,#000,#222);
-  }
-  .avatar img{width:100%;height:100%;object-fit:cover;display:block}
+    .icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.03);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all .2s ease;
+      border: 1px solid rgba(255,255,255,0.04);
+      cursor: pointer;
+    }
 
-  /* name + handle */
-  .name{
-    margin-top:12px;font-weight:800;font-size:46px;letter-spacing:1px;color:var(--neon);
-    position:relative;
-    display:inline-block;
-    text-shadow: 0 0 12px rgba(0,240,255,0.12), 0 0 30px rgba(0,200,255,0.08);
-    mix-blend-mode:screen;
-    transform-origin:center;
-    padding:4px 10px;
-  }
+    .icon:hover {
+      background: rgba(255,255,255,0.07);
+      transform: scale(1.08);
+    }
 
-  /* subtle glitch layers */
-  .name::after,.name::before{
-    content:attr(data-text);
-    position:absolute;left:0;top:0;width:100%;height:100%;overflow:hidden;
-    clip-path:rect(0,9999px,9999px,0);
-    opacity:.6;
-    pointer-events:none;
-  }
-  .name::before{color:#ff00c8;z-index:1;mix-blend-mode:screen;transform:translate(-2px,0) skewX(-6deg);}
-  .name::after{color:#00fff5;z-index:2;mix-blend-mode:screen;transform:translate(2px,0) skewX(6deg);}
-  @keyframes subtleGlitch{
-    0%{transform:none}
-    20%{transform:translateX(-2px)}
-    40%{transform:translateX(2px)}
-    60%{transform:none}
-    80%{transform:translateX(-1px)}
-    100%{transform:none}
-  }
-  .name{animation:subtleGlitch 3.2s infinite linear}
+    .icon img {
+      width: 20px;
+      height: 20px;
+      opacity: 0.9;
+    }
 
-  .handle{margin-top:4px;color:#9feff3;font-weight:600;opacity:.9}
+    .footer {
+      margin-top: 28px;
+      font-size: 14px;
+      color: rgba(255,255,255,0.4);
+    }
 
-  /* icons row */
-  .icons-row{margin-top:22px;display:flex;gap:18px;align-items:center;justify-content:center}
-  .icon-btn{
-    width:46px;height:46px;border-radius:10px;background:rgba(255,255,255,0.02);
-    display:flex;align-items:center;justify-content:center;transition:all .15s;
-    box-shadow:0 6px 18px rgba(0,0,0,0.45);
-    border:1px solid rgba(255,255,255,0.02);cursor:pointer;
-  }
-  .icon-btn svg{width:22px;height:22px;fill:var(--neon-2)}
-
-  /* small subtitle icons under handle (two tiny badges) */
-  .badges{display:flex;gap:8px;margin-top:10px}
-  .badge{width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff}
-
-  /* info row bottom (crypto / link style icons) */
-  .bottom-icons{margin-top:26px;display:flex;gap:18px;align-items:center;justify-content:center}
-
-  /* responsive tweaks */
-  @media (max-width:520px){
-    .card{padding:26px}
-    .name{font-size:34px}
-    .avatar{width:90px;height:90px;margin-top:-60px}
-  }
-</style>
+    @media (max-width: 480px) {
+      .card {
+        width: 90%;
+        padding: 30px 20px;
+      }
+    }
+  </style>
 </head>
 <body>
+  <div class="overlay"></div>
 
-  <!-- Top-right compact audio control (autoplay attempt / volume) -->
-  <div class="top-audio" aria-hidden="false">
-    <div class="audio-btn" id="audioToggle" title="Play / Pause">
-      <!-- speaker icon -->
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9v6h4l5 4V5L9 9H5z"></path></svg>
+  <div class="card">
+    <div class="pfp">
+      <img src="https://via.placeholder.com/100x100" alt="pfp">
     </div>
 
-    <div class="vol-pop" id="volPop" style="display:none">
-      <svg viewBox="0 0 24 24" style="width:16px;height:16px;opacity:.9"><path d="M5 9v6h4l5 4V5L9 9H5z"></path></svg>
-      <input id="volRange" type="range" min="0" max="100" step="1" value="50" />
+    <div class="divider"></div>
+
+    <div class="icon-row">
+      <div class="icon"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111370.png" alt="discord"></div>
+      <div class="icon"><img src="https://cdn-icons-png.flaticon.com/512/825/825454.png" alt="twitter"></div>
+      <div class="icon"><img src="https://cdn-icons-png.flaticon.com/512/732/732200.png" alt="link"></div>
+      <div class="icon"><img src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png" alt="telegram"></div>
     </div>
+
+    <div class="footer">👁 000</div>
   </div>
-
-  <!-- main card -->
-  <div class="card-wrap">
-    <div class="card">
-      <!-- avatar (floating look) -->
-      <div class="avatar" aria-hidden="true">
-        <img src="https://media.discordapp.net/attachments/1433931945766551604/1434019169845776424/Screenshot_2025-10-30_002542.png?ex=6906cdec&is=69057c6c&hm=4b9ce6985c1e0172cc49fffa31d442ca72ec7b9a433a26a6fd4af04867b1ead4&=&format=webp&quality=lossless" alt="avatar">
-      </div>
-
-      <!-- name & handle -->
-      <div style="text-align:center;margin-top:6px">
-        <div class="name" data-text="333">333</div>
-        <div class="handle">@c</div>
-        <div class="badges" aria-hidden="true">
-          <div class="badge">🌐</div>
-          <div class="badge">💀</div>
-        </div>
-      </div>
-
-      <!-- middle inline discord card appearance -->
-      <div style="margin-top:18px;display:flex;align-items:center;gap:12px;justify-content:center">
-        <!-- faux popup card mimicking vvision style (clickable) -->
-        <a href="https://discord.com/users/l.ung" target="_blank" style="display:inline-flex;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;background:linear-gradient(180deg, rgba(0,0,0,0.55), rgba(0,0,0,0.38));border:1px solid rgba(255,255,255,0.03);box-shadow:0 10px 30px rgba(0,0,0,0.45);text-decoration:none">
-          <img src="https://cdn-icons-png.flaticon.com/512/2111/2111370.png" style="width:36px;height:36px;border-radius:8px;background:linear-gradient(45deg,#000,#111);padding:6px" alt="discord small">
-          <div style="color:#dff; font-weight:700; font-size:14px;line-height:1">vlsion</div>
-          <div style="color:#9feff3;font-weight:600;font-size:12px;opacity:.9">DISCORD</div>
-        </a>
-      </div>
-
-      <!-- icons row under (crypto / links) -->
-      <div class="icons-row" role="list" aria-label="quick-links">
-        <button class="icon-btn" title="Link A" onclick="location.href='#'">
-          <!-- key icon -->
-          <svg viewBox="0 0 24 24"><path d="M10 2a8 8 0 105.29 13.71L22 20.41 20.59 22 17.71 19.12A8 8 0 0010 2zM10 6a4 4 0 110 8 4 4 0 010-8z"/></svg>
-        </button>
-
-        <button class="icon-btn" title="ETH" onclick="location.href='#'">
-          <!-- diamond (eth) -->
-          <svg viewBox="0 0 24 24"><path d="M12 2L3 12l9 5 9-5z"/></svg>
-        </button>
-
-        <button class="icon-btn" title="XRP" onclick="location.href='#'">
-          <svg viewBox="0 0 24 24"><path d="M12 21s8-5.5 8-12V3L12 9 4 3v6c0 6.5 8 12 8 12z"/></svg>
-        </button>
-
-        <button class="icon-btn" title="BTC" onclick="location.href='#'">
-          <svg viewBox="0 0 24 24"><path d="M12 1v22a11 11 0 110-22z"/></svg>
-        </button>
-
-        <button class="icon-btn" title="Telegram" onclick="window.open('https://t.me/lntersect','_blank')">
-          <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" style="width:18px;height:18px" alt="tg">
-        </button>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- hidden audio element -->
-  <audio id="bgAudio" loop preload="auto">
-    <source src="https://files.catbox.moe/3hx3iy.mp3" type="audio/mpeg">
-    <!-- replace above URL with your preferred mp3 -->
-  </audio>
-
-<script>
-  // audio logic for top-right compact control
-  const audio = document.getElementById('bgAudio');
-  const toggle = document.getElementById('audioToggle');
-  const volPop = document.getElementById('volPop');
-  const volRange = document.getElementById('volRange');
-
-  // initial volume
-  audio.volume = 0.5;
-  volRange.value = 50;
-
-  // attempt autoplay on load
-  window.addEventListener('load', async () => {
-    try{
-      await audio.play();
-      toggle.classList.add('playing');
-    }catch(e){
-      // autoplay blocked — keep ready for user click
-    }
-  });
-
-  // toggle play/pause on click
-  toggle.addEventListener('click', async (e)=>{
-    if(audio.paused){
-      try{
-        await audio.play();
-        toggle.classList.add('playing');
-      }catch(err){
-        console.warn('autoplay blocked');
-      }
-    } else {
-      audio.pause();
-      toggle.classList.remove('playing');
-    }
-  });
-
-  // show/hide volume pop on hover (desktop) & click (mobile)
-  let popTimeout;
-  toggle.addEventListener('mouseenter', ()=>{ clearTimeout(popTimeout); volPop.style.display='flex'; });
-  toggle.addEventListener('mouseleave', ()=>{ popTimeout = setTimeout(()=>volPop.style.display='none',400); });
-
-  // for touch devices: click toggles visibility for a short time when tapped (separate from play)
-  toggle.addEventListener('contextmenu', (e)=>{ e.preventDefault(); });
-  toggle.addEventListener('dblclick', ()=>{ /* noop */ });
-
-  // connect volume control
-  volRange.addEventListener('input', ()=> {
-    audio.volume = volRange.value / 100;
-  });
-
-  // keyboard toggle (space) for convenience
-  window.addEventListener('keydown', (e) => {
-    if(e.code === 'Space' && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)){
-      e.preventDefault();
-      toggle.click();
-    }
-  });
-
-  // small accessibility: announce play/pause via aria on toggle
-  function setA11y(){
-    toggle.setAttribute('aria-pressed', !audio.paused);
-    toggle.setAttribute('title', audio.paused ? 'Play audio' : 'Pause audio');
-  }
-  audio.addEventListener('play', setA11y);
-  audio.addEventListener('pause', setA11y);
-  setA11y();
-
-</script>
 </body>
 </html>
