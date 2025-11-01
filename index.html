@@ -3,39 +3,39 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>333 - Lost in the Neon</title>
+<title>333</title>
 
 <style>
-  /* Reset */
+  /* Reset & base styles */
   * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
   body, html { width: 100%; height: 100%; overflow: hidden; }
 
-  /* Background */
+  /* Background GIF */
   body {
-    background: url('https://media.tenor.com/fDpLh_dGvB8AAAAC/black-and-white-night-city.gif') no-repeat center center fixed;
+    background: url('https://media.tenor.com/Pj1ZQyH0yTgAAAAd/black-and-white-night-city.gif') no-repeat center center fixed;
     background-size: cover;
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #00faff;
-    text-shadow: 0 0 15px #00eaff, 0 0 30px #00eaff;
     flex-direction: column;
+    color: #00faff;
+    text-shadow: 0 0 15px #00faff;
   }
 
-  /* Neon Card */
+  /* Card */
   .card {
-    backdrop-filter: blur(18px);
-    background-color: rgba(0, 0, 0, 0.45);
-    border-radius: 22px;
-    padding: 50px 70px;
+    backdrop-filter: blur(15px);
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: 20px;
+    padding: 40px 60px;
     text-align: center;
-    box-shadow: 0 0 30px #00eaff;
-    animation: glowPulse 2.5s infinite alternate;
+    box-shadow: 0 0 30px #00faff;
+    animation: glowPulse 2s infinite alternate;
   }
 
   @keyframes glowPulse {
-    0% { box-shadow: 0 0 25px #00eaff; }
-    100% { box-shadow: 0 0 45px #00ffff; }
+    0% { box-shadow: 0 0 20px #00faff; }
+    100% { box-shadow: 0 0 40px #00ffff; }
   }
 
   /* Avatar */
@@ -43,65 +43,60 @@
     width: 130px;
     height: 130px;
     border-radius: 50%;
-    border: 3px solid #00eaff;
-    margin-bottom: 25px;
-    box-shadow: 0 0 20px #00ffff;
+    border: 3px solid #00faff;
+    margin-bottom: 20px;
+    box-shadow: 0 0 20px #00faff;
   }
 
-  /* Glitchy Name */
-  .glitch {
+  /* Name (with glitch) */
+  h1 {
     font-size: 3rem;
-    font-weight: 800;
     position: relative;
-    color: #00faff;
-    animation: glitch 1.5s infinite;
+    display: inline-block;
+    animation: glitch 2s infinite;
   }
 
   @keyframes glitch {
-    0% { text-shadow: 2px 2px #ff00c8, -2px -2px #00ffff; }
-    25% { text-shadow: -2px 2px #ff00c8, 2px -2px #00ffff; }
-    50% { text-shadow: 2px -2px #ff00c8, -2px 2px #00ffff; }
-    75% { text-shadow: -1px -1px #ff00c8, 1px 1px #00ffff; }
-    100% { text-shadow: 2px 2px #ff00c8, -2px -2px #00ffff; }
+    0% { text-shadow: 2px 0 #ff00ff, -2px 0 #00ffff; }
+    25% { text-shadow: -2px -2px #00ffff, 2px 2px #ff00ff; }
+    50% { text-shadow: 2px -2px #ff00ff, -2px 2px #00ffff; }
+    75% { text-shadow: -2px 2px #00ffff, 2px -2px #ff00ff; }
+    100% { text-shadow: 2px 0 #ff00ff, -2px 0 #00ffff; }
   }
 
-  p { 
-    font-size: 1.1rem; 
-    color: #aafaff; 
+  p {
+    font-size: 1.2rem;
+    color: #bfffff;
     margin-bottom: 30px;
-    opacity: 0.9;
   }
 
   /* Links */
   .links {
     display: flex;
-    justify-content: center;
     gap: 30px;
-    margin-bottom: 35px;
+    justify-content: center;
+    margin-bottom: 20px;
   }
 
   .links a {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: rgba(0,255,255,0.12);
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: 0.4s;
-    box-shadow: 0 0 15px #00eaff;
+    width: 60px; height: 60px;
+    border-radius: 50%;
+    background: rgba(0,255,255,0.15);
+    transition: 0.3s;
+    box-shadow: 0 0 10px #00faff;
   }
 
   .links a:hover {
-    transform: scale(1.2) rotate(4deg);
-    background: rgba(0,255,255,0.3);
+    transform: scale(1.2);
     box-shadow: 0 0 25px #00ffff;
   }
 
-  .links svg {
+  .links img {
     width: 32px;
     height: 32px;
-    fill: #00faff;
   }
 
   /* Music Player */
@@ -109,157 +104,42 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 12px;
-    color: #00faff;
-  }
-
-  .controls {
-    display: flex;
-    align-items: center;
+    margin-top: 15px;
     gap: 10px;
   }
 
-  .controls button {
-    background: rgba(0,255,255,0.15);
-    border: none;
-    color: #00faff;
-    padding: 10px;
-    border-radius: 50%;
-    font-size: 1.2rem;
-    cursor: pointer;
-    transition: 0.3s;
-  }
-
-  .controls button:hover {
-    background: rgba(0,255,255,0.4);
-  }
-
-  input[type="range"] {
-    width: 220px;
-    accent-color: #00eaff;
-    cursor: pointer;
-  }
-
-  /* Viewer Counter */
-  .view-count {
-    margin-top: 20px;
-    font-size: 0.9rem;
-    color: #00ffff;
-    opacity: 0.8;
-  }
-
-  /* Floating Glow Particles */
-  .particles {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    z-index: -1;
-  }
-
-  .particle {
-    position: absolute;
-    background: rgba(0,255,255,0.6);
-    border-radius: 50%;
-    animation: float 10s infinite ease-in-out;
-  }
-
-  @keyframes float {
-    0% { transform: translateY(0) scale(1); opacity: 0.9; }
-    50% { transform: translateY(-50px) scale(1.2); opacity: 0.4; }
-    100% { transform: translateY(0) scale(1); opacity: 0.9; }
+  audio {
+    width: 250px;
+    outline: none;
+    filter: drop-shadow(0 0 10px #00ffff);
   }
 </style>
 </head>
 <body>
 
-<!-- Floating neon particles -->
-<div class="particles">
-  <div class="particle" style="top:10%; left:20%; width:8px; height:8px; animation-delay:0s;"></div>
-  <div class="particle" style="top:40%; left:80%; width:6px; height:6px; animation-delay:2s;"></div>
-  <div class="particle" style="top:70%; left:50%; width:10px; height:10px; animation-delay:4s;"></div>
-  <div class="particle" style="top:30%; left:10%; width:7px; height:7px; animation-delay:6s;"></div>
-  <div class="particle" style="top:85%; left:60%; width:9px; height:9px; animation-delay:8s;"></div>
-</div>
-
 <div class="card">
-  <!-- Avatar -->
-  <img src="https://media.discordapp.net/attachments/1433931945766551604/1434019169845776424/Screenshot_2025-10-30_002542.png?ex=6906cdec&is=69057c6c&hm=4b9ce6985c1e0172cc49fffa31d442ca72ec7b9a433a26a6fd4af04867b1ead4&=&format=webp&quality=lossless" alt="Avatar" class="avatar">
-  
-  <!-- Glitch Name -->
-  <h1 class="glitch">333</h1>
+  <img src="https://media.discordapp.net/attachments/1433931945766551604/1434019169845776424/Screenshot_2025-10-30_002542.png?ex=6906cdec&is=69057c6c&hm=4b9ce6985c1e0172cc49fffa31d442ca72ec7b9a433a26a6fd4af04867b1ead4&=&format=webp&quality=lossless" 
+       alt="Avatar" class="avatar">
+
+  <h1>333</h1>
   <p>lost in the neon night 🌌⚡</p>
 
-  <!-- Links -->
   <div class="links">
     <a href="https://discord.com/users/l.ung" target="_blank" title="Discord">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 245 240"><path d="M104.4 104.4c-5.7 0-10.2 4.9-10.2 11s4.6 11 10.2 11 10.3-4.9 10.2-11c0-6.1-4.6-11-10.2-11zm36.2 0c-5.7 0-10.2 4.9-10.2 11s4.6 11 10.2 11 10.3-4.9 10.2-11c0-6.1-4.5-11-10.2-11z"/><path d="M189.5 20h-134C34.7 20 25 29.8 25 41.2v134.7c0 11.5 9.7 21.3 30.5 21.3h104.2l-4.9-17 11.8 11 11.2 10.4 19.7 17V41.2C197.5 29.8 198.5 20 189.5 20zM160 155s-3.5-4.1-6.4-7.7c12.7-3.6 17.5-11.6 17.5-11.6-3.9 2.6-7.6 4.4-10.9 5.6-4.7 2-9.1 3.3-13.4 4-8.9 1.7-17 1.3-23.9-.1-5.3-1-9.8-2.4-13.6-4-2.1-.8-4.5-1.9-6.9-3.3-.3-.2-.6-.3-.9-.5-.2-.1-.3-.2-.5-.3-.7-.4-1.1-.7-1.1-.7s4.7 8 17.1 11.6c-2.9 3.7-6.5 7.9-6.5 7.9-21.5-.7-29.7-14.8-29.7-14.8 0-31.3 14-56.8 14-56.8 14-10.4 27.3-10.1 27.3-10.1l1 1.2c-17.5 5-25.5 12.6-25.5 12.6s2.1-1.1 5.6-2.6c10.2-4.3 18.3-5.5 21.7-5.8.6-.1 1.2-.2 1.8-.2 6.4-.9 13.7-1.2 21.2-.2 10 1.2 20.7 4.1 31.7 10.1 0 0-7.7-7.3-24.3-12.3l1.4-1.6s13.3-.3 27.3 10.1c0 0 14 25.5 14 56.8 0 0-8.3 14.1-29.8 14.8z"/></svg>
+      <img src="https://cdn-icons-png.flaticon.com/512/3670/3670157.png" alt="Discord">
     </a>
-
     <a href="https://lntersect" target="_blank" title="Telegram">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240"><path d="M120 0C53.7 0 0 53.7 0 120s53.7 120 120 120 120-53.7 120-120S186.3 0 120 0zM177.5 85.5l-20.6 97.4c-1.5 6.8-5.5 8.4-11.1 5.2l-30.6-22.5-14.8 14.2c-1.6 1.6-2.9 2.9-5.9 2.9l2.1-31.2 56.8-51.3c2.5-2.2-.6-3.5-3.8-1.3l-70.2 44-30.3-9.5c-6.6-2.1-6.8-6.6 1.4-9.8l118.5-45.7c5.5-2 10.3 1.3 8.5 9.7z"/></svg>
+      <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="Telegram">
     </a>
   </div>
 
-  <!-- Music Player -->
   <div class="music-container">
-    <audio id="audio" src="https://www.dropbox.com/scl/fi/your-song.mp3?raw=1"></audio>
-
-    <div class="controls">
-      <button id="play-pause">▶️</button>
-      <input type="range" id="progress" value="0" min="0" max="100">
-      <input type="range" id="volume" value="50" min="0" max="100">
-    </div>
+    <audio controls autoplay loop>
+      <source src="https://files.catbox.moe/3hx3iy.mp3" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
   </div>
-
-  <!-- Viewer Counter -->
-  <div class="view-count" id="viewCount">👁️ 0 visitors</div>
 </div>
-
-<script>
-  // === Music Controls ===
-  const audio = document.getElementById('audio');
-  const playPauseBtn = document.getElementById('play-pause');
-  const progress = document.getElementById('progress');
-  const volume = document.getElementById('volume');
-
-  let isPlaying = false;
-
-  playPauseBtn.addEventListener('click', () => {
-    if (isPlaying) {
-      audio.pause();
-      playPauseBtn.textContent = '▶️';
-    } else {
-      audio.play();
-      playPauseBtn.textContent = '⏸️';
-    }
-    isPlaying = !isPlaying;
-  });
-
-  audio.addEventListener('timeupdate', () => {
-    progress.value = (audio.currentTime / audio.duration) * 100 || 0;
-  });
-
-  progress.addEventListener('input', () => {
-    audio.currentTime = (progress.value / 100) * audio.duration;
-  });
-
-  volume.addEventListener('input', () => {
-    audio.volume = volume.value / 100;
-  });
-
-  window.addEventListener('load', () => {
-    audio.volume = 0.5;
-    audio.play().catch(() => {});
-  });
-
-  // === Viewer Counter (local) ===
-  let views = localStorage.getItem('viewCount');
-  if (!views) views = 0;
-  views++;
-  localStorage.setItem('viewCount', views);
-  document.getElementById('viewCount').textContent = `👁️ ${views} visitors`;
-</script>
 
 </body>
 </html>
