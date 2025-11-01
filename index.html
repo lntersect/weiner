@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>333</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 
     * {
       margin: 0;
@@ -14,204 +14,199 @@
     }
 
     body {
-      font-family: 'UnifrakturCook', cursive;
-      background: url('https://i.imgur.com/LUwBkw2.gif') center/cover no-repeat fixed;
-      color: white;
       height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      width: 100vw;
       overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: url('https://media.tenor.com/pdZyRrBzVhAAAAAd/black-and-white-night-city.gif') center/cover no-repeat;
+      font-family: 'Poppins', sans-serif;
+      color: white;
     }
 
-    /* Fade in overlay */
-    #overlay {
+    /* Background drift */
+    body::before {
+      content: "";
       position: fixed;
       inset: 0;
-      background: black;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      z-index: 10;
-      transition: opacity 1s ease;
-    }
-    #overlay h1 {
-      font-size: 2em;
-      letter-spacing: 3px;
-      animation: blink 1s infinite;
-      cursor: pointer;
-    }
-    @keyframes blink {
-      50% { opacity: 0.4; }
+      background: inherit;
+      z-index: -2;
+      animation: bgMove 60s linear infinite;
+      transform-origin: center;
     }
 
-    .container {
-      position: relative;
-      text-align: center;
-      z-index: 2;
-      opacity: 0;
-      transition: opacity 2s ease;
+    @keyframes bgMove {
+      0% { transform: scale(1.05) translate(0, 0); }
+      50% { transform: scale(1.07) translate(-2%, -2%); }
+      100% { transform: scale(1.05) translate(0, 0); }
     }
 
-    .pfp-box {
-      background: rgba(255,255,255,0.05);
+    /* Particle canvas */
+    #particles {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+    }
+
+    /* Card */
+    .card {
+      background: rgba(0, 0, 0, 0.5);
       backdrop-filter: blur(10px);
-      border-radius: 50%;
-      padding: 15px;
-      display: inline-block;
-      box-shadow: 0 0 30px rgba(255,255,255,0.2);
-      transition: 0.3s ease;
-    }
-
-    .pfp-box:hover {
-      box-shadow: 0 0 50px rgba(255,255,255,0.4);
-    }
-
-    .pfp-box img {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-    }
-
-    h1 {
-      font-size: 3em;
-      margin-top: 10px;
-      letter-spacing: 4px;
-      text-shadow: 0 0 20px rgba(255,255,255,0.5);
-    }
-
-    .icons {
-      margin-top: 20px;
-    }
-
-    .icons a {
-      color: white;
-      margin: 0 10px;
-      font-size: 1.8em;
-      text-decoration: none;
-      transition: 0.3s ease;
-      opacity: 0.8;
-    }
-
-    .icons a:hover {
-      opacity: 1;
-      text-shadow: 0 0 20px white;
-    }
-
-    .video-container {
-      margin-top: 20px;
-      border-radius: 20px;
+      border-radius: 18px;
+      padding: 40px 60px;
+      text-align: center;
+      position: relative;
+      animation: pulseGlow 4s ease-in-out infinite;
+      border: 1px solid transparent;
+      background-clip: padding-box;
       overflow: hidden;
-      width: 360px;
-      height: 200px;
-      margin-inline: auto;
-      box-shadow: 0 0 20px rgba(255,255,255,0.2);
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 18px;
+      padding: 1px;
+      background: linear-gradient(120deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05));
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 20px rgba(255,255,255,0.05); }
+      50% { box-shadow: 0 0 40px rgba(255,255,255,0.15); }
+    }
+
+    /* PFP */
+    .pfp {
+      width: 140px;
+      height: 140px;
+      border-radius: 18px;
+      object-fit: cover;
+      margin-bottom: 20px;
+      border: 2px solid rgba(255,255,255,0.2);
+    }
+
+    /* Typewriter 333 */
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 600;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      border-right: 2px solid rgba(255,255,255,0.5);
+      width: 0ch;
+      animation: typing 2s steps(3) infinite alternate;
+      margin-bottom: 20px;
+    }
+
+    @keyframes typing {
+      0% { width: 0ch; }
+      100% { width: 3ch; }
+    }
+
+    /* Buttons */
+    .buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    a {
+      text-decoration: none;
+      color: white;
+      border: 1px solid rgba(255,255,255,0.3);
+      padding: 10px 20px;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(4px);
+    }
+
+    a:hover {
+      background: rgba(255,255,255,0.15);
+      transform: scale(1.05);
     }
 
     iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-
-    canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
+      margin-top: 20px;
+      border-radius: 12px;
+      overflow: hidden;
+      width: 320px;
+      height: 180px;
     }
   </style>
 </head>
 <body>
-
-  <div id="overlay">
-    <h1>Click to Enter</h1>
-  </div>
-
   <canvas id="particles"></canvas>
 
-  <div class="container" id="main">
-    <div class="pfp-box">
-      <img src="https://i.imgur.com/OJeD12w.jpeg" alt="pfp">
+  <div class="card">
+    <img src="https://i.imgur.com/OJeD12w.jpeg" alt="pfp" class="pfp" />
+    <h1>333</h1>
+    <div class="buttons">
+      <a href="https://discord.gg/yourserver" target="_blank">Discord</a>
+      <a href="https://t.me/yourtelegram" target="_blank">Telegram</a>
     </div>
-    <h1 id="typing"></h1>
-    <div class="icons">
-      <a href="https://discord.com" target="_blank">💬</a>
-      <a href="https://t.me" target="_blank">✈️</a>
-    </div>
-    <div class="video-container">
-      <iframe id="ytplayer" src="https://www.youtube.com/embed/OAyixxm4yXw?autoplay=1&mute=0&loop=1&playlist=OAyixxm4yXw&controls=0&modestbranding=1"></iframe>
-    </div>
+    <iframe
+      src="https://www.youtube.com/embed/OAyixxm4yXw?autoplay=1&mute=0&loop=1&playlist=OAyixxm4yXw"
+      allow="autoplay; encrypted-media"
+      allowfullscreen
+    ></iframe>
   </div>
 
   <script>
-    // Overlay fade
-    const overlay = document.getElementById('overlay');
-    const main = document.getElementById('main');
-    overlay.addEventListener('click', () => {
-      overlay.style.opacity = '0';
-      setTimeout(() => overlay.style.display = 'none', 1000);
-      main.style.opacity = '1';
-    });
-
-    // Typewriter loop for 333
-    const text = "333";
-    const typingEl = document.getElementById("typing");
-    let index = 0;
-    function typeLoop() {
-      typingEl.textContent = text.slice(0, index);
-      index++;
-      if (index > text.length) {
-        setTimeout(() => {
-          index = 0;
-          typeLoop();
-        }, 1000);
-      } else {
-        setTimeout(typeLoop, 400);
-      }
-    }
-    typeLoop();
-
-    // Particles background
+    // Simple particle drift effect
     const canvas = document.getElementById('particles');
     const ctx = canvas.getContext('2d');
     let particles = [];
 
-    function resizeCanvas() {
+    function resize() {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     }
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
 
-    for (let i = 0; i < 60; i++) {
+    window.addEventListener('resize', resize);
+    resize();
+
+    for (let i = 0; i < 50; i++) {
       particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        r: Math.random() * 2,
-        dx: (Math.random() - 0.5) * 0.5,
-        dy: (Math.random() - 0.5) * 0.5
+        r: Math.random() * 1.5,
+        d: Math.random() * 1.5,
       });
     }
 
-    function animate() {
+    function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "rgba(255,255,255,0.7)";
+      ctx.fillStyle = 'rgba(255,255,255,0.6)';
       for (let p of particles) {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
         ctx.fill();
-        p.x += p.dx;
-        p.y += p.dy;
-        if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
-        if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
       }
-      requestAnimationFrame(animate);
+      update();
     }
-    animate();
+
+    function update() {
+      for (let p of particles) {
+        p.y += p.d * 0.2;
+        if (p.y > canvas.height) {
+          p.y = 0;
+          p.x = Math.random() * canvas.width;
+        }
+      }
+    }
+
+    function loop() {
+      draw();
+      requestAnimationFrame(loop);
+    }
+
+    loop();
   </script>
 </body>
 </html>
