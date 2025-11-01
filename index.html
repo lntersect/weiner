@@ -44,22 +44,13 @@
       opacity: 1;
     }
 
-    .video-bg {
+    /* Dimmed GIF background */
+    .bg {
       position: fixed;
-      top: 0; left: 0;
-      width: 100%;
-      height: 100%;
+      inset: 0;
       z-index: 0;
-      overflow: hidden;
-      opacity: 0;
-      transition: opacity 1.2s ease;
-    }
-
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      object-fit: cover;
+      background: url("https://media.tenor.com/Ua5qB1eng_oAAAPo/black-and-white-night-city.gif") center center/cover no-repeat;
+      filter: brightness(0.25) contrast(1.1);
     }
 
     .overlay {
@@ -104,9 +95,14 @@
       overflow: hidden;
       margin: 0 auto 18px;
       border: 1px solid rgba(255,255,255,0.08);
+      position: relative;
     }
 
-    .pfp img { width: 100%; height: 100%; object-fit: cover; }
+    .pfp img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
 
     h1 {
       font-size: 1.6rem;
@@ -144,9 +140,30 @@
       cursor: pointer;
     }
 
-    .icon:hover { background: rgba(255,255,255,0.08); transform: scale(1.08); }
+    .icon:hover {
+      background: rgba(255,255,255,0.08);
+      transform: scale(1.08);
+    }
 
-    .icon img { width: 22px; height: 22px; filter: brightness(0) invert(1); }
+    .icon img {
+      width: 22px;
+      height: 22px;
+      filter: brightness(0) invert(1);
+    }
+
+    /* YouTube embed box */
+    .video-box {
+      margin-top: 25px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .video-box iframe {
+      width: 100%;
+      height: 200px;
+      border: none;
+    }
 
     @media (max-width: 480px) {
       .card { width: 90%; padding: 30px 20px; }
@@ -155,21 +172,18 @@
 </head>
 <body>
 
-  <!-- Click to Enter -->
   <div id="enterScreen">
     <h1>click to enter</h1>
   </div>
 
-  <!-- YouTube video background -->
-  <div class="video-bg" id="videoBg">
-    <iframe id="ytplayer" src="" allow="autoplay; fullscreen"></iframe>
-  </div>
+  <!-- Dimmed background GIF -->
+  <div class="bg"></div>
 
   <div class="overlay" id="overlay"></div>
 
   <div class="card" id="mainCard">
     <div class="pfp">
-      <img src="https://cdn.discordapp.com/attachments/1431809720431280282/1434030714940166205/fde005003e6ecd6ca3e7b8886da6e6d7.jpg" alt="pfp">
+      <img src="https://cdn.discordapp.com/attachments/1431809720431280282/1434030714940166205/fde005003e6ecd6ca3e7b8886da6e6d7.jpg?ex=6906d8ad&is=6905872d&hm=752d975d24c39751445ef2cbca1b4271dda7ae6cd72438f43751ce203fea7321&" alt="pfp">
     </div>
 
     <h1>333</h1>
@@ -184,25 +198,28 @@
         <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="telegram">
       </a>
     </div>
+
+    <div class="video-box" id="videoBox" style="display:none;">
+      <iframe id="ytplayer" allow="autoplay; fullscreen"></iframe>
+    </div>
   </div>
 
   <script>
     const enterScreen = document.getElementById('enterScreen');
-    const videoBg = document.getElementById('videoBg');
     const overlay = document.getElementById('overlay');
     const card = document.getElementById('mainCard');
-    const player = document.getElementById('ytplayer');
+    const ytPlayer = document.getElementById('ytplayer');
+    const videoBox = document.getElementById('videoBox');
 
     enterScreen.addEventListener('click', () => {
-      // Set YouTube video with sound after user click
-      player.src = "https://www.youtube.com/embed/OAyixxm4yXw?autoplay=1&mute=0&controls=0&loop=1&playlist=OAyixxm4yXw&modestbranding=1&showinfo=0";
-      
       enterScreen.style.opacity = "0";
       setTimeout(() => enterScreen.style.display = "none", 1000);
-      
-      videoBg.style.opacity = "1";
+
       overlay.style.opacity = "1";
       card.classList.add('show');
+
+      ytPlayer.src = "https://www.youtube.com/embed/OAyixxm4yXw?autoplay=1&mute=0&controls=0&modestbranding=1";
+      videoBox.style.display = "block";
     });
   </script>
 
