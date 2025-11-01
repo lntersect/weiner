@@ -15,12 +15,12 @@
 
     body {
       height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       overflow: hidden;
       color: #fff;
       background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     video.bg-video {
@@ -53,13 +53,14 @@
       text-align: center;
       box-shadow: 0 10px 30px rgba(0,0,0,0.7);
       backdrop-filter: blur(10px);
-      transition: all .4s ease;
+      transition: all .4s ease, opacity 1s ease;
+      opacity: 0;
+      pointer-events: none;
     }
 
-    .card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 0 25px rgba(255,255,255,0.3);
-      background: linear-gradient(145deg, rgba(40,40,40,0.85), rgba(20,20,20,0.85));
+    .card.show {
+      opacity: 1;
+      pointer-events: all;
     }
 
     .pfp {
@@ -82,8 +83,6 @@
       font-weight: 600;
       letter-spacing: 1px;
       color: #fff;
-      position: relative;
-      display: inline-block;
     }
 
     .divider {
@@ -125,6 +124,40 @@
       object-fit: contain;
     }
 
+    /* --- CLICK TO ENTER SCREEN --- */
+    .enter-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      color: #fff;
+      transition: opacity 1s ease;
+    }
+
+    .enter-screen.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .enter-text {
+      font-size: 1.5rem;
+      letter-spacing: 2px;
+      cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.2);
+      padding: 12px 25px;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .enter-text:hover {
+      background: rgba(255,255,255,0.1);
+      transform: scale(1.05);
+    }
+
     @media (max-width: 480px) {
       .card {
         width: 90%;
@@ -136,15 +169,16 @@
 <body>
 
   <!-- video background -->
-  <video class="bg-video" autoplay muted loop playsinline>
-    <source src="https://images-ext-1.discordapp.net/external/xN2okxJPKRojryQT9OkptHTbyDNU6UNOLiJRU7ixd1U/https/media.tenor.com/Ua5qB1eng_oAAAPo/black-and-white-night-city.mp4" type="video/mp4">
+  <video id="bgVideo" class="bg-video" loop playsinline>
+    <source src="https://www.youtube.com/watch?v=OAyixxm4yXw" type="video/mp4">
   </video>
 
   <div class="overlay"></div>
 
-  <div class="card">
+  <!-- main content -->
+  <div class="card" id="mainCard">
     <div class="pfp">
-      <img src="https://cdn.discordapp.com/attachments/1431809720431280282/1434030714940166205/fde005003e6ecd6ca3e7b8886da6e6d7.jpg?ex=6906d8ad&is=6905872d&hm=752d975d24c39751445ef2cbca1b4271dda7ae6cd72438f43751ce203fea7321&" alt="pfp">
+      <img src="https://cdn.discordapp.com/attachments/1431809720431280282/1434030714940166205/fde005003e6ecd6ca3e7b8886da6e6d7.jpg" alt="pfp">
     </div>
 
     <h1>333</h1>
@@ -160,6 +194,26 @@
       </a>
     </div>
   </div>
+
+  <!-- click to enter overlay -->
+  <div class="enter-screen" id="enterScreen">
+    <div class="enter-text" id="enterBtn">Click to Enter</div>
+  </div>
+
+  <script>
+    const enterBtn = document.getElementById('enterBtn');
+    const enterScreen = document.getElementById('enterScreen');
+    const video = document.getElementById('bgVideo');
+    const mainCard = document.getElementById('mainCard');
+
+    enterBtn.addEventListener('click', () => {
+      enterScreen.classList.add('fade-out');
+      mainCard.classList.add('show');
+      // Enable video audio and play
+      video.muted = false;
+      video.play();
+    });
+  </script>
 
 </body>
 </html>
