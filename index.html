@@ -16,6 +16,7 @@
       overflow: hidden;
       color: #fff;
       background: #000;
+      position: relative;
     }
 
     /* Click to enter screen */
@@ -40,23 +41,23 @@
       transition: opacity 0.3s ease;
     }
 
-    #enterScreen:hover h1 {
-      opacity: 1;
-    }
+    #enterScreen:hover h1 { opacity: 1; }
 
-    /* Dimmed GIF background */
+    /* Background video or GIF */
     .bg {
       position: fixed;
-      inset: 0;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
       z-index: 0;
-      background: url("https://media.tenor.com/Ua5qB1eng_oAAAPo/black-and-white-night-city.gif") center center/cover no-repeat;
       filter: brightness(0.25) contrast(1.1);
     }
 
     .overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.45);
+      background: rgba(0,0,0,0.55);
       backdrop-filter: blur(3px);
       z-index: 1;
       opacity: 0;
@@ -78,9 +79,7 @@
       opacity: 0;
     }
 
-    .card.show {
-      opacity: 1;
-    }
+    .card.show { opacity: 1; }
 
     .card:hover {
       transform: translateY(-8px);
@@ -149,14 +148,17 @@
       width: 22px;
       height: 22px;
       filter: brightness(0) invert(1);
+      object-fit: contain;
+      border-radius: 0; /* removes circular clipping */
     }
 
-    /* YouTube embed box */
+    /* YouTube embed inside card */
     .video-box {
       margin-top: 25px;
       border-radius: 12px;
       overflow: hidden;
       border: 1px solid rgba(255,255,255,0.08);
+      display: none;
     }
 
     .video-box iframe {
@@ -172,15 +174,17 @@
 </head>
 <body>
 
+  <!-- Click to Enter -->
   <div id="enterScreen">
     <h1>click to enter</h1>
   </div>
 
-  <!-- Dimmed background GIF -->
-  <div class="bg"></div>
+  <!-- Background GIF -->
+  <img src="https://media.tenor.com/Ua5qB1eng_oAAAPo/black-and-white-night-city.gif" alt="Night City" class="bg">
 
   <div class="overlay" id="overlay"></div>
 
+  <!-- Main Card -->
   <div class="card" id="mainCard">
     <div class="pfp">
       <img src="https://cdn.discordapp.com/attachments/1431809720431280282/1434030714940166205/fde005003e6ecd6ca3e7b8886da6e6d7.jpg?ex=6906d8ad&is=6905872d&hm=752d975d24c39751445ef2cbca1b4271dda7ae6cd72438f43751ce203fea7321&" alt="pfp">
@@ -192,14 +196,14 @@
 
     <div class="icon-row">
       <a href="https://discord.com" target="_blank" class="icon">
-        <img src="https://cdn-icons-png.flaticon.com/512/2111/2111370.png" alt="discord">
+        <img src="https://cdn-icons-png.flaticon.com/512/2111/2111370.png" alt="Discord">
       </a>
       <a href="https://t.me" target="_blank" class="icon">
-        <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="telegram">
+        <img src="https://cdn-icons-png.flaticon.com/512/5968/5968804.png" alt="Telegram">
       </a>
     </div>
 
-    <div class="video-box" id="videoBox" style="display:none;">
+    <div class="video-box" id="videoBox">
       <iframe id="ytplayer" allow="autoplay; fullscreen"></iframe>
     </div>
   </div>
