@@ -181,7 +181,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
   transition:transform 220ms cubic-bezier(.2,.9,.2,1), opacity 220ms;
   opacity:0.98;
 }
-.sigil:hover { transform: scale(1.08); }
+.sigil:hover { transform: none; cursor: default; }
+.sigil { pointer-events: none; }
 
 /* stronger white pulsing aura behind sigil */
 .sigil-aura{
@@ -322,8 +323,8 @@ h1 { transition: text-shadow 220ms ease, transform 220ms cubic-bezier(.2,.9,.2,1
   <div class="title-row">
     <h1 id="title">333</h1>
     <div class="sigil-wrap" aria-hidden="true">
-      <div class="sigil-aura" aria-hidden="true"></div>
-      <img src="https://i.imgur.com/MnTO6SS.png" alt="sigil" class="sigil"/>
+      
+      <img src="https://i.imgur.com/2k8HQg9.png" alt="sigil" class="sigil"/>
     </div>
   </div>
 
@@ -500,7 +501,7 @@ function stepViz(t){
   // subtle title scale to energy
   const strongest = Math.max(...Array.from(vbars).map(b => parseFloat(b.style.height)));
   const scale = 1 + (strongest/120);
-  title.style.transform = `scale(${scale})`;
+  // title scale removed to keep '333' static;
   // aura intensity
   aura.style.opacity = 0.7 + Math.min(0.35, E*0.6);
 }
@@ -734,9 +735,9 @@ window.__VOID = { spawnSnow, spawnFog, spawnGrain };
 let tX = 0, tY = 0;
 let cX = 0, cY = 0;
 const strengthRotate = 10;
-const depthBg = 0.12;
-const depthFog = 0.3;
-const depthAura = 0.45;
+const depthBg = 0.05;
+const depthFog = 0.18;
+const depthAura = 0.3;
 
 window.addEventListener('mousemove', (e) => {
   const x = (e.clientX / window.innerWidth - 0.5) * 2;
@@ -745,7 +746,8 @@ window.addEventListener('mousemove', (e) => {
 });
 
 function animate3DParallax(){
-  cX += (tX - cX) * 0.08;
+  const smoothness = 0.06;
+  cX += (tX - cX) * smoothness;
   cY += (tY - cY) * 0.08;
 
   const bgEl = document.querySelector('.bg');
@@ -922,6 +924,111 @@ startExperience = function(){
     setTimeout(()=>quote.classList.add('pulse'),1000);
   }, 1200);
 };
+</script>
+
+
+<!-- === Subtle 3D Tilt + Light Flash Effect === -->
+<style>
+#center {
+  transform-style: preserve-3d;
+  transition: transform 0.4s cubic-bezier(.2,.9,.2,1);
+  will-change: transform;
+}
+.click-flash {
+  position: fixed;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 70%);
+  pointer-events: none;
+  mix-blend-mode: screen;
+  transform: translate(-50%, -50%) scale(0.4);
+  opacity: 0.7;
+  animation: flashExpand 0.7s ease-out forwards;
+  z-index: 9998;
+}
+@keyframes flashExpand {
+  0% { transform: translate(-50%, -50%) scale(0.4); opacity: 0.7; }
+  70% { opacity: 0.3; }
+  100% { transform: translate(-50%, -50%) scale(2.8); opacity: 0; }
+}
+</style>
+<script>
+// Subtle 3D tilt motion
+const centerCard = document.getElementById('center');
+document.addEventListener('mousemove', e => {
+  const x = (e.clientX / innerWidth - 0.5) * 2;
+  const y = (e.clientY / innerHeight - 0.5) * 2;
+  centerCard.style.transform = `rotateY(${x * 6}deg) rotateX(${y * -6}deg)`;
+});
+document.addEventListener('mouseleave', () => {
+  centerCard.style.transform = 'rotateY(0deg) rotateX(0deg)';
+});
+
+// Light flash click effect
+document.addEventListener('click', e => {
+  const flash = document.createElement('div');
+  flash.className = 'click-flash';
+  flash.style.left = e.clientX + 'px';
+  flash.style.top = e.clientY + 'px';
+  document.body.appendChild(flash);
+  setTimeout(() => flash.remove(), 700);
+});
+</script>
+
+
+<!-- === Enhanced Independent 3D Parallax === -->
+<style>
+body { perspective: 1000px; }
+#center {
+  transform-style: preserve-3d;
+  transition: transform 0.5s cubic-bezier(.2,.9,.2,1);
+}
+#center .pfp { transform: translateZ(40px); transition: transform 0.5s ease; }
+#center h1 { transform: translateZ(60px); transition: transform 0.5s ease; }
+#center .sigil-wrap { transform: translateZ(80px); transition: transform 0.5s ease; }
+#center .icon-row { transform: translateZ(50px); transition: transform 0.5s ease; }
+</style>
+<script>
+const center3D = document.getElementById('center');
+const pfp3D = center3D.querySelector('.pfp');
+const sigil3D = center3D.querySelector('.sigil-wrap');
+const title3D = center3D.querySelector('h1');
+const icons3D = center3D.querySelector('.icon-row');
+
+let tiltX = 0, tiltY = 0, smoothX = 0, smoothY = 0;
+
+document.addEventListener('mousemove', e => {
+  const x = (e.clientX / innerWidth - 0.5) * 2;
+  const y = (e.clientY / innerHeight - 0.5) * 2;
+  tiltX = x * 12;  // more dramatic tilt
+  tiltY = y * -12;
+});
+
+function animateTilt(){
+  smoothX += (tiltX - smoothX) * 0.08;
+  smoothY += (tiltY - smoothY) * 0.08;
+
+  center3D.style.transform = `rotateY(${smoothX}deg) rotateX(${smoothY}deg)`;
+  if(pfp3D) pfp3D.style.transform = `translateZ(${40 + smoothX*0.5}px)`;
+  if(sigil3D) sigil3D.style.transform = `translateZ(${80 + smoothX*1.0}px)`;
+  if(title3D) title3D.style.transform = `translateZ(${60 + smoothX*0.8}px)`;
+  if(icons3D) icons3D.style.transform = `translateZ(${50 + smoothX*0.4}px)`;
+
+  requestAnimationFrame(animateTilt);
+}
+animateTilt();
+
+// Optional idle drift for life-like motion
+let idleT = 0;
+function idleDrift(){
+  idleT += 0.002;
+  const driftX = Math.sin(idleT) * 3;
+  const driftY = Math.cos(idleT) * 3;
+  center3D.style.transform += ` rotateY(${driftX}deg) rotateX(${driftY}deg)`;
+  requestAnimationFrame(idleDrift);
+}
+idleDrift();
 </script>
 
 </body>
