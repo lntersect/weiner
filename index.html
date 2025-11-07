@@ -9,91 +9,85 @@
 <style>
 :root{
   --white:#bfe1ff;
-  --muted: rgba(10,30,80,0.06);
-  --accent: rgba(10,30,80,0.06);
-  --glass: rgba(10,30,80,0.03);
+  --muted: rgba(6,12,28,0.06);
+  --accent: rgba(6,16,40,0.06);
+  --glass: rgba(6,16,40,0.03);
   --blue-strong: rgba(76,111,255,0.95);
-  --blue-soft: rgba(10,30,80,0.08);
+  --blue-soft: rgba(8,18,48,0.08);
+  --void-black: #020306;
+  --deep-navy: #050922;
 }
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif}
-html,body{height:100%;background:#000;color:var(--white);overflow:hidden}
+html,body{height:100%;background:var(--void-black);color:var(--white);overflow:hidden}
 body{display:flex;align-items:center;justify-content:center;}
 
-/* hide the system cursor on non-touch devices — we'll manage the custom dot in JS */
+/* hide system cursor on desktop */
 body.no-cursor{cursor:none}
-
-/* ensure clickable elements also hide system cursor */
- a, button, input, select, textarea, [role="button"], .btn, .icon { cursor: none !important; }
-
+a, button, input, select, textarea, [role="button"], .btn, .icon { cursor: none !important; }
 
 /* BACKGROUND + LAYERS */
 .bg{
   position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;
-  /* cinematic glow adjusted to blue */
-  filter: brightness(0.55) contrast(1.12) saturate(1.15);
-  transition: transform .25s ease-out, filter 1.5s ease;
-  box-shadow: 0 0 120px 40px rgba(10,30,120,0.08),
-              0 0 240px 100px rgba(10,20,80,0.06);
+  filter: brightness(0.32) contrast(1.08) saturate(1.05); /* darker */
+  transition: transform .6s ease-out, filter 1.2s ease;
+  box-shadow: 0 0 160px 60px rgba(5,12,40,0.12),
+              0 0 320px 160px rgba(2,6,20,0.10);
 }
-canvas#waves, canvas#particles,canvas#snow,canvas#fog,canvas#grain{position:fixed;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
-.overlay{position:fixed;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0.35),rgba(0,0,0,0.6));backdrop-filter:blur(2px);z-index:2;pointer-events:none}
-.vignette{position:fixed;inset:0;z-index:45;pointer-events:none;background:radial-gradient(ellipse at center, rgba(0,0,0,0) 30%, rgba(0,0,0,0.45) 100%);mix-blend-mode:multiply;opacity:0.9}
-.scanlines{position:fixed;inset:0;z-index:4;pointer-events:none;background:repeating-linear-gradient(to bottom, rgba(76,111,255,0.02)0px, rgba(76,111,255,0.02)1px, transparent 2px, transparent 3px);mix-blend-mode:overlay;opacity:0.18}
 
-/* ENTER SCREEN */
-#enterScreen{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;flex-direction:column;background:#000}
-#enterText{font-size:1.6rem;letter-spacing:6px;text-transform:uppercase;color:transparent;-webkit-text-stroke:0.9px rgba(76,111,255,0.95);cursor:pointer;padding:14px 30px;border-radius:999px;transition:transform .18s ease,opacity .5s ease;user-select:none}
-#enterText:hover{transform:scale(1.03)}
-#enterScreen.fade{opacity:0;pointer-events:none;transition:opacity .9s ease}
+/* starfield on top of background (canvas) */
+canvas#stars{position:fixed;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;mix-blend-mode:screen;opacity:0.85}
+
+/* existing canvases */
+canvas#waves, canvas#particles,canvas#snow,canvas#fog,canvas#grain{position:fixed;inset:0;width:100%;height:100%;z-index:2;pointer-events:none}
+.overlay{position:fixed;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0.55),rgba(0,0,0,0.88));backdrop-filter:blur(6px);z-index:5;pointer-events:none}
+.vignette{position:fixed;inset:0;z-index:45;pointer-events:none;background:radial-gradient(ellipse at center, rgba(0,0,0,0) 25%, rgba(0,0,0,0.72) 100%);mix-blend-mode:multiply;opacity:1}
+.scanlines{position:fixed;inset:0;z-index:4;pointer-events:none;background:repeating-linear-gradient(to bottom, rgba(76,111,255,0.01)0px, rgba(76,111,255,0.01)1px, transparent 2px, transparent 3px);mix-blend-mode:overlay;opacity:0.06}
+
+/* ENTER SCREEN (slower cinematic) */
+#enterScreen{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;flex-direction:column;background:linear-gradient(180deg, rgba(0,0,0,0.85), rgba(0,0,0,0.98));backdrop-filter: blur(6px)}
+#enterText{font-size:1.6rem;letter-spacing:6px;text-transform:uppercase;color:transparent;-webkit-text-stroke:1px rgba(76,111,255,0.95);cursor:pointer;padding:18px 32px;border-radius:999px;transition:transform .28s ease,opacity .9s ease;user-select:none}
+#enterText:hover{transform:scale(1.04)}
+#enterScreen.fade{opacity:0;pointer-events:none;transition:opacity 1.5s ease}
 
 /* CENTER content */
-#center{position:relative;z-index:10;display:flex;align-items:center;flex-direction:column;gap:10px;pointer-events:auto;transform:translateY(20px);opacity:0;transition:transform 900ms cubic-bezier(.2,.9,.2,1),opacity 900ms ease}
+#center{position:relative;z-index:20;display:flex;align-items:center;flex-direction:column;gap:12px;pointer-events:auto;transform:translateY(30px) scale(1.25);opacity:0;transition:transform 1200ms cubic-bezier(.2,.9,.2,1),opacity 1200ms ease}
 #center.show{transform:none;opacity:1}
 
 /* PFP/AURA */
-.pfp{width:120px;height:120px;border-radius:999px;overflow:visible;position:relative;z-index:11}
+.pfp{width:120px;height:120px;border-radius:999px;overflow:visible;position:relative;z-index:22}
 .pfp img{width:120px;height:120px;border-radius:999px;object-fit:cover;display:block;filter:grayscale(1) contrast(1.02)}
-.aura{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;width:420px;height:420px;border-radius:50%;z-index:9;mix-blend-mode:screen;filter:blur(34px);opacity:0.9;background:radial-gradient(circle at 40% 30%, rgba(76,111,255,0.14), rgba(30,60,160,0.06) 18%, rgba(76,111,255,0.00)50%);transition:transform .25s linear,opacity .25s linear}
+.aura{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;width:480px;height:480px;border-radius:50%;z-index:19;mix-blend-mode:screen;filter:blur(46px);opacity:0.85;background:radial-gradient(circle at 42% 28%, rgba(30,50,140,0.14), rgba(8,16,48,0.06) 22%, rgba(30,50,140,0.00)48%);transition:transform .4s linear,opacity .4s linear}
 
-/* subtle pulse */
-@keyframes auraPulse{
-  0%{ transform: translate(-50%,-50%) scale(0.98); opacity:0.88 }
-  50%{ transform: translate(-50%,-50%) scale(1.04); opacity:1 }
-  100%{ transform: translate(-50%,-50%) scale(0.98); opacity:0.88 }
+/* slow deep pulse */
+@keyframes auraPulseSlow{
+  0%{ transform: translate(-50%,-50%) scale(0.985); opacity:0.86 }
+  50%{ transform: translate(-50%,-50%) scale(1.06); opacity:0.95 }
+  100%{ transform: translate(-50%,-50%) scale(0.985); opacity:0.86 }
 }
 
-/* TITLE */
-h1{font-size:2.2rem;letter-spacing:6px;margin-top:6px;background:linear-gradient(90deg,#4c6fff,#bdbdbd,#4c6fff);background-size:220% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 3.2s linear infinite;z-index:11;transition:transform .18s ease}
-@keyframes shimmer{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+/* TITLE (slower shimmer) */
+h1{font-size:2.4rem;letter-spacing:6px;margin-top:6px;background:linear-gradient(90deg,#20305a,#7ea0ff,#20305a);background-size:240% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmerSlow 6.2s linear infinite;z-index:22;transition:transform .28s ease}
+@keyframes shimmerSlow{0%{background-position:0% 50%}100%{background-position:200% 50%}}
 
 /* ICONS */
-.icon-row{display:flex;gap:18px;margin-top:14px;z-index:11}
-.icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(76,111,255,0.03);border:1px solid rgba(76,111,255,0.04);transition:transform .25s,box-shadow .25s;cursor:pointer}
+.icon-row{display:flex;gap:18px;margin-top:18px;z-index:22}
+.icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(76,111,255,0.02);border:1px solid rgba(76,111,255,0.03);transition:transform .28s,box-shadow .28s;cursor:pointer}
 .icon img{width:22px;height:22px;filter:grayscale(1);opacity:0.95}
-.icon:hover{transform:translateY(-6px) scale(1.08);box-shadow:0 12px 40px rgba(76,111,255,0.04)}
+.icon:hover{transform:translateY(-6px) scale(1.08);box-shadow:0 18px 48px rgba(76,111,255,0.04)}
 
 /* VISUALIZER */
-#visualizer{display:flex;gap:4px;margin-top:20px;align-items:flex-end;height:44px;z-index:11}
-.vbar{width:6px;background:linear-gradient(to top,#4c6fff,#bdbdbd);border-radius:3px;opacity:0.8;transform-origin:bottom center;transition:height .08s linear}
+#visualizer{display:flex;gap:4px;margin-top:20px;align-items:flex-end;height:44px;z-index:22}
+.vbar{width:6px;background:linear-gradient(to top,#4c6fff,#bdbdbd);border-radius:3px;opacity:0.78;transform-origin:bottom center;transition:height .12s linear}
 
 /* CONTROLS */
-#controls{position:fixed;left:50%;transform:translateX(-50%);bottom:22px;z-index:40;display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:999px;background:rgba(0,0,0,0.25);backdrop-filter:blur(6px);border:1px solid rgba(76,111,255,0.04)}
+#controls{position:fixed;left:50%;transform:translateX(-50%);bottom:22px;z-index:50;display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:999px;background:rgba(0,0,0,0.28);backdrop-filter:blur(6px);border:1px solid rgba(76,111,255,0.04)}
 .btn{width:36px;height:36px;display:grid;place-items:center;border-radius:8px;background:rgba(76,111,255,0.03);cursor:pointer;transition:transform .12s,background .12s}
-.btn:hover{transform:scale(1.06);background:rgba(76,111,255,0.08)}
+.btn:hover{transform:scale(1.06);background:rgba(76,111,255,0.06)}
 .icon-white{width:18px;height:18px;filter:invert(1) grayscale(1) brightness(1.2)}
 
-/* VISIBLE WHITE VOLUME */
+/* VOLUME */
 input[type="range"]{width:140px;-webkit-appearance:none;background:transparent;margin-left:8px}
-/* FIX: Prevent default click cursor on volume slider */
-#vol,
-#vol:hover,
-#vol:active,
-input[type="range"],
-input[type="range"]::-webkit-slider-thumb {
-  cursor: none !important;
-}
-
-input[type=range]::-webkit-slider-runnable-track{height:5px;background:rgba(76,111,255,0.45);border-radius:999px}
+input[type=range]::-webkit-slider-runnable-track{height:5px;background:rgba(76,111,255,0.36);border-radius:999px}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:#4c6fff;margin-top:-4px;box-shadow:0 0 12px rgba(76,111,255,0.7);cursor:pointer}
 
 /* CUSTOM CURSOR DOT */
@@ -101,33 +95,22 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
   position:fixed;
   width:14px;height:14px;border-radius:50%;
   background:rgba(76,111,255,0.95);
-  box-shadow:0 0 18px rgba(76,111,255,0.75),0 0 40px rgba(76,111,255,0.06);
+  box-shadow:0 0 22px rgba(76,111,255,0.85),0 0 56px rgba(76,111,255,0.06);
   pointer-events:none;
   z-index:9999;
   transform:translate(-50%,-50%) scale(1);
   opacity:0;
-  transition:opacity .28s ease, transform .16s cubic-bezier(.2,.9,.2,1), box-shadow .16s ease;
+  transition:opacity .28s ease, transform .18s cubic-bezier(.2,.9,.2,1), box-shadow .18s ease;
   will-change:transform,opacity;
 }
-
-/* visible state */
 .cursor.visible{opacity:1}
+.cursor.hover{transform:translate(-50%,-50%) scale(1.9);box-shadow:0 0 44px rgba(76,111,255,0.95),0 0 96px rgba(76,111,255,0.06)}
+.cursor.idle{transform:translate(-50%,-50%) scale(0.9);opacity:0.82}
 
-/* hover / interactive bloom */
-.cursor.hover{
-  transform:translate(-50%,-50%) scale(1.85);
-  box-shadow:0 0 36px rgba(76,111,255,0.95),0 0 86px rgba(76,111,255,0.08);
-}
+/* flicker sweep */
+.flicker{position:fixed;left:-10%;top:0;width:30%;height:100%;transform:skewX(-12deg);background:linear-gradient(90deg,rgba(76,111,255,0),rgba(76,111,255,0.03),rgba(76,111,255,0));mix-blend-mode:screen;z-index:18;pointer-events:none;opacity:0;transition:opacity .22s ease}
 
-/* small idle shrink for subtlety (when visible but not moving) */
-.cursor.idle{
-  transform:translate(-50%,-50%) scale(0.9);
-  opacity:0.82;
-}
-
-/* subtle sweep (unchanged) */
-.flicker{position:fixed;left:-10%;top:0;width:30%;height:100%;transform:skewX(-12deg);background:linear-gradient(90deg,rgba(76,111,255,0),rgba(76,111,255,0.04),rgba(76,111,255,0));mix-blend-mode:screen;z-index:8;pointer-events:none;opacity:0;transition:opacity .12s ease}
-
+/* small responsive */
 @media(max-width:520px){
  .pfp{width:96px;height:96px}.pfp img{width:96px;height:96px}
  h1{font-size:1.6rem}
@@ -140,7 +123,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
   bottom: 54px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(76,111,255,0.1);
+  background: rgba(76,111,255,0.08);
   color: black; font-weight: 600; background: rgba(76,111,255,0.95);
   font-size: 12px;
   padding: 4px 10px;
@@ -153,208 +136,83 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
 .copy-popup.show { opacity: 1; }
 .icon.discord-copy { position: relative; }
 
+/* Sigil + aura enhancements */
+.title-row { display:flex; align-items:center; gap:14px; justify-content:center; z-index:22; position:relative; }
+.sigil-wrap { position:relative; width:60px; height:60px; display:inline-flex; align-items:center; justify-content:center; pointer-events:auto; }
+.sigil { width:44px; height:44px; display:block; object-fit:contain; z-index:23; filter:grayscale(1) contrast(36) brightness(2.4); mix-blend-mode:screen; transition:transform 320ms cubic-bezier(.2,.9,.2,1), opacity 320ms; opacity:0.98; pointer-events:none; }
+.sigil-aura{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:128px; height:128px; border-radius:50%; z-index:21; pointer-events:none; background: radial-gradient(circle, rgba(76,111,255,0.28) 0%, rgba(30,50,140,0.16) 25%, rgba(76,111,255,0.06) 55%, rgba(76,111,255,0) 100%); filter: blur(22px); opacity:0.86; animation: sigilPulseSlow 5.8s ease-in-out infinite; }
+@keyframes sigilPulseSlow { 0%{ transform:translate(-50%,-50%) scale(0.96); opacity:0.62 } 50%{ transform:translate(-50%,-50%) scale(1.08); opacity:1 } 100%{ transform:translate(-50%,-50%) scale(0.96); opacity:0.62 } }
 
-/* ===== Sigil + aura (blue only, stronger pulse) ===== */
-.title-row {
-  display:flex;
-  align-items:center;
-  gap:14px;
-  justify-content:center;
-  z-index:11;
-  position:relative;
-}
-.sigil-wrap {
-  position:relative;
-  width:54px;
-  height:54px;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  pointer-events:auto;
-}
-.sigil {
-  width:40px;
-  height:40px;
-  display:block;
-  object-fit:contain;
-  z-index:12;
-  filter:grayscale(1) contrast(40) brightness(2.6);
-  mix-blend-mode:screen;
-  transition:transform 220ms cubic-bezier(.2,.9,.2,1), opacity 220ms;
-  opacity:0.98;
-}
-.sigil:hover { transform: none; cursor: default; }
-.sigil { pointer-events: none; }
+/* Glass reflection under center */
+#center::after { content: ""; position: absolute; bottom: -120px; left: 0; width: 100%; height: 120px; background: linear-gradient(to bottom, rgba(8,18,48,0.08), transparent); transform: scaleY(-1); opacity: 0.12; filter: blur(6px); pointer-events: none; }
 
-/* stronger blue pulsing aura behind sigil */
-.sigil-aura{
-  position:absolute;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%);
-  width:110px;
-  height:110px;
-  border-radius:50%;
-  z-index:10;
-  pointer-events:none;
-  background: radial-gradient(circle, rgba(76,111,255,0.36) 0%, rgba(76,111,255,0.24) 25%, rgba(76,111,255,0.08) 55%, rgba(76,111,255,0) 100%);
-  filter: blur(18px);
-  opacity:0.85;
-  animation: sigilPulse 3.0s ease-in-out infinite;
-  will-change: opacity, transform, filter;
-}
-@keyframes sigilPulse {
-  0% { transform: translate(-50%,-50%) scale(0.92); opacity:0.6; filter:blur(12px); }
-  45% { transform: translate(-50%,-50%) scale(1.12); opacity:1; filter:blur(26px); }
-  100% { transform: translate(-50%,-50%) scale(0.92); opacity:0.6; filter:blur(12px); }
-}
+/* subtle slow breathing */
+@keyframes breathe { 0%{ transform: scale(1.0) } 50%{ transform: scale(1.008) } 100%{ transform: scale(1.0) } }
 
-/* Glass reflection under center card */
-#center::after {
-  content: "";
-  position: absolute;
-  bottom: -120px;
-  left: 0;
-  width: 100%;
-  height: 120px;
-  background: linear-gradient(to bottom, rgba(10,30,80,0.08), transparent);
-  transform: scaleY(-1);
-  opacity: 0.15;
-  filter: blur(6px);
-  pointer-events: none;
-}
-
-</style>
-<style>
-/* ===== ADDED: Cinematic subtle enhancements (blue) ===== */
-:root{
-  --cinema-glow: rgba(76,111,255,0.12);
-  --pulse-speed: 0.22s;
-}
-/* Entrance */
-#center.show .pfp, #center.show h1, #center.show .icon-row { 
-  animation: cineEnter 820ms cubic-bezier(.2,.9,.2,1) both;
-  will-change: transform, opacity, filter;
-}
-#center.show .pfp { animation-delay: 120ms; }
-#center.show h1 { animation-delay: 220ms; }
-#center.show .icon-row { animation-delay: 350ms; }
-
-@keyframes cineEnter{
-  0%{ opacity:0; transform: translateY(18px) scale(.98); filter:blur(6px) saturate(.85) }
-  60%{ opacity:1; transform: translateY(-6px) scale(1.02); filter:blur(0px) saturate(1.06) }
-  100%{ opacity:1; transform: translateY(0) scale(1); filter:none }
-}
-
-/* slow subtle camera drift */
-body { transition: transform 8s ease-in-out; }
-@keyframes cameraDrift {
-  0%{ transform: translateY(0) }
-  50%{ transform: translateY(-6px) }
-  100%{ transform: translateY(0) }
-}
-body { animation: cameraDrift 28s ease-in-out infinite; }
-
-/* title hover flicker */
-h1:hover { text-shadow: 0 6px 42px rgba(76,111,255,0.06), 0 2px 8px rgba(0,0,0,0.35); transform:scale(1.02); }
-h1 { transition: text-shadow 220ms ease, transform 220ms cubic-bezier(.2,.9,.2,1); }
-
-/* icon subtle glow on hover */
-.icon:hover { box-shadow: 0 18px 54px rgba(76,111,255,0.04), inset 0 1px 0 rgba(76,111,255,0.02); transform: translateY(-6px) scale(1.06) rotateZ(-0.6deg); }
-.icon:active { transform: translateY(-2px) scale(1.03) rotateZ(-0.2deg); }
-
-/* cursor ripple */
-.cursor-ripple {
-  position: fixed;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  pointer-events: none;
-  transform: translate(-50%,-50%) scale(0.2);
-  opacity: 0.32;
-  box-shadow: 0 0 28px rgba(76,111,255,0.12), 0 0 6px rgba(76,111,255,0.06) inset;
-  transition: transform 420ms cubic-bezier(.2,.9,.2,1), opacity 420ms ease;
-  z-index: 9998;
-}
-.cursor-ripple.expand { transform: translate(-50%,-50%) scale(3.6); opacity: 0; }
-
-/* film grain subtle fade toggle */
-.filmgrain-fade { transition: opacity 1.2s ease; opacity:0.18; }
-
-/* enter screen ripple */
-.enter-ripple { position: absolute; inset:0; display:block; pointer-events:none; mix-blend-mode:screen; }
-.enter-ripple .r { position:absolute; width:120px; height:120px; border-radius:50%; background: radial-gradient(circle, rgba(76,111,255,0.12) 0%, rgba(76,111,255,0) 40%); left:50%; top:50%; transform:translate(-50%,-50%) scale(0.6); opacity:0; }
-.enter-ripple.play .r { animation: enterRipple 820ms cubic-bezier(.18,.9,.2,1) forwards; }
-@keyframes enterRipple { 0%{ transform:translate(-50%,-50%) scale(0.6); opacity:0.45 } 60%{ transform:translate(-50%,-50%) scale(2.6); opacity:0.18 } 100%{ transform:translate(-50%,-50%) scale(3.6); opacity:0 } }
-
-/* subtle aura rotation and shimmer */
-#aura { transition: transform 420ms linear, opacity 280ms ease; will-change: transform, opacity, filter; }
-.aura-rotate { animation: auraRotate 24s linear infinite; }
-@keyframes auraRotate { 0%{ transform: translate(-50%,-50%) rotate(0deg) } 100%{ transform: translate(-50%,-50%) rotate(360deg) } }
-</style>
-<style>
-/* ===== ENHANCEMENT: Bigger card + fixed custom cursor on enter ===== */
-#center {
-  transform: scale(1.5);
-  transform-origin: center center;
-}
-#enterText { cursor: none !important; }
 </style>
 </head>
 <body>
 <!-- ENTER -->
 <div id="enterScreen"><div id="enterText" tabindex="0">Enter the Void</div></div>
+
 <!-- BACKGROUND + CANVASES -->
-<img alt="night city" class="bg" src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExeXA4MGhqcWR0bjFhZnd5OWgzOGI1NnRwNGJxdDU1ajd0Njh5MXd4MiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/sTvpri7hXgsBfPACBP/giphy.gif"/>
+<img alt="night gif" class="bg" src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExeXA4MGhqcWR0bjFhZnd5OWgzOGI1NnRwNGJxdDU1ajd0Njh5MXd4MiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/sTvpri7hXgsBfPACBP/giphy.gif"/>
+<canvas id="stars"></canvas>
 <canvas id="waves"></canvas>
 <canvas id="particles"></canvas>
 <canvas id="snow"></canvas>
 <canvas id="fog"></canvas>
 <canvas id="grain"></canvas>
+
 <div class="overlay"></div>
 <div class="vignette"></div>
 <div class="scanlines"></div>
 <div class="flicker" id="flick"></div>
+
 <!-- CENTER -->
 <div aria-hidden="true" id="center">
-<div class="aura" id="aura"></div>
-<div class="pfp" id="pfp">
-<img alt="pfp" src="https://i.imgur.com/OJeD12w.jpeg"/>
-</div>
+  <div class="aura" id="aura"></div>
+  <div class="pfp" id="pfp">
+    <img alt="pfp" src="https://i.imgur.com/OJeD12w.jpeg"/>
+  </div>
 
   <div class="title-row">
     <h1 id="title">lung</h1>
     <div class="sigil-wrap" aria-hidden="true">
-      
+      <div class="sigil-aura" aria-hidden="true"></div>
       <img src="https://i.imgur.com/2k8HQg9.png" alt="sigil" class="sigil"/>
     </div>
   </div>
 
-<div class="icon-row" id="icons">
-<div class="icon discord-copy" title="Copy Discord"><img alt="discord" src="https://cdn-icons-png.flaticon.com/512/2111/2111370.png"/><div class="copy-popup" id="copyPopup">Copied!</div></div>
-<a class="icon" href="https://t.me/lntersect" rel="noreferrer" target="_blank"><img alt="telegram" src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png"/></a>
+  <div class="icon-row" id="icons">
+    <div class="icon discord-copy" title="Copy Discord"><img alt="discord" src="https://cdn-icons-png.flaticon.com/512/2111/2111370.png"/><div class="copy-popup" id="copyPopup">Copied!</div></div>
+    <a class="icon" href="https://t.me/lntersect" rel="noreferrer" target="_blank"><img alt="telegram" src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png"/></a>
+  </div>
+
+  <div aria-hidden="true" id="visualizer">
+    <!-- 20 bars -->
+    <div class="vbar" style="height:8px"></div><div class="vbar" style="height:10px"></div><div class="vbar" style="height:7px"></div><div class="vbar" style="height:9px"></div>
+    <div class="vbar" style="height:11px"></div><div class="vbar" style="height:8px"></div><div class="vbar" style="height:7px"></div><div class="vbar" style="height:10px"></div>
+    <div class="vbar" style="height:9px"></div><div class="vbar" style="height:8px"></div><div class="vbar" style="height:7px"></div><div class="vbar" style="height:10px"></div>
+    <div class="vbar" style="height:9px"></div><div class="vbar" style="height:8px"></div><div class="vbar" style="height:11px"></div><div class="vbar" style="height:7px"></div>
+    <div class="vbar" style="height:8px"></div><div class="vbar" style="height:9px"></div><div class="vbar" style="height:7px"></div><div class="vbar" style="height:8px"></div>
+  </div>
 </div>
-<div aria-hidden="true" id="visualizer">
-<!-- 20 bars -->
-<div class="vbar" style="height:8px"></div><div class="vbar" style="height:10px"></div><div class="vbar" style="height:7px"></div><div class="vbar" style="height:9px"></div>
-<div class="vbar" style="height:11px"></div><div class="vbar" style="height:8px"></div><div class="vbar" style="height:7px"></div><div class="vbar" style="height:10px"></div>
-<div class="vbar" style="height:9px"></div><div class="vbar" style="height:8px"></div><div class="vbar" style="height:7px"></div><div class="vbar" style="height:10px"></div>
-<div class="vbar" style="height:9px"></div><div class="vbar" style="height:8px"></div><div class="vbar" style="height:11px"></div><div class="vbar" style="height:7px"></div>
-<div class="vbar" style="height:8px"></div><div class="vbar" style="height:9px"></div><div class="vbar" style="height:7px"></div><div class="vbar" style="height:8px"></div>
-</div>
-</div>
+
 <!-- CONTROLS -->
 <div aria-hidden="true" id="controls" style="display:none">
-<button aria-label="Play/Pause" aria-pressed="false" class="btn" id="playBtn" title="Play/Pause">
-<svg fill="none" height="18" stroke="#4c6fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4" viewbox="0 0 24 24" width="18"><path d="M5 3v18l15-9L5 3z"></path></svg>
-</button>
-<button aria-label="Mute/Unmute" aria-pressed="false" class="btn" id="muteBtn" title="Mute/Unmute">
-<svg fill="none" height="14" stroke="#4c6fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4" viewbox="0 0 24 24" width="14"><path d="M11 5L6 9H3v6h3l5 4V5z"></path><path d="M19 9a4 4 0 010 6"></path></svg>
-</button>
-<input aria-label="Volume" id="vol" max="100" min="0" type="range" value="70"/>
+  <button aria-label="Play/Pause" aria-pressed="false" class="btn" id="playBtn" title="Play/Pause">
+    <svg fill="none" height="18" stroke="#4c6fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4" viewbox="0 0 24 24" width="18"><path d="M5 3v18l15-9L5 3z"></path></svg>
+  </button>
+  <button aria-label="Mute/Unmute" aria-pressed="false" class="btn" id="muteBtn" title="Mute/Unmute">
+    <svg fill="none" height="14" stroke="#4c6fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4" viewbox="0 0 24 24" width="14"><path d="M11 5L6 9H3v6h3l5 4V5z"></path><path d="M19 9a4 4 0 010 6"></path></svg>
+  </button>
+  <input aria-label="Volume" id="vol" max="100" min="0" type="range" value="68"/>
 </div>
+
 <div aria-hidden="true" class="cursor" id="cursorEl"></div>
 <div id="ytHost" style="width:1px;height:1px;overflow:hidden;position:fixed;left:-9999px;top:-9999px;"></div>
+
 <script>
 /* ======= Utilities & DOM ======= */
 const enterScreen = document.getElementById('enterScreen');
@@ -370,10 +228,40 @@ const visualizer = document.getElementById('visualizer');
 const flick = document.getElementById('flick');
 const aura = document.getElementById('aura');
 const title = document.getElementById('title');
+const starsCanvas = document.getElementById('stars');
 
 let ytPlayer = null;
 let isPlaying = false;
 let isMuted = false;
+
+/* ======= Stars field (subtle, slow) ======= */
+const sctx = starsCanvas.getContext('2d');
+let SW = innerWidth, SH = innerHeight;
+function resizeStars(){ SW = innerWidth; SH = innerHeight; starsCanvas.width = SW; starsCanvas.height = SH; drawStars(); }
+window.addEventListener('resize', resizeStars);
+function drawStars(){
+  sctx.clearRect(0,0,SW,SH);
+  const count = Math.round((SW*SH)/50000); // fewer stars, deep void
+  for(let i=0;i<count;i++){
+    const x = Math.random()*SW, y = Math.random()*SH;
+    const r = Math.random()*1.1;
+    const a = 0.06 + Math.random()*0.18;
+    sctx.fillStyle = `rgba(180,200,255,${a})`;
+    sctx.beginPath();
+    sctx.arc(x,y,r,0,Math.PI*2);
+    sctx.fill();
+  }
+}
+resizeStars();
+
+/* slow twinkle */
+function twinkle(){
+  sctx.globalCompositeOperation = 'lighter';
+  // redraw with slight alpha modulation
+  drawStars();
+  requestAnimationFrame(()=> setTimeout(twinkle, 1200 + Math.random()*1600));
+}
+setTimeout(twinkle, 800);
 
 /* ======= YouTube IFrame API (lazy load after user gesture) ======= */
 function loadYouTubeAPI(cb){
@@ -392,7 +280,7 @@ function createYTPlayer(){
   ytPlayer = new YT.Player('ytPlayerEl', {
     height: '1', width: '1',
     videoId: '8taz5FtrQUs',
-    playerVars: { autoplay: 1, controls: 0, loop: 1, playlist: '8taz5FtrQUs', rel: 0, modestbranding: 1 },
+    playerVars: { autoplay: 1, controls: 0, loop: 1, playlist: '8taz5FtrQUs', rel: 0, modestbranding: 1, iv_load_policy:3 },
     events: {
       onReady: (e) => {
         const v = parseInt(volRange.value, 10);
@@ -411,25 +299,24 @@ function createYTPlayer(){
   });
 }
 
-/* ======= Enter flow ======= */
+/* ======= Enter flow (slower cinematic) ======= */
 enterText.addEventListener('click', () => startExperience());
 enterText.addEventListener('keydown', (e) => { if(e.key === 'Enter' || e.key === ' ') startExperience(); });
-/* Allow clicking anywhere on the enter screen to start */
 enterScreen.addEventListener('click', () => startExperience());
 
 function startExperience(){
-  // fade enter screen
+  // fade enter screen slower
   enterScreen.classList.add('fade');
-  setTimeout(()=> enterScreen.style.display='none',900);
+  setTimeout(()=> enterScreen.style.display='none',1500);
 
-  // reveal content
+  // reveal content (slower)
   center.classList.add('show');
-  center.style.animation = 'breathe 8s ease-in-out infinite';
+  center.style.animation = 'breathe 12s ease-in-out infinite';
   center.removeAttribute('aria-hidden');
 
   // small flick
   flick.style.opacity = 0.22;
-  setTimeout(()=> flick.style.opacity = 0, 240);
+  setTimeout(()=> flick.style.opacity = 0, 420);
 
   // start canvases/particles
   spawnSnow();
@@ -477,15 +364,15 @@ document.addEventListener('keydown', (e) => {
   if(e.code === 'Space'){ e.preventDefault(); if(ytPlayer){ if(isPlaying){ ytPlayer.pauseVideo(); isPlaying=false; } else { ytPlayer.playVideo(); isPlaying=true; } updatePlayIcon(); } }
 });
 
-/* ======= Fake visualizer (smooth, subtle) ======= */
+/* ======= Visualizer (unchanged but slightly slowed) ======= */
 const vbars = Array.from(document.querySelectorAll('.vbar'));
 const VCOUNT = vbars.length;
 let vizStart = 0;
 function fakeEnergy(t){
-  const beat = 0.8 + 0.45 * Math.abs(Math.sin(t*0.004 + 0.02));
-  const rhythm = 0.5 + 0.45 * Math.abs(Math.sin(t*0.011 + 0.7));
-  const bursts = (Math.sin(t*0.02) > 0.82) ? (0.4 + Math.random()*0.9) : (0.02*Math.random());
-  return Math.min(1, (0.55*beat + 0.35*rhythm + 0.9*bursts) * (0.95 + 0.2*Math.random()));
+  const beat = 0.75 + 0.42 * Math.abs(Math.sin(t*0.0035 + 0.02));
+  const rhythm = 0.45 + 0.42 * Math.abs(Math.sin(t*0.009 + 0.7));
+  const bursts = (Math.sin(t*0.018) > 0.86) ? (0.3 + Math.random()*0.8) : (0.02*Math.random());
+  return Math.min(1, (0.55*beat + 0.35*rhythm + 0.9*bursts) * (0.95 + 0.18*Math.random()));
 }
 function stepViz(t){
   if(!vizStart) vizStart = t;
@@ -493,102 +380,49 @@ function stepViz(t){
   const E = fakeEnergy(elapsed);
   for(let i=0;i<VCOUNT;i++){
     const idx = i/VCOUNT;
-    const local = E * (0.6 + 0.6*(1-idx)) + 0.12*Math.sin(elapsed*0.007*(1+idx*2)+i);
-    const transient = (Math.random() < 0.02) ? (0.2 + Math.random()*0.8) : 0;
+    const local = E * (0.58 + 0.6*(1-idx)) + 0.1*Math.sin(elapsed*0.006*(1+idx*2)+i);
+    const transient = (Math.random() < 0.015) ? (0.18 + Math.random()*0.7) : 0;
     const val = Math.min(1, Math.max(0, local + transient));
-    const px = Math.max(6, Math.round(val * (46 - idx*14)));
+    const px = Math.max(6, Math.round(val * (44 - idx*12)));
     vbars[i].style.height = px + 'px';
-    vbars[i].style.opacity = 0.42 + (val*0.62);
+    vbars[i].style.opacity = 0.38 + (val*0.62);
   }
-  // subtle title scale to energy
-  const strongest = Math.max(...Array.from(vbars).map(b => parseFloat(b.style.height)));
-  const scale = 1 + (strongest/120);
-  // title scale removed to keep 'lung' static;
-  // aura intensity
-  aura.style.opacity = 0.7 + Math.min(0.35, E*0.6);
+  aura.style.opacity = 0.68 + Math.min(0.36, E*0.55);
 }
 
-/* ======= Cursor: fade in/out, hide on touch, hover bloom ======= */
-const HIDE_IDLE_MS = 1000;
+/* ======= Cursor logic (unchanged) ======= */
+const HIDE_IDLE_MS = 1200;
 let idleTimer = null;
 let isTouch = (('ontouchstart' in window) || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0);
 if(!isTouch){
-  // hide system cursor and show custom dot
   document.body.classList.add('no-cursor');
 } else {
-  // on touch devices, ensure the system cursor remains default and hide our dot
   cursorEl.style.display = 'none';
   document.body.classList.remove('no-cursor');
 }
-
 function showCursorImmediate(){
   cursorEl.classList.add('visible');
   cursorEl.classList.remove('idle');
-  // reset idle timer
   clearTimeout(idleTimer);
   idleTimer = setTimeout(()=> {
     cursorEl.classList.remove('visible');
     cursorEl.classList.remove('hover');
   }, HIDE_IDLE_MS);
 }
-
-function setCursorPos(x,y){
-  // smooth follow; immediate set for responsiveness
-  cursorEl.style.left = x + 'px';
-  cursorEl.style.top = y + 'px';
-}
-
+function setCursorPos(x,y){ cursorEl.style.left = x + 'px'; cursorEl.style.top = y + 'px'; }
 function updateHoverState(e){
-  // determine if hovered element is interactive
   const el = document.elementFromPoint(e.clientX, e.clientY);
   if(!el) return false;
   const interactive = el.closest && (el.closest('a,button,input,select,textarea,[role="button"],.btn,.icon'));
-  if(interactive){
-    cursorEl.classList.add('hover');
-  } else {
-    cursorEl.classList.remove('hover');
-  }
+  if(interactive){ cursorEl.classList.add('hover'); } else { cursorEl.classList.remove('hover'); }
 }
+window.addEventListener('pointermove', (e) => { if(isTouch) return; showCursorImmediate(); setCursorPos(e.clientX, e.clientY); updateHoverState(e); });
+document.addEventListener('pointerover', (e) => { if(isTouch) return; const tgt = e.target; if(tgt && tgt.closest && tgt.closest('a,button,input,select,textarea,[role="button"],.btn,.icon')){ cursorEl.classList.add('hover'); showCursorImmediate(); } });
+document.addEventListener('pointerout', (e) => { if(isTouch) return; const tgt = e.target; if(tgt && tgt.closest && tgt.closest('a,button,input,select,textarea,[role="button"],.btn,.icon')){ cursorEl.classList.remove('hover'); } });
+document.addEventListener('pointerdown', (e) => { if(isTouch) return; cursorEl.style.transform = 'translate(-50%,-50%) scale(0.9)'; });
+document.addEventListener('pointerup', (e) => { if(isTouch) return; cursorEl.style.transform = cursorEl.classList.contains('hover') ? 'translate(-50%,-50%) scale(1.85)' : 'translate(-50%,-50%) scale(1)'; });
 
-/* pointermove handler */
-window.addEventListener('pointermove', (e) => {
-  if(isTouch) return;
-  // show and position
-  showCursorImmediate();
-  setCursorPos(e.clientX, e.clientY);
-  // decide hover bloom
-  updateHoverState(e);
-});
-
-/* also adjust hover on pointerover/out to catch element changes without movement */
-document.addEventListener('pointerover', (e) => {
-  if(isTouch) return;
-  // check target
-  const tgt = e.target;
-  if(tgt && tgt.closest && tgt.closest('a,button,input,select,textarea,[role="button"],.btn,.icon')){
-    cursorEl.classList.add('hover');
-    showCursorImmediate();
-  }
-});
-document.addEventListener('pointerout', (e) => {
-  if(isTouch) return;
-  const tgt = e.target;
-  if(tgt && tgt.closest && tgt.closest('a,button,input,select,textarea,[role="button"],.btn,.icon')){
-    cursorEl.classList.remove('hover');
-  }
-});
-
-/* on pointerdown give a tiny press feedback */
-document.addEventListener('pointerdown', (e) => {
-  if(isTouch) return;
-  cursorEl.style.transform = 'translate(-50%,-50%) scale(0.9)';
-});
-document.addEventListener('pointerup', (e) => {
-  if(isTouch) return;
-  cursorEl.style.transform = cursorEl.classList.contains('hover') ? 'translate(-50%,-50%) scale(1.85)' : 'translate(-50%,-50%) scale(1)';
-});
-
-/* ======= CANVAS: waves / particles / snow / fog / grain ======= */
+/* ======= CANVAS: waves / particles / snow / fog / grain (tuned for Deep Void) ======= */
 const waves = document.getElementById('waves');
 const particles = document.getElementById('particles');
 const snow = document.getElementById('snow');
@@ -597,36 +431,35 @@ const grain = document.getElementById('grain');
 
 const wctx = waves.getContext('2d');
 const pctx = particles.getContext('2d');
-const sctx = snow.getContext('2d');
+const snctx = snow.getContext('2d');
 const fctx = fog.getContext('2d');
 const gctx = grain.getContext('2d');
 
 let W = innerWidth, H = innerHeight;
-function resizeAll(){ W = innerWidth; H = innerHeight; [waves,particles,snow,fog,grain].forEach(c=>{ c.width = W; c.height = H; }); }
+function resizeAll(){ W = innerWidth; H = innerHeight; [waves,particles,snow,fog,grain].forEach(c=>{ c.width = W; c.height = H; }); starsCanvas.width = W; starsCanvas.height = H; drawStars(); }
 window.addEventListener('resize', resizeAll);
 resizeAll();
 
-/* moving background waves */
+/* waves: slower, deeper */
 let wavesArr = [];
-for(let i=0;i<6;i++){
-  wavesArr.push({y: H*0.2 + i*(H*0.12), amp: 20 + Math.random()*36, speed: 0.0006 + Math.random()*0.0012, phase: Math.random()*Math.PI*2 });
+for(let i=0;i<5;i++){
+  wavesArr.push({y: H*0.25 + i*(H*0.13), amp: 12 + Math.random()*22, speed: 0.0003 + Math.random()*0.0006, phase: Math.random()*Math.PI*2 });
 }
-
 function drawWaves(t){
   wctx.clearRect(0,0,W,H);
   wctx.globalCompositeOperation = 'lighter';
   for(let i=0;i<wavesArr.length;i++){
     const w = wavesArr[i];
     w.phase += w.speed * (t%10000);
-    const grad = wctx.createLinearGradient(0,w.y-80,0,w.y+80);
-    grad.addColorStop(0, 'rgba(180,200,255,0)');
-    grad.addColorStop(0.4, 'rgba(180,200,255,0.02)');
-    grad.addColorStop(1, 'rgba(180,200,255,0)');
+    const grad = wctx.createLinearGradient(0,w.y-90,0,w.y+90);
+    grad.addColorStop(0, 'rgba(120,150,255,0)');
+    grad.addColorStop(0.45, 'rgba(120,150,255,0.018)');
+    grad.addColorStop(1, 'rgba(120,150,255,0)');
     wctx.fillStyle = grad;
     wctx.beginPath();
     wctx.moveTo(0,H);
-    for(let x=0;x<=W;x+=24){
-      const y = w.y + Math.sin((x*0.006) + (w.phase*0.005)) * w.amp * Math.sin(t*0.0005 + i);
+    for(let x=0;x<=W;x+=28){
+      const y = w.y + Math.sin((x*0.004) + (w.phase*0.004)) * w.amp * Math.sin(t*0.00035 + i*0.6);
       wctx.lineTo(x, y);
     }
     wctx.lineTo(W,H);
@@ -636,62 +469,40 @@ function drawWaves(t){
   wctx.globalCompositeOperation = 'source-over';
 }
 
-/* small floating particles */
+/* floating particles (slower, fewer, softer) */
 let smalls = [];
-for(let i=0;i<90;i++){
-  smalls.push({ x: Math.random()*W, y: Math.random()*H, r: Math.random()*1.6, vy: 0.2+Math.random()*0.7 });
+window.smalls = smalls;
+for(let i=0;i<72;i++){
+  smalls.push({ x: Math.random()*W, y: Math.random()*H, r: Math.random()*1.8, vy: 0.06+Math.random()*0.26, alpha: 0.08 + Math.random()*0.12 });
 }
-
-/* snowflakes */
-let flakes = [];
-for(let i=0;i<60;i++){
-  flakes.push({ x: Math.random()*W, y: Math.random()*H, r: Math.random()*2+0.8, vy:0.4+Math.random()*0.8, sway:Math.random()*1.6 });
-}
-
-/* fog blobs */
-let fogBlobs = [];
-for(let i=0;i<6;i++){
-  fogBlobs.push({ x: Math.random()*W, y: Math.random()*H, s: (W/2)*(0.12+Math.random()*0.5), vx:(Math.random()-0.5)*0.06, vy:(Math.random()-0.5)*0.03, alpha:0.02+Math.random()*0.06, phase:Math.random()*Math.PI*2 });
-}
-
-/* draw frames */
 function drawParticles(){
   pctx.clearRect(0,0,W,H);
-  pctx.fillStyle = 'rgba(76,111,255,0.28)';
+  pctx.fillStyle = 'rgba(76,111,255,0.16)';
   for(let p of smalls){
     pctx.beginPath();
     pctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    pctx.fillStyle = `rgba(76,111,255,${p.alpha})`;
     pctx.fill();
-    p.y -= p.vy * 0.25;
-    if(p.y < -10){ p.y = H + 10; p.x = Math.random()*W; }
+    p.y -= p.vy * 0.6;
+    p.x += Math.sin((p.y+p.r)*0.001) * 0.2;
+    if(p.y < -10){ p.y = H + 20; p.x = Math.random()*W; }
   }
 }
 
-function drawSnow(){
-  sctx.clearRect(0,0,W,H);
-  sctx.fillStyle = 'rgba(76,111,255,0.28)';
-  sctx.beginPath();
-  for(let f of flakes){
-    sctx.moveTo(f.x,f.y);
-    sctx.arc(f.x,f.y,f.r,0,Math.PI*2);
-  }
-  sctx.fill();
-  for(let f of flakes){
-    f.y += f.vy;
-    f.x += Math.sin((f.y+f.sway)*0.008)*1.6;
-    if(f.y > H + 8){ f.y = -6; f.x = Math.random()*W; }
-  }
+/* drifting fog (bigger, slower) */
+let fogBlobs = [];
+for(let i=0;i<7;i++){
+  fogBlobs.push({ x: Math.random()*W, y: Math.random()*H, s: (W/2)*(0.18+Math.random()*0.6), vx:(Math.random()-0.5)*0.02, vy:(Math.random()-0.5)*0.01, alpha:0.015+Math.random()*0.06, phase:Math.random()*Math.PI*2 });
 }
-
 function drawFog(t){
   fctx.clearRect(0,0,W,H);
   for(let b of fogBlobs){
-    b.x += b.vx * Math.cos(t*0.0007 + b.phase) * 0.8;
-    b.y += b.vy * Math.sin(t*0.0004 + b.phase) * 0.8;
+    b.x += b.vx * Math.cos(t*0.0004 + b.phase) * 0.5;
+    b.y += b.vy * Math.sin(t*0.00025 + b.phase) * 0.5;
     const g = fctx.createRadialGradient(b.x,b.y,0,b.x,b.y,b.s);
     g.addColorStop(0, `rgba(76,111,255,${b.alpha})`);
-    g.addColorStop(0.35, `rgba(76,111,255,${b.alpha*0.45})`);
-    g.addColorStop(1, 'rgba(76,111,255,0)');
+    g.addColorStop(0.4, `rgba(8,16,48,${b.alpha*0.55})`);
+    g.addColorStop(1, 'rgba(8,16,48,0)');
     fctx.fillStyle = g;
     fctx.beginPath();
     fctx.arc(b.x,b.y,b.s,0,Math.PI*2);
@@ -699,10 +510,32 @@ function drawFog(t){
   }
 }
 
+/* subtle snow (sparse drifting) */
+let flakes = [];
+for(let i=0;i<40;i++){
+  flakes.push({ x: Math.random()*W, y: Math.random()*H, r: Math.random()*2.2+0.6, vy:0.12+Math.random()*0.5, sway:Math.random()*1.3 });
+}
+function drawSnow(){
+  snctx.clearRect(0,0,W,H);
+  snctx.fillStyle = 'rgba(76,111,255,0.12)';
+  snctx.beginPath();
+  for(let f of flakes){
+    snctx.moveTo(f.x,f.y);
+    snctx.arc(f.x,f.y,f.r,0,Math.PI*2);
+  }
+  snctx.fill();
+  for(let f of flakes){
+    f.y += f.vy;
+    f.x += Math.sin((f.y+f.sway)*0.006)*1.2;
+    if(f.y > H + 12){ f.y = -6; f.x = Math.random()*W; }
+  }
+}
+
+/* grain: subtle */
 function drawGrain(){
   gctx.clearRect(0,0,W,H);
-  gctx.fillStyle = 'rgba(76,111,255,0.02)';
-  const dots = Math.round(W*H/7000);
+  gctx.fillStyle = 'rgba(76,111,255,0.01)';
+  const dots = Math.round(W*H/12000);
   for(let i=0;i<dots;i++){
     const x = Math.random()*W, y = Math.random()*H;
     gctx.fillRect(x,y,1,1);
@@ -719,27 +552,25 @@ function frame(t){
   drawFog(t);
   drawGrain();
   stepViz(t);
-  // occasional flick
-  if(Math.random() < 0.002){ flick.style.opacity = 0.28; setTimeout(()=> flick.style.opacity = 0, 140); }
+  if(Math.random() < 0.0015){ flick.style.opacity = 0.24; setTimeout(()=> flick.style.opacity = 0, 180); }
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
 
-/* spawn helpers */
+/* spawn helpers (kept for API parity) */
 function spawnSnow(){ /* already running */ }
 function spawnFog(){ /* already running */ }
 function spawnGrain(){ drawGrain(); }
 
-/* expose debug */
 window.__VOID = { spawnSnow, spawnFog, spawnGrain };
 
-/* === Parallax (no center float) === */
+/* Parallax: slower/more subtle */
 let tX = 0, tY = 0;
 let cX = 0, cY = 0;
-const strengthRotate = 10;
-const depthBg = 0.05;
-const depthFog = 0.18;
-const depthAura = 0.3;
+const strengthRotate = 8;
+const depthBg = 0.035;
+const depthFog = 0.14;
+const depthAura = 0.26;
 
 window.addEventListener('mousemove', (e) => {
   const x = (e.clientX / window.innerWidth - 0.5) * 2;
@@ -748,9 +579,9 @@ window.addEventListener('mousemove', (e) => {
 });
 
 function animate3DParallax(){
-  const smoothness = 0.06;
+  const smoothness = 0.048;
   cX += (tX - cX) * smoothness;
-  cY += (tY - cY) * 0.08;
+  cY += (tY - cY) * 0.06;
 
   const bgEl = document.querySelector('.bg');
   const fogEl = document.getElementById('fog');
@@ -760,11 +591,12 @@ function animate3DParallax(){
   const rotateX = cY * -strengthRotate;
   const rotateY = cX * strengthRotate;
 
-  if(bgEl) bgEl.style.transform = `translate(${cX * 60 * depthBg}px, ${cY * 60 * depthBg}px) scale(1.06) rotateY(${rotateY*0.4}deg) rotateX(${rotateX*0.4}deg)`;
-  if(fogEl) fogEl.style.transform = `translate(${cX * 80 * depthFog}px, ${cY * 80 * depthFog}px) rotateY(${rotateY*0.6}deg) rotateX(${rotateX*0.6}deg)`;
-  if(auraEl) auraEl.style.transform = `translate(calc(-50% + ${cX * 100 * depthAura}px), calc(-50% + ${cY * 100 * depthAura}px)) rotateY(${rotateY*0.8}deg) rotateX(${rotateX*0.8}deg)`;
+  if(bgEl) bgEl.style.transform = `translate(${cX * 60 * depthBg}px, ${cY * 60 * depthBg}px) scale(1.04) rotateY(${rotateY*0.32}deg) rotateX(${rotateX*0.32}deg)`;
+  if(fogEl) fogEl.style.transform = `translate(${cX * 80 * depthFog}px, ${cY * 80 * depthFog}px) rotateY(${rotateY*0.5}deg) rotateX(${rotateX*0.5}deg)`;
+  if(auraEl) auraEl.style.transform = `translate(calc(-50% + ${cX * 100 * depthAura}px), calc(-50% + ${cY * 100 * depthAura}px)) rotateY(${rotateY*0.6}deg) rotateX(${rotateX*0.6}deg)`;
 
   if(centerEl){
+    // keep center mostly stable in deep void
     centerEl.style.transform = 'none';
   }
 
@@ -772,16 +604,13 @@ function animate3DParallax(){
 }
 animate3DParallax();
 
-/* ======= Aura pulse enable ======= */
+/* ======= Aura pulse enable (slower) ======= */
 function enableAuraPulse(){
-  aura.style.animation = 'auraPulse 6s ease-in-out infinite';
+  aura.style.animation = 'auraPulseSlow 10s ease-in-out infinite';
   aura.style.opacity = 0.9;
 }
 
-/* Done enhancements */
-
-
-// ===== Discord copy handler =====
+/* ===== Discord copy handler (keeps 'lung') ===== */
 const discordIcon = document.querySelector('.discord-copy');
 const popup = document.getElementById('copyPopup');
 if (discordIcon) {
@@ -793,18 +622,15 @@ if (discordIcon) {
   });
 }
 
-</script>
-<script>
-/* ===== ADDED: Cinematic JS enhancements (blue) ===== */
+/* ===== Cinematic JS extras (tuned for Deep Void) ===== */
 (function(){
   try{
-    // insert a ripple element into enter screen
     const enterText = document.getElementById('enterText');
-    const enterScreen = document.getElementById('enterScreen');
+    const enterScreenEl = document.getElementById('enterScreen');
     const rippleWrap = document.createElement('div');
     rippleWrap.className = 'enter-ripple';
     rippleWrap.innerHTML = '<span class="r"></span>';
-    enterScreen.appendChild(rippleWrap);
+    enterScreenEl.appendChild(rippleWrap);
 
     enterText.addEventListener('pointerdown', ()=> {
       rippleWrap.classList.remove('play');
@@ -812,7 +638,7 @@ if (discordIcon) {
       rippleWrap.classList.add('play');
     });
 
-    // create cursor ripple element
+    // cursor ripple
     const ripple = document.createElement('div');
     ripple.className = 'cursor-ripple';
     document.body.appendChild(ripple);
@@ -822,215 +648,110 @@ if (discordIcon) {
       ripple.style.left = e.clientX + 'px';
       ripple.style.top = e.clientY + 'px';
       ripple.classList.remove('expand');
-      // trigger reflow
       void ripple.offsetWidth;
       ripple.classList.add('expand');
-      setTimeout(()=> ripple.classList.remove('expand'), 480);
+      setTimeout(()=> ripple.classList.remove('expand'), 520);
     });
 
-    // Make film grain slightly fade in after enter
-    const grain = document.getElementById('grain');
-    if(grain) grain.classList.add('filmgrain-fade');
+    // film grain fade
+    const grainEl = document.getElementById('grain');
+    if(grainEl) grainEl.classList.add('filmgrain-fade');
 
-    // Tie aura brightness to visualizer energy by sampling bar heights
+    // aura rotation & slow shimmer tied to visualizer
     const auraEl = document.getElementById('aura');
     auraEl.classList.add('aura-rotate');
-    let lastEnergy = 0;
+    let smooth = 0;
     function sampleEnergy(){
       const bars = Array.from(document.querySelectorAll('.vbar'));
       if(!bars.length) return 0;
-      // compute normalized energy from bar heights
       const vals = bars.map(b=> parseFloat(b.style.height || 6));
       const max = Math.max(...vals);
       const energy = Math.min(1, Math.max(0, (max - 6) / 40));
       return energy;
     }
-    // smooth energy and apply to aura opacity & blur
-    let smooth = 0;
     function auraTick(){
       const target = sampleEnergy();
-      smooth += (target - smooth) * 0.22;
-      // set opacity range and slight scale on beat
-      const op = 0.55 + smooth * 0.78; // base + energy
-      const sc = 1 + smooth * 0.035;
+      smooth += (target - smooth) * 0.16;
+      const op = 0.5 + smooth * 0.9;
+      const sc = 1 + smooth * 0.04;
       auraEl.style.opacity = op;
-      auraEl.style.transform = `translate(calc(-50% + ${window.__VOID?.cX || 0}px), calc(-50% + ${window.__VOID?.cY || 0}px)) rotate(${(Date.now()%36000)/100}deg) scale(${sc})`;
-      // gentle filter for shimmer
-      auraEl.style.filter = `blur(${34 - smooth*6}px) saturate(${1 + smooth*0.12})`;
+      auraEl.style.transform = `translate(calc(-50% + ${window.__VOID?.cX || 0}px), calc(-50% + ${window.__VOID?.cY || 0}px)) rotate(${(Date.now()%54000)/150}deg) scale(${sc})`;
+      auraEl.style.filter = `blur(${46 - smooth*8}px) saturate(${1 + smooth*0.12})`;
       requestAnimationFrame(auraTick);
     }
     requestAnimationFrame(auraTick);
 
-    // gentle periodic glow on title synced a bit slower
-    const title = document.getElementById('title');
+    // title slow glow
+    const titleEl = document.getElementById('title');
     (function titleGlow(){
       const e = sampleEnergy();
-      title.style.textShadow = `0 ${(4 + e*18)|0}px ${8 + e*36}px rgba(76,111,255,${0.06 + e*0.28})`;
+      titleEl.style.textShadow = `0 ${(4 + e*18)|0}px ${8 + e*36}px rgba(76,111,255,${0.06 + e*0.26})`;
       requestAnimationFrame(titleGlow);
     })();
-
-    // small particle pulsing with beat
-    const smallsPulse = window.__VOID;
-    let lastPulse = 0;
-    function pulseParticles(){
-      const e = sampleEnergy();
-      if(e > 0.48 && Date.now() - lastPulse > 160){
-        // nudge small particles velocity slightly
-        if(window.smalls) for(let p of window.smalls) p.vy += 0.02 * (0.6 + Math.random()*0.8);
-        lastPulse = Date.now();
-      }
-      requestAnimationFrame(pulseParticles);
-    }
-    requestAnimationFrame(pulseParticles);
-
-    // ensure our sampleEnergy plays nicely after DOM updates
-    setTimeout(()=>{ /* warm start */ },400);
-  }catch(err){ console.warn('Cinematic extras failed:', err); }
+  }catch(err){ console.warn('DeepVoid extras failed:', err); }
 })();
 </script>
 
-<!-- === Cinematic Quote === -->
+<!-- Quote -->
 <style>
 #voidQuote {
   position: fixed;
   bottom: 60px;
-  left: 80px;
+  left: 64px;
   font-size: 0.9rem;
   font-style: italic;
   letter-spacing: 1.2px;
-  color: rgba(76,111,255,0.9);
+  color: rgba(76,111,255,0.88);
   opacity: 0;
-  z-index: 8;
+  z-index: 18;
   line-height: 1.6;
-  filter: drop-shadow(0 0 14px rgba(76,111,255,0.15));
-  transition: opacity 2s ease;
+  filter: drop-shadow(0 0 12px rgba(76,111,255,0.12));
+  transition: opacity 2.2s ease;
 }
 #voidQuote.show { opacity: 1; }
+#voidQuote.pulse { animation: quotePulse 8s ease-in-out infinite; }
 @keyframes quotePulse {
-  0%,100% { text-shadow: 0 0 6px rgba(76,111,255,0.25), 0 0 14px rgba(76,111,255,0.08); }
-  50% { text-shadow: 0 0 18px rgba(76,111,255,0.55), 0 0 34px rgba(76,111,255,0.18); }
+  0%,100% { text-shadow: 0 0 6px rgba(76,111,255,0.16); }
+  50% { text-shadow: 0 0 18px rgba(76,111,255,0.42); }
 }
-#voidQuote.pulse { animation: quotePulse 6s ease-in-out infinite; }
 </style>
 
 <div id="voidQuote"><i>I disappeared into the dark so I could see what light was left in me.</i></div>
 
 <script>
-// fade and pulse quote after Enter-the-Void
+// fade and pulse quote after Enter-the-Void (slower)
 const quote = document.getElementById('voidQuote');
 const oldStart = startExperience;
 startExperience = function(){
   oldStart();
   setTimeout(()=>{
     quote.classList.add('show');
-    setTimeout(()=>quote.classList.add('pulse'),1000);
-  }, 1200);
+    setTimeout(()=>quote.classList.add('pulse'),1500);
+  }, 1600);
 };
 </script>
 
-
-<!-- === Subtle 3D Tilt + Light Flash Effect === -->
+<!-- 3D tilt + subtle click flash (kept for feel) -->
 <style>
-#center {
-  transform-style: preserve-3d;
-  transition: transform 0.4s cubic-bezier(.2,.9,.2,1);
-  will-change: transform;
-}
-.click-flash {
-  position: fixed;
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(76,111,255,0.35) 0%, rgba(76,111,255,0) 70%);
-  pointer-events: none;
-  mix-blend-mode: screen;
-  transform: translate(-50%, -50%) scale(0.4);
-  opacity: 0.7;
-  animation: flashExpand 0.7s ease-out forwards;
-  z-index: 9998;
-}
-@keyframes flashExpand {
-  0% { transform: translate(-50%, -50%) scale(0.4); opacity: 0.7; }
-  70% { opacity: 0.3; }
-  100% { transform: translate(-50%, -50%) scale(2.8); opacity: 0; }
-}
+.click-flash { position: fixed; width: 100px; height: 100px; border-radius: 50%; background: radial-gradient(circle, rgba(76,111,255,0.28) 0%, rgba(76,111,255,0) 70%); pointer-events: none; mix-blend-mode: screen; transform: translate(-50%, -50%) scale(0.4); opacity: 0.7; animation: flashExpand 0.9s ease-out forwards; z-index: 9998; }
+@keyframes flashExpand { 0% { transform: translate(-50%, -50%) scale(0.4); opacity: 0.7; } 70% { opacity: 0.3; } 100% { transform: translate(-50%, -50%) scale(2.8); opacity: 0; } }
 </style>
 <script>
-// Subtle 3D tilt motion
 const centerCard = document.getElementById('center');
 document.addEventListener('mousemove', e => {
   const x = (e.clientX / innerWidth - 0.5) * 2;
   const y = (e.clientY / innerHeight - 0.5) * 2;
-  centerCard.style.transform = `rotateY(${x * 6}deg) rotateX(${y * -6}deg)`;
+  centerCard.style.transform = `rotateY(${x * 4}deg) rotateX(${y * -4}deg)`;
 });
-document.addEventListener('mouseleave', () => {
-  centerCard.style.transform = 'rotateY(0deg) rotateX(0deg)';
-});
-
-// Light flash click effect
+document.addEventListener('mouseleave', () => { centerCard.style.transform = 'rotateY(0deg) rotateX(0deg)'; });
 document.addEventListener('click', e => {
   const flash = document.createElement('div');
   flash.className = 'click-flash';
   flash.style.left = e.clientX + 'px';
   flash.style.top = e.clientY + 'px';
   document.body.appendChild(flash);
-  setTimeout(() => flash.remove(), 700);
+  setTimeout(() => flash.remove(), 900);
 });
-</script>
-
-
-<!-- === Enhanced Independent 3D Parallax === -->
-<style>
-body { perspective: 1000px; }
-#center {
-  transform-style: preserve-3d;
-  transition: transform 0.5s cubic-bezier(.2,.9,.2,1);
-}
-#center .pfp { transform: translateZ(40px); transition: transform 0.5s ease; }
-#center h1 { transform: translateZ(60px); transition: transform 0.5s ease; }
-#center .sigil-wrap { transform: translateZ(80px); transition: transform 0.5s ease; }
-#center .icon-row { transform: translateZ(50px); transition: transform 0.5s ease; }
-</style>
-<script>
-const center3D = document.getElementById('center');
-const pfp3D = center3D.querySelector('.pfp');
-const sigil3D = center3D.querySelector('.sigil-wrap');
-const title3D = center3D.querySelector('h1');
-const icons3D = center3D.querySelector('.icon-row');
-
-let tiltX = 0, tiltY = 0, smoothX = 0, smoothY = 0;
-
-document.addEventListener('mousemove', e => {
-  const x = (e.clientX / innerWidth - 0.5) * 2;
-  const y = (e.clientY / innerHeight - 0.5) * 2;
-  tiltX = x * 12;  // more dramatic tilt
-  tiltY = y * -12;
-});
-
-function animateTilt(){
-  smoothX += (tiltX - smoothX) * 0.08;
-  smoothY += (tiltY - smoothY) * 0.08;
-
-  center3D.style.transform = `rotateY(${smoothX}deg) rotateX(${smoothY}deg)`;
-  if(pfp3D) pfp3D.style.transform = `translateZ(${40 + smoothX*0.5}px)`;
-  if(sigil3D) sigil3D.style.transform = `translateZ(${80 + smoothX*1.0}px)`;
-  if(title3D) title3D.style.transform = `translateZ(${60 + smoothX*0.8}px)`;
-  if(icons3D) icons3D.style.transform = `translateZ(${50 + smoothX*0.4}px)`;
-
-  requestAnimationFrame(animateTilt);
-}
-animateTilt();
-
-// Optional idle drift for life-like motion
-let idleT = 0;
-function idleDrift(){
-  idleT += 0.002;
-  const driftX = Math.sin(idleT) * 3;
-  const driftY = Math.cos(idleT) * 3;
-  center3D.style.transform += ` rotateY(${driftX}deg) rotateX(${driftY}deg)`;
-  requestAnimationFrame(idleDrift);
-}
-idleDrift();
 </script>
 
 </body>
