@@ -4,14 +4,16 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1" name="viewport"/>
-<title>333 — Night Void (Final Cut) — Cursor Final</title>
+<title>lung — Night Void (Final Cut) — Cursor Final</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet"/>
 <style>
 :root{
-  --white:#ff2222fff;
-  --muted: rgba(255,40,40,0.06);
-  --accent: rgba(255,40,40,0.06);
-  --glass: rgba(255,40,40,0.03);
+  --white:#bfe1ff;
+  --muted: rgba(10,30,80,0.06);
+  --accent: rgba(10,30,80,0.06);
+  --glass: rgba(10,30,80,0.03);
+  --blue-strong: rgba(76,111,255,0.95);
+  --blue-soft: rgba(10,30,80,0.08);
 }
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif}
 html,body{height:100%;background:#000;color:var(--white);overflow:hidden}
@@ -27,20 +29,20 @@ body.no-cursor{cursor:none}
 /* BACKGROUND + LAYERS */
 .bg{
   position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;
-  /* brighter + cinematic glow (modified per request) */
+  /* cinematic glow adjusted to blue */
   filter: brightness(0.55) contrast(1.12) saturate(1.15);
   transition: transform .25s ease-out, filter 1.5s ease;
-  box-shadow: 0 0 120px 40px rgba(255,40,40,0.08),
-              0 0 240px 100px rgba(255,20,20,0.06);
+  box-shadow: 0 0 120px 40px rgba(10,30,120,0.08),
+              0 0 240px 100px rgba(10,20,80,0.06);
 }
 canvas#waves, canvas#particles,canvas#snow,canvas#fog,canvas#grain{position:fixed;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
 .overlay{position:fixed;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0.35),rgba(0,0,0,0.6));backdrop-filter:blur(2px);z-index:2;pointer-events:none}
 .vignette{position:fixed;inset:0;z-index:45;pointer-events:none;background:radial-gradient(ellipse at center, rgba(0,0,0,0) 30%, rgba(0,0,0,0.45) 100%);mix-blend-mode:multiply;opacity:0.9}
-.scanlines{position:fixed;inset:0;z-index:4;pointer-events:none;background:repeating-linear-gradient(to bottom,rgba(255,40,40,0.02)0px,rgba(255,40,40,0.02)1px,transparent 2px,transparent 3px);mix-blend-mode:overlay;opacity:0.18}
+.scanlines{position:fixed;inset:0;z-index:4;pointer-events:none;background:repeating-linear-gradient(to bottom, rgba(76,111,255,0.02)0px, rgba(76,111,255,0.02)1px, transparent 2px, transparent 3px);mix-blend-mode:overlay;opacity:0.18}
 
 /* ENTER SCREEN */
 #enterScreen{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;flex-direction:column;background:#000}
-#enterText{font-size:1.6rem;letter-spacing:6px;text-transform:uppercase;color:transparent;-webkit-text-stroke:0.9px rgba(255,40,40,0.95);cursor:pointer;padding:14px 30px;border-radius:999px;transition:transform .18s ease,opacity .5s ease;user-select:none}
+#enterText{font-size:1.6rem;letter-spacing:6px;text-transform:uppercase;color:transparent;-webkit-text-stroke:0.9px rgba(76,111,255,0.95);cursor:pointer;padding:14px 30px;border-radius:999px;transition:transform .18s ease,opacity .5s ease;user-select:none}
 #enterText:hover{transform:scale(1.03)}
 #enterScreen.fade{opacity:0;pointer-events:none;transition:opacity .9s ease}
 
@@ -51,7 +53,7 @@ canvas#waves, canvas#particles,canvas#snow,canvas#fog,canvas#grain{position:fixe
 /* PFP/AURA */
 .pfp{width:120px;height:120px;border-radius:999px;overflow:visible;position:relative;z-index:11}
 .pfp img{width:120px;height:120px;border-radius:999px;object-fit:cover;display:block;filter:grayscale(1) contrast(1.02)}
-.aura{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;width:420px;height:420px;border-radius:50%;z-index:9;mix-blend-mode:screen;filter:blur(34px);opacity:0.9;background:radial-gradient(circle at 40% 30%,rgba(255,40,40,0.14),rgba(255,20,20,0.06)18%,rgba(255,40,40,0.00)50%);transition:transform .25s linear,opacity .25s linear}
+.aura{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;width:420px;height:420px;border-radius:50%;z-index:9;mix-blend-mode:screen;filter:blur(34px);opacity:0.9;background:radial-gradient(circle at 40% 30%, rgba(76,111,255,0.14), rgba(30,60,160,0.06) 18%, rgba(76,111,255,0.00)50%);transition:transform .25s linear,opacity .25s linear}
 
 /* subtle pulse */
 @keyframes auraPulse{
@@ -61,23 +63,23 @@ canvas#waves, canvas#particles,canvas#snow,canvas#fog,canvas#grain{position:fixe
 }
 
 /* TITLE */
-h1{font-size:2.2rem;letter-spacing:6px;margin-top:6px;background:linear-gradient(90deg,#ff2222,#bdbdbd,#ff2222);background-size:220% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 3.2s linear infinite;z-index:11;transition:transform .18s ease}
+h1{font-size:2.2rem;letter-spacing:6px;margin-top:6px;background:linear-gradient(90deg,#4c6fff,#bdbdbd,#4c6fff);background-size:220% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 3.2s linear infinite;z-index:11;transition:transform .18s ease}
 @keyframes shimmer{0%{background-position:0% 50%}100%{background-position:200% 50%}}
 
 /* ICONS */
 .icon-row{display:flex;gap:18px;margin-top:14px;z-index:11}
-.icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,40,40,0.03);border:1px solid rgba(255,40,40,0.04);transition:transform .25s,box-shadow .25s;cursor:pointer}
+.icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(76,111,255,0.03);border:1px solid rgba(76,111,255,0.04);transition:transform .25s,box-shadow .25s;cursor:pointer}
 .icon img{width:22px;height:22px;filter:grayscale(1);opacity:0.95}
-.icon:hover{transform:translateY(-6px) scale(1.08);box-shadow:0 12px 40px rgba(255,40,40,0.04)}
+.icon:hover{transform:translateY(-6px) scale(1.08);box-shadow:0 12px 40px rgba(76,111,255,0.04)}
 
 /* VISUALIZER */
 #visualizer{display:flex;gap:4px;margin-top:20px;align-items:flex-end;height:44px;z-index:11}
-.vbar{width:6px;background:linear-gradient(to top,#ff2222,#bdbdbd);border-radius:3px;opacity:0.8;transform-origin:bottom center;transition:height .08s linear}
+.vbar{width:6px;background:linear-gradient(to top,#4c6fff,#bdbdbd);border-radius:3px;opacity:0.8;transform-origin:bottom center;transition:height .08s linear}
 
 /* CONTROLS */
-#controls{position:fixed;left:50%;transform:translateX(-50%);bottom:22px;z-index:40;display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:999px;background:rgba(0,0,0,0.25);backdrop-filter:blur(6px);border:1px solid rgba(255,40,40,0.04)}
-.btn{width:36px;height:36px;display:grid;place-items:center;border-radius:8px;background:rgba(255,40,40,0.03);cursor:pointer;transition:transform .12s,background .12s}
-.btn:hover{transform:scale(1.06);background:rgba(255,40,40,0.08)}
+#controls{position:fixed;left:50%;transform:translateX(-50%);bottom:22px;z-index:40;display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:999px;background:rgba(0,0,0,0.25);backdrop-filter:blur(6px);border:1px solid rgba(76,111,255,0.04)}
+.btn{width:36px;height:36px;display:grid;place-items:center;border-radius:8px;background:rgba(76,111,255,0.03);cursor:pointer;transition:transform .12s,background .12s}
+.btn:hover{transform:scale(1.06);background:rgba(76,111,255,0.08)}
 .icon-white{width:18px;height:18px;filter:invert(1) grayscale(1) brightness(1.2)}
 
 /* VISIBLE WHITE VOLUME */
@@ -91,15 +93,15 @@ input[type="range"]::-webkit-slider-thumb {
   cursor: none !important;
 }
 
-input[type=range]::-webkit-slider-runnable-track{height:5px;background:rgba(255,40,40,0.45);border-radius:999px}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:#ff2222;margin-top:-4px;box-shadow:0 0 12px rgba(255,40,40,0.7);cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:5px;background:rgba(76,111,255,0.45);border-radius:999px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:#4c6fff;margin-top:-4px;box-shadow:0 0 12px rgba(76,111,255,0.7);cursor:pointer}
 
 /* CUSTOM CURSOR DOT */
 .cursor{
   position:fixed;
   width:14px;height:14px;border-radius:50%;
-  background:rgba(255,40,40,0.95);
-  box-shadow:0 0 18px rgba(255,40,40,0.75),0 0 40px rgba(255,40,40,0.06);
+  background:rgba(76,111,255,0.95);
+  box-shadow:0 0 18px rgba(76,111,255,0.75),0 0 40px rgba(76,111,255,0.06);
   pointer-events:none;
   z-index:9999;
   transform:translate(-50%,-50%) scale(1);
@@ -114,7 +116,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
 /* hover / interactive bloom */
 .cursor.hover{
   transform:translate(-50%,-50%) scale(1.85);
-  box-shadow:0 0 36px rgba(255,40,40,0.95),0 0 86px rgba(255,40,40,0.08);
+  box-shadow:0 0 36px rgba(76,111,255,0.95),0 0 86px rgba(76,111,255,0.08);
 }
 
 /* small idle shrink for subtlety (when visible but not moving) */
@@ -124,7 +126,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
 }
 
 /* subtle sweep (unchanged) */
-.flicker{position:fixed;left:-10%;top:0;width:30%;height:100%;transform:skewX(-12deg);background:linear-gradient(90deg,rgba(255,40,40,0),rgba(255,40,40,0.04),rgba(255,40,40,0));mix-blend-mode:screen;z-index:8;pointer-events:none;opacity:0;transition:opacity .12s ease}
+.flicker{position:fixed;left:-10%;top:0;width:30%;height:100%;transform:skewX(-12deg);background:linear-gradient(90deg,rgba(76,111,255,0),rgba(76,111,255,0.04),rgba(76,111,255,0));mix-blend-mode:screen;z-index:8;pointer-events:none;opacity:0;transition:opacity .12s ease}
 
 @media(max-width:520px){
  .pfp{width:96px;height:96px}.pfp img{width:96px;height:96px}
@@ -138,8 +140,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
   bottom: 54px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(255,40,40,0.1);
-  color: black; font-weight: 600; background: rgba(255,40,40,0.95);
+  background: rgba(76,111,255,0.1);
+  color: black; font-weight: 600; background: rgba(76,111,255,0.95);
   font-size: 12px;
   padding: 4px 10px;
   border-radius: 6px;
@@ -152,7 +154,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
 .icon.discord-copy { position: relative; }
 
 
-/* ===== Sigil + aura (black & white only, stronger pulse) ===== */
+/* ===== Sigil + aura (blue only, stronger pulse) ===== */
 .title-row {
   display:flex;
   align-items:center;
@@ -184,7 +186,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
 .sigil:hover { transform: none; cursor: default; }
 .sigil { pointer-events: none; }
 
-/* stronger white pulsing aura behind sigil */
+/* stronger blue pulsing aura behind sigil */
 .sigil-aura{
   position:absolute;
   left:50%;
@@ -195,7 +197,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
   border-radius:50%;
   z-index:10;
   pointer-events:none;
-  background: radial-gradient(circle, rgba(255,40,40,0.36) 0%, rgba(255,40,40,0.24) 25%, rgba(255,40,40,0.08) 55%, rgba(255,40,40,0) 100%);
+  background: radial-gradient(circle, rgba(76,111,255,0.36) 0%, rgba(76,111,255,0.24) 25%, rgba(76,111,255,0.08) 55%, rgba(76,111,255,0) 100%);
   filter: blur(18px);
   opacity:0.85;
   animation: sigilPulse 3.0s ease-in-out infinite;
@@ -215,7 +217,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
   left: 0;
   width: 100%;
   height: 120px;
-  background: linear-gradient(to bottom, rgba(255,40,40,0.08), transparent);
+  background: linear-gradient(to bottom, rgba(10,30,80,0.08), transparent);
   transform: scaleY(-1);
   opacity: 0.15;
   filter: blur(6px);
@@ -224,9 +226,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;heigh
 
 </style>
 <style>
-/* ===== ADDED: Cinematic subtle enhancements ===== */
+/* ===== ADDED: Cinematic subtle enhancements (blue) ===== */
 :root{
-  --cinema-glow: rgba(255,40,40,0.12);
+  --cinema-glow: rgba(76,111,255,0.12);
   --pulse-speed: 0.22s;
 }
 /* Entrance */
@@ -254,11 +256,11 @@ body { transition: transform 8s ease-in-out; }
 body { animation: cameraDrift 28s ease-in-out infinite; }
 
 /* title hover flicker */
-h1:hover { text-shadow: 0 6px 42px rgba(255,40,40,0.06), 0 2px 8px rgba(0,0,0,0.35); transform:scale(1.02); }
+h1:hover { text-shadow: 0 6px 42px rgba(76,111,255,0.06), 0 2px 8px rgba(0,0,0,0.35); transform:scale(1.02); }
 h1 { transition: text-shadow 220ms ease, transform 220ms cubic-bezier(.2,.9,.2,1); }
 
 /* icon subtle glow on hover */
-.icon:hover { box-shadow: 0 18px 54px rgba(255,40,40,0.04), inset 0 1px 0 rgba(255,40,40,0.02); transform: translateY(-6px) scale(1.06) rotateZ(-0.6deg); }
+.icon:hover { box-shadow: 0 18px 54px rgba(76,111,255,0.04), inset 0 1px 0 rgba(76,111,255,0.02); transform: translateY(-6px) scale(1.06) rotateZ(-0.6deg); }
 .icon:active { transform: translateY(-2px) scale(1.03) rotateZ(-0.2deg); }
 
 /* cursor ripple */
@@ -270,7 +272,7 @@ h1 { transition: text-shadow 220ms ease, transform 220ms cubic-bezier(.2,.9,.2,1
   pointer-events: none;
   transform: translate(-50%,-50%) scale(0.2);
   opacity: 0.32;
-  box-shadow: 0 0 28px rgba(255,40,40,0.12), 0 0 6px rgba(255,40,40,0.06) inset;
+  box-shadow: 0 0 28px rgba(76,111,255,0.12), 0 0 6px rgba(76,111,255,0.06) inset;
   transition: transform 420ms cubic-bezier(.2,.9,.2,1), opacity 420ms ease;
   z-index: 9998;
 }
@@ -281,7 +283,7 @@ h1 { transition: text-shadow 220ms ease, transform 220ms cubic-bezier(.2,.9,.2,1
 
 /* enter screen ripple */
 .enter-ripple { position: absolute; inset:0; display:block; pointer-events:none; mix-blend-mode:screen; }
-.enter-ripple .r { position:absolute; width:120px; height:120px; border-radius:50%; background: radial-gradient(circle, rgba(255,40,40,0.12) 0%, rgba(255,40,40,0) 40%); left:50%; top:50%; transform:translate(-50%,-50%) scale(0.6); opacity:0; }
+.enter-ripple .r { position:absolute; width:120px; height:120px; border-radius:50%; background: radial-gradient(circle, rgba(76,111,255,0.12) 0%, rgba(76,111,255,0) 40%); left:50%; top:50%; transform:translate(-50%,-50%) scale(0.6); opacity:0; }
 .enter-ripple.play .r { animation: enterRipple 820ms cubic-bezier(.18,.9,.2,1) forwards; }
 @keyframes enterRipple { 0%{ transform:translate(-50%,-50%) scale(0.6); opacity:0.45 } 60%{ transform:translate(-50%,-50%) scale(2.6); opacity:0.18 } 100%{ transform:translate(-50%,-50%) scale(3.6); opacity:0 } }
 
@@ -303,7 +305,7 @@ h1 { transition: text-shadow 220ms ease, transform 220ms cubic-bezier(.2,.9,.2,1
 <!-- ENTER -->
 <div id="enterScreen"><div id="enterText" tabindex="0">Enter the Void</div></div>
 <!-- BACKGROUND + CANVASES -->
-<img alt="night city" class="bg" src="https://media.giphy.com/media/8JZ7ZKdrTk72RaahLB/giphy.gif"/>
+<img alt="night city" class="bg" src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExeXA4MGhqcWR0bjFhZnd5OWgzOGI1NnRwNGJxdDU1ajd0Njh5MXd4MiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/sTvpri7hXgsBfPACBP/giphy.gif"/>
 <canvas id="waves"></canvas>
 <canvas id="particles"></canvas>
 <canvas id="snow"></canvas>
@@ -321,7 +323,7 @@ h1 { transition: text-shadow 220ms ease, transform 220ms cubic-bezier(.2,.9,.2,1
 </div>
 
   <div class="title-row">
-    <h1 id="title">333</h1>
+    <h1 id="title">lung</h1>
     <div class="sigil-wrap" aria-hidden="true">
       
       <img src="https://i.imgur.com/2k8HQg9.png" alt="sigil" class="sigil"/>
@@ -344,10 +346,10 @@ h1 { transition: text-shadow 220ms ease, transform 220ms cubic-bezier(.2,.9,.2,1
 <!-- CONTROLS -->
 <div aria-hidden="true" id="controls" style="display:none">
 <button aria-label="Play/Pause" aria-pressed="false" class="btn" id="playBtn" title="Play/Pause">
-<svg fill="none" height="18" stroke="#ff2222" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4" viewbox="0 0 24 24" width="18"><path d="M5 3v18l15-9L5 3z"></path></svg>
+<svg fill="none" height="18" stroke="#4c6fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4" viewbox="0 0 24 24" width="18"><path d="M5 3v18l15-9L5 3z"></path></svg>
 </button>
 <button aria-label="Mute/Unmute" aria-pressed="false" class="btn" id="muteBtn" title="Mute/Unmute">
-<svg fill="none" height="14" stroke="#ff2222" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4" viewbox="0 0 24 24" width="14"><path d="M11 5L6 9H3v6h3l5 4V5z"></path><path d="M19 9a4 4 0 010 6"></path></svg>
+<svg fill="none" height="14" stroke="#4c6fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.4" viewbox="0 0 24 24" width="14"><path d="M11 5L6 9H3v6h3l5 4V5z"></path><path d="M19 9a4 4 0 010 6"></path></svg>
 </button>
 <input aria-label="Volume" id="vol" max="100" min="0" type="range" value="70"/>
 </div>
@@ -389,8 +391,8 @@ function createYTPlayer(){
 
   ytPlayer = new YT.Player('ytPlayerEl', {
     height: '1', width: '1',
-    videoId: 'TQ-J0sXfRL4',
-    playerVars: { autoplay: 1, controls: 0, loop: 1, playlist: 'TQ-J0sXfRL4', rel: 0, modestbranding: 1 },
+    videoId: '8taz5FtrQUs',
+    playerVars: { autoplay: 1, controls: 0, loop: 1, playlist: '8taz5FtrQUs', rel: 0, modestbranding: 1 },
     events: {
       onReady: (e) => {
         const v = parseInt(volRange.value, 10);
@@ -447,8 +449,8 @@ function showControls(){
 
 function updatePlayIcon(){
   playBtn.innerHTML = isPlaying
-    ? `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#ff2222" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>`
-    : `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#ff2222" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v18l15-9L5 3z"/></svg>`;
+    ? `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#4c6fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>`
+    : `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#4c6fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v18l15-9L5 3z"/></svg>`;
   playBtn.setAttribute('aria-pressed', String(isPlaying));
 }
 
@@ -501,7 +503,7 @@ function stepViz(t){
   // subtle title scale to energy
   const strongest = Math.max(...Array.from(vbars).map(b => parseFloat(b.style.height)));
   const scale = 1 + (strongest/120);
-  // title scale removed to keep '333' static;
+  // title scale removed to keep 'lung' static;
   // aura intensity
   aura.style.opacity = 0.7 + Math.min(0.35, E*0.6);
 }
@@ -655,7 +657,7 @@ for(let i=0;i<6;i++){
 /* draw frames */
 function drawParticles(){
   pctx.clearRect(0,0,W,H);
-  pctx.fillStyle = 'rgba(255,40,40,0.28)';
+  pctx.fillStyle = 'rgba(76,111,255,0.28)';
   for(let p of smalls){
     pctx.beginPath();
     pctx.arc(p.x,p.y,p.r,0,Math.PI*2);
@@ -667,7 +669,7 @@ function drawParticles(){
 
 function drawSnow(){
   sctx.clearRect(0,0,W,H);
-  sctx.fillStyle = 'rgba(255,40,40,0.28)';
+  sctx.fillStyle = 'rgba(76,111,255,0.28)';
   sctx.beginPath();
   for(let f of flakes){
     sctx.moveTo(f.x,f.y);
@@ -687,9 +689,9 @@ function drawFog(t){
     b.x += b.vx * Math.cos(t*0.0007 + b.phase) * 0.8;
     b.y += b.vy * Math.sin(t*0.0004 + b.phase) * 0.8;
     const g = fctx.createRadialGradient(b.x,b.y,0,b.x,b.y,b.s);
-    g.addColorStop(0, `rgba(255,40,40,${b.alpha})`);
-    g.addColorStop(0.35, `rgba(255,40,40,${b.alpha*0.45})`);
-    g.addColorStop(1, 'rgba(255,40,40,0)');
+    g.addColorStop(0, `rgba(76,111,255,${b.alpha})`);
+    g.addColorStop(0.35, `rgba(76,111,255,${b.alpha*0.45})`);
+    g.addColorStop(1, 'rgba(76,111,255,0)');
     fctx.fillStyle = g;
     fctx.beginPath();
     fctx.arc(b.x,b.y,b.s,0,Math.PI*2);
@@ -699,7 +701,7 @@ function drawFog(t){
 
 function drawGrain(){
   gctx.clearRect(0,0,W,H);
-  gctx.fillStyle = 'rgba(255,40,40,0.02)';
+  gctx.fillStyle = 'rgba(76,111,255,0.02)';
   const dots = Math.round(W*H/7000);
   for(let i=0;i<dots;i++){
     const x = Math.random()*W, y = Math.random()*H;
@@ -784,7 +786,7 @@ const discordIcon = document.querySelector('.discord-copy');
 const popup = document.getElementById('copyPopup');
 if (discordIcon) {
   discordIcon.addEventListener('click', () => {
-    navigator.clipboard.writeText('l.ung').then(() => {
+    navigator.clipboard.writeText('lung').then(() => {
       popup.classList.add('show');
       setTimeout(() => popup.classList.remove('show'), 500);
     });
@@ -793,7 +795,7 @@ if (discordIcon) {
 
 </script>
 <script>
-/* ===== ADDED: Cinematic JS enhancements ===== */
+/* ===== ADDED: Cinematic JS enhancements (blue) ===== */
 (function(){
   try{
     // insert a ripple element into enter screen
@@ -863,7 +865,7 @@ if (discordIcon) {
     const title = document.getElementById('title');
     (function titleGlow(){
       const e = sampleEnergy();
-      title.style.textShadow = `0 ${(4 + e*18)|0}px ${8 + e*36}px rgba(255,40,40,${0.06 + e*0.28})`;
+      title.style.textShadow = `0 ${(4 + e*18)|0}px ${8 + e*36}px rgba(76,111,255,${0.06 + e*0.28})`;
       requestAnimationFrame(titleGlow);
     })();
 
@@ -896,17 +898,17 @@ if (discordIcon) {
   font-size: 0.9rem;
   font-style: italic;
   letter-spacing: 1.2px;
-  color: rgba(255,40,40,0.9);
+  color: rgba(76,111,255,0.9);
   opacity: 0;
   z-index: 8;
   line-height: 1.6;
-  filter: drop-shadow(0 0 14px rgba(255,40,40,0.15));
+  filter: drop-shadow(0 0 14px rgba(76,111,255,0.15));
   transition: opacity 2s ease;
 }
 #voidQuote.show { opacity: 1; }
 @keyframes quotePulse {
-  0%,100% { text-shadow: 0 0 6px rgba(255,40,40,0.25), 0 0 14px rgba(255,40,40,0.08); }
-  50% { text-shadow: 0 0 18px rgba(255,40,40,0.55), 0 0 34px rgba(255,40,40,0.18); }
+  0%,100% { text-shadow: 0 0 6px rgba(76,111,255,0.25), 0 0 14px rgba(76,111,255,0.08); }
+  50% { text-shadow: 0 0 18px rgba(76,111,255,0.55), 0 0 34px rgba(76,111,255,0.18); }
 }
 #voidQuote.pulse { animation: quotePulse 6s ease-in-out infinite; }
 </style>
@@ -939,7 +941,7 @@ startExperience = function(){
   width: 100px;
   height: 100px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,40,40,0.35) 0%, rgba(255,40,40,0) 70%);
+  background: radial-gradient(circle, rgba(76,111,255,0.35) 0%, rgba(76,111,255,0) 70%);
   pointer-events: none;
   mix-blend-mode: screen;
   transform: translate(-50%, -50%) scale(0.4);
